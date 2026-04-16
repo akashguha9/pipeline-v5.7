@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pipeline V5.7+ — LinkedIn Scorecard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #0a0a0f;
+  --paper: #f5f2ec;
+  --paper2: #edeae2;
+  --rule: #d4cfc5;
+  --accent: #c8401a;
+  --accent2: #1a3a8a;
+  --gold: #b8922a;
+  --green: #1a6e3a;
+  --grey: #7a7570;
+  --light: #a8a3980;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--ink);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 32px 16px;
+  font-family: 'Syne', sans-serif;
+}
+
+.card {
+  width: 900px;
+  background: var(--paper);
+  position: relative;
+  overflow: hidden;
+}
+
+/* NEWSPAPER HEADER */
+.masthead {
+  background: var(--ink);
+  padding: 0;
+  position: relative;
+}
+
+.masthead-rule {
+  height: 6px;
+  background: linear-gradient(90deg, var(--accent) 0%, var(--accent) 33%, var(--gold) 33%, var(--gold) 66%, var(--accent2) 66%);
+}
+
+.masthead-inner {
+  padding: 24px 32px 20px;
+  border-bottom: 1px solid #2a2a3a;
+}
+
+.masthead-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.pipeline-name {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 3.2rem;
+  line-height: 1;
+  color: var(--paper);
+  letter-spacing: -0.03em;
+}
+
+.pipeline-name span {
+  color: var(--gold);
+}
+
+.masthead-meta {
+  text-align: right;
+}
+
+.meta-date {
+  font-family: 'Space Mono', monospace;
+  font-size: .65rem;
+  color: #888;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.meta-tagline {
+  font-family: 'Space Mono', monospace;
+  font-size: .62rem;
+  color: #aaa;
+  max-width: 220px;
+  text-align: right;
+  line-height: 1.5;
+}
+
+.masthead-scores {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0;
+  border-top: 1px solid #2a2a3a;
+}
+
+.score-box {
+  padding: 14px 0 12px;
+  text-align: center;
+  border-right: 1px solid #2a2a3a;
+}
+.score-box:last-child { border-right: none; }
+
+.score-val {
+  font-family: 'Space Mono', monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.score-lbl {
+  font-family: 'Space Mono', monospace;
+  font-size: .5rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #666;
+}
+
+/* SECTION RULE */
+.section-rule {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 32px 12px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.section-rule-line {
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+
+.section-title {
+  font-family: 'Space Mono', monospace;
+  font-size: .6rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--grey);
+  white-space: nowrap;
+}
+
+/* MODULE GRID */
+.modules-wrap {
+  padding: 16px 32px 0;
+}
+
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+  border: 2px solid var(--ink);
+}
+
+.mod-cell {
+  padding: 10px 9px 9px;
+  border-right: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  position: relative;
+  background: var(--paper);
+}
+.mod-cell:nth-child(7n) { border-right: none; }
+.mod-cell:nth-child(n+8) { border-top: none; }
+
+.mod-cell.debt { background: #fff5f5; }
+.mod-cell.ceiling { background: #f4faf6; }
+.mod-cell.improved { background: #f5f6ff; }
+
+.mod-label {
+  font-family: 'Space Mono', monospace;
+  font-size: .56rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  color: var(--grey);
+}
+
+.mod-score {
+  font-family: 'Space Mono', monospace;
+  font-size: 1.55rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.mod-bar-bg {
+  height: 2px;
+  background: var(--rule);
+  margin-bottom: 5px;
+  position: relative;
+}
+.mod-bar-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+}
+
+.mod-tag {
+  font-family: 'Space Mono', monospace;
+  font-size: .46rem;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  padding: 2px 4px;
+  border-radius: 2px;
+  display: inline-block;
+  margin-bottom: 4px;
+}
+
+.mod-note {
+  font-size: .56rem;
+  line-height: 1.45;
+  color: var(--grey);
+}
+
+.mod-delta {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-family: 'Space Mono', monospace;
+  font-size: .5rem;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+/* MECHANISMS SECTION */
+.mechs-wrap {
+  padding: 0 32px;
+}
+
+.mechs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  border: 2px solid var(--ink);
+  border-top: none;
+}
+
+.mech-item {
+  padding: 10px 12px;
+  border-right: 1px solid var(--ink);
+  border-bottom: 1px solid var(--rule);
+}
+.mech-item:nth-child(3n) { border-right: none; }
+.mech-item:nth-last-child(-n+3) { border-bottom: none; }
+
+.mech-name {
+  font-family: 'Space Mono', monospace;
+  font-size: .56rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  margin-bottom: 3px;
+  color: var(--ink);
+}
+
+.mech-mod {
+  display: inline-block;
+  font-family: 'Space Mono', monospace;
+  font-size: .46rem;
+  font-weight: 700;
+  padding: 1px 4px;
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: 1px;
+  margin-bottom: 4px;
+}
+
+.mech-desc {
+  font-size: .57rem;
+  color: var(--grey);
+  line-height: 1.45;
+}
+
+/* CRITICAL PATH */
+.crit-wrap {
+  padding: 0 32px;
+}
+
+.crit-inner {
+  border: 2px solid var(--accent);
+  border-top: none;
+  padding: 14px 16px;
+  background: #fff8f6;
+}
+
+.crit-header {
+  font-family: 'Space Mono', monospace;
+  font-size: .55rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.crit-items {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 24px;
+}
+
+.crit-item {
+  display: flex;
+  gap: 7px;
+  align-items: flex-start;
+}
+
+.crit-bullet {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.crit-text {
+  font-size: .62rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+/* PROJECTION */
+.proj-wrap {
+  padding: 0 32px 20px;
+}
+
+.proj-inner {
+  border: 2px solid var(--ink);
+  border-top: none;
+}
+
+.proj-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 50px 60px;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--rule);
+}
+.proj-row:last-child { border-bottom: none; }
+.proj-row.header { background: var(--paper2); }
+
+.proj-date {
+  font-family: 'Space Mono', monospace;
+  font-size: .58rem;
+  color: var(--grey);
+}
+
+.proj-event {
+  font-size: .6rem;
+  color: var(--ink);
+  line-height: 1.4;
+}
+
+.proj-score {
+  font-family: 'Space Mono', monospace;
+  font-size: .7rem;
+  font-weight: 700;
+  text-align: right;
+  color: var(--green);
+}
+
+.proj-bar-wrap {
+  height: 3px;
+  background: var(--rule);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.proj-bar-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 1px;
+}
+
+/* FOOTER */
+.footer {
+  background: var(--ink);
+  padding: 14px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer-left {
+  font-family: 'Space Mono', monospace;
+  font-size: .52rem;
+  color: #666;
+  line-height: 1.7;
+}
+
+.footer-axiom {
+  font-style: italic;
+  font-family: 'Syne', sans-serif;
+  font-size: .65rem;
+  color: #999;
+  max-width: 340px;
+  text-align: right;
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="masthead-rule"></div>
+    <div class="masthead-inner">
+      <div class="masthead-top">
+        <div>
+          <div class="pipeline-name">PIPELINE<span> V5.7+</span></div>
+          <div style="font-family:'Space Mono',monospace;font-size:.6rem;color:#888;margin-top:5px;letter-spacing:.08em">GEOPOLITICAL SIGNAL PIPELINE · SESSION BLOCK SCORECARD</div>
+        </div>
+        <div class="masthead-meta">
+          <div class="meta-date">April 16, 2026 · 1900+ Sessions</div>
+          <div class="meta-tagline">"Capital moves before language. Structure forms before capital. Price reconciles last."</div>
+        </div>
+      </div>
+    </div>
+    <div class="masthead-scores">
+      <div class="score-box">
+        <div class="score-val" style="color:#d4a855">9.57</div>
+        <div class="score-lbl">Score</div>
+      </div>
+      <div class="score-box">
+        <div class="score-val" style="color:#c8401a">0.19</div>
+        <div class="score-lbl">Gap to ceiling</div>
+      </div>
+      <div class="score-box">
+        <div class="score-val" style="color:#f5f2ec">9.76</div>
+        <div class="score-lbl">Ceiling</div>
+      </div>
+      <div class="score-box">
+        <div class="score-val" style="color:#ef4444">T=6</div>
+        <div class="score-lbl">Closed trades</div>
+      </div>
+      <div class="score-box">
+        <div class="score-val" style="color:#22c55e">+18</div>
+        <div class="score-lbl">New mechs</div>
+      </div>
+      <div class="score-box">
+        <div class="score-val" style="color:#3b82f6">+2.69</div>
+        <div class="score-lbl">V2 total gain</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULES -->
+  <div class="section-rule">
+    <div class="section-rule-line"></div>
+    <div class="section-title">Module Scores — 13 Components</div>
+    <div class="section-rule-line"></div>
+  </div>
+
+  <div class="modules-wrap">
+    <div class="modules-grid">
+
+      <!-- S0 -->
+      <div class="mod-cell improved">
+        <div class="mod-delta" style="background:#dbeafe;color:#1d4ed8">+0.05</div>
+        <div class="mod-label">S0</div>
+        <div class="mod-score" style="color:#1d4ed8">9.56</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:95.6%;background:#3b82f6"></div></div>
+        <div class="mod-tag" style="background:#eff6ff;color:#1d4ed8">tooling</div>
+        <div class="mod-note">Signal intake. PBSC·TVG·ETL·SBS·TSL·NLR·SPF</div>
+      </div>
+
+      <!-- S1 -->
+      <div class="mod-cell ceiling improved">
+        <div class="mod-delta" style="background:#dcfce7;color:#15803d">+0.04</div>
+        <div class="mod-label">S1</div>
+        <div class="mod-score" style="color:#15803d">9.59</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:95.9%;background:#22c55e"></div></div>
+        <div class="mod-tag" style="background:#f0fdf4;color:#15803d">ceiling</div>
+        <div class="mod-note">Belief state. SSSC·OAD·TSL·NLR·CVS</div>
+      </div>
+
+      <!-- S2 -->
+      <div class="mod-cell ceiling">
+        <div class="mod-delta" style="background:#f1f5f9;color:#64748b">—</div>
+        <div class="mod-label">S2</div>
+        <div class="mod-score" style="color:#15803d">9.80</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:98%;background:#22c55e"></div></div>
+        <div class="mod-tag" style="background:#f0fdf4;color:#15803d">ceiling</div>
+        <div class="mod-note">Narrative engine. TEMPORAL_GRAMMAR·HPS</div>
+      </div>
+
+      <!-- S3A -->
+      <div class="mod-cell">
+        <div class="mod-delta" style="background:#f1f5f9;color:#64748b">—</div>
+        <div class="mod-label">S3A</div>
+        <div class="mod-score" style="color:#c2410c">9.14</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:91.4%;background:#f97316"></div></div>
+        <div class="mod-tag" style="background:#fff7ed;color:#c2410c">structural</div>
+        <div class="mod-note">Capital flow. Structural ceiling. Live data req.</div>
+      </div>
+
+      <!-- S3B -->
+      <div class="mod-cell improved">
+        <div class="mod-delta" style="background:#dbeafe;color:#1d4ed8">+0.01</div>
+        <div class="mod-label">S3B</div>
+        <div class="mod-score" style="color:#1d4ed8">8.96</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:89.6%;background:#3b82f6"></div></div>
+        <div class="mod-tag" style="background:#eff6ff;color:#1d4ed8">tooling</div>
+        <div class="mod-note">Flow dynamics. ICT active.</div>
+      </div>
+
+      <!-- S35 -->
+      <div class="mod-cell ceiling">
+        <div class="mod-delta" style="background:#f1f5f9;color:#64748b">—</div>
+        <div class="mod-label">S35</div>
+        <div class="mod-score" style="color:#15803d">9.80</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:98%;background:#22c55e"></div></div>
+        <div class="mod-tag" style="background:#f0fdf4;color:#15803d">ceiling</div>
+        <div class="mod-note">Decision gate. GRADUATED_EXIT·CVS</div>
+      </div>
+
+      <!-- S4 -->
+      <div class="mod-cell ceiling">
+        <div class="mod-delta" style="background:#f1f5f9;color:#64748b">—</div>
+        <div class="mod-label">S4</div>
+        <div class="mod-score" style="color:#15803d">9.80</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:98%;background:#22c55e"></div></div>
+        <div class="mod-tag" style="background:#f0fdf4;color:#15803d">ceiling</div>
+        <div class="mod-note">Execution. FIRE_MODE·CHIGURH·LALO</div>
+      </div>
+
+      <!-- ATOM -->
+      <div class="mod-cell debt">
+        <div class="mod-delta" style="background:#fef2f2;color:#dc2626">⚠</div>
+        <div class="mod-label">ATOM</div>
+        <div class="mod-score" style="color:#dc2626">8.90</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:89%;background:#ef4444"></div></div>
+        <div class="mod-tag" style="background:#fef2f2;color:#dc2626">⚠ DEBT</div>
+        <div class="mod-note">95→35 fields BLOCKING. Complexity debt RED.</div>
+      </div>
+
+      <!-- S5 -->
+      <div class="mod-cell improved">
+        <div class="mod-delta" style="background:#faf5ff;color:#7c3aed">+0.03</div>
+        <div class="mod-label">S5</div>
+        <div class="mod-score" style="color:#7c3aed">8.51</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:85.1%;background:#a855f7"></div></div>
+        <div class="mod-tag" style="background:#faf5ff;color:#7c3aed">empirical</div>
+        <div class="mod-note">Operator. BRP·BIS·3POISONS·REALM</div>
+      </div>
+
+      <!-- S7 -->
+      <div class="mod-cell">
+        <div class="mod-delta" style="background:#f1f5f9;color:#64748b">—</div>
+        <div class="mod-label">S7</div>
+        <div class="mod-score" style="color:#7c3aed">9.65</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:96.5%;background:#a855f7"></div></div>
+        <div class="mod-tag" style="background:#faf5ff;color:#7c3aed">empirical</div>
+        <div class="mod-note">Regime. LEGITIMACY_DECAY·SAECULAR</div>
+      </div>
+
+      <!-- S8 -->
+      <div class="mod-cell ceiling improved">
+        <div class="mod-delta" style="background:#dcfce7;color:#15803d">+0.01</div>
+        <div class="mod-label">S8</div>
+        <div class="mod-score" style="color:#15803d">9.83</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:98.3%;background:#22c55e"></div></div>
+        <div class="mod-tag" style="background:#f0fdf4;color:#15803d">ceiling</div>
+        <div class="mod-note">Risk. TRC·PES·DECOHERENCE·ICT</div>
+      </div>
+
+      <!-- S9 -->
+      <div class="mod-cell">
+        <div class="mod-delta" style="background:#f1f5f9;color:#64748b">—</div>
+        <div class="mod-label">S9</div>
+        <div class="mod-score" style="color:#1d4ed8">8.37</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:83.7%;background:#3b82f6"></div></div>
+        <div class="mod-tag" style="background:#eff6ff;color:#1d4ed8">tooling</div>
+        <div class="mod-note">Build May 13. 24 named components.</div>
+      </div>
+
+      <!-- CAL -->
+      <div class="mod-cell debt">
+        <div class="mod-delta" style="background:#fefce8;color:#a16207">+0.06</div>
+        <div class="mod-label">CAL</div>
+        <div class="mod-score" style="color:#a16207">5.41</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:54.1%;background:#eab308"></div></div>
+        <div class="mod-tag" style="background:#fefce8;color:#a16207">data void</div>
+        <div class="mod-note">T=6→10 April 25. ε=1.0→0.56.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- NEW MECHANISMS -->
+  <div class="section-rule" style="margin-top:16px">
+    <div class="section-rule-line"></div>
+    <div class="section-title">18 New Mechanisms — This Session Block</div>
+    <div class="section-rule-line"></div>
+  </div>
+
+  <div class="mechs-wrap">
+    <div class="mechs-grid">
+
+      <div class="mech-item">
+        <div class="mech-name">THREE_POISONS_BIAS_ENGINE</div>
+        <span class="mech-mod">S5</span>
+        <div class="mech-desc">desire_t / aversion_t / ignorance_t tracked separately. C'_t = C_t × (1−β₁d−β₂a−β₃i)</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">REALM_CLASSIFIER</div>
+        <span class="mech-mod">S5</span>
+        <div class="mech-desc">6-state: Hell/Ghost/Animal/Human/Asura/Deva. Only Human realm → FIRE_MODE permitted.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">FEEDBACK_CONTAMINATION_SCORE</div>
+        <span class="mech-mod">CAL</span>
+        <div class="mech-desc">CHAOS_ENTRY = near-zero MW weight. Effective T-count = 4.2, not 6.</div>
+      </div>
+
+      <div class="mech-item">
+        <div class="mech-name">OPEN_LOOP_MONITOR</div>
+        <span class="mech-mod">CAL</span>
+        <div class="mech-desc">Z=0.5 partial closure. Position dead, thesis paused. Re-entry trigger + expiry.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">INTEGRATION_COST_THRESHOLD</div>
+        <span class="mech-mod">S3B</span>
+        <div class="mech-desc">NET_EDGE = COMPOSITE_EDGE − ICT. Proceed only if NET_EDGE > 0.45.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">LUCKY_PASS_CLASSIFIER</div>
+        <span class="mech-mod">CAL</span>
+        <div class="mech-desc">thesis_confirmed boolean. Luck_score [0,1]. Survival ≠ valid process.</div>
+      </div>
+
+      <div class="mech-item">
+        <div class="mech-name">TAIL_RISK_COUNTERFACTUAL</div>
+        <span class="mech-mod">S8</span>
+        <div class="mech-desc">4 scenarios per closed trade. CVX proximity=0.882, USO=0.950. Near-misses count.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">SOURCE_BUBBLE_SCORE</div>
+        <span class="mech-mod">S0</span>
+        <div class="mech-desc">Individual-source credibility within a layer. SBS = insularity + echo density + falsification rate.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">NARRATIVE_LAG_REGISTER</div>
+        <span class="mech-mod">S1</span>
+        <div class="mech-desc">Empirical Layer1→Layer3 timing. CVX entry Day 80 vs edge window Day 0-5. LATE_ENTRY_WARNING.</div>
+      </div>
+
+      <div class="mech-item">
+        <div class="mech-name">ENTRY_TAX_LAYER</div>
+        <span class="mech-mod">S0</span>
+        <div class="mech-desc">Access friction predicts edge window duration. ETL = money + network + geo + language barriers.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">TASTE_SIGNAL_LAYER</div>
+        <span class="mech-mod">S1</span>
+        <div class="mech-desc">Selector quality scoring. SELECTOR_CONFIRMED → CE boost +0.08. Fills VISOR precision gap.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">BEHAVIORAL_INTEGRITY_SCORER</div>
+        <span class="mech-mod">S5</span>
+        <div class="mech-desc">Longitudinal conduct consistency. BIS_rolling < 0.6 = CONDUCT_DEGRADATION. BIS > 0.85 = GHOST_STANCE earned.</div>
+      </div>
+
+      <div class="mech-item">
+        <div class="mech-name">OUTSIDER_ADVANTAGE_DETECTOR</div>
+        <span class="mech-mod">S1</span>
+        <div class="mech-desc">OAD = C_internal × (1−D_consensus) − P_conformity × 0.3. The Englishman in New York state.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">SANGAM_SIGNAL_STATE_CLASSIFIER</div>
+        <span class="mech-mod">S1</span>
+        <div class="mech-desc">CONFLUENCE / PARALLEL_NON_MIXING / BOUNDARY_TENSION / SUBSURFACE_CONTROL. Signal topology not scalar.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">TYNDALL_VISIBILITY_GATE</div>
+        <span class="mech-mod">S0</span>
+        <div class="mech-desc">M_total < 0.3 → SHADOW_BOOK. Medium density check before signal strength. CVX Day 80: M=0.12.</div>
+      </div>
+
+      <div class="mech-item">
+        <div class="mech-name">PRE_BURST_SIGNAL_CLASSIFIER</div>
+        <span class="mech-mod">S0</span>
+        <div class="mech-desc">SLOW_CRAWLER → FAST_CRAWLER → PRE_BURST_COIL → STAND_UP_RUN. Elite entry = before the run starts.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">BURST_RECOVERY_PROTOCOL</div>
+        <span class="mech-mod">S5</span>
+        <div class="mech-desc">Session-level cooldown. CHAOS_LOSS = +14 days. STOP_LOSS = +21 days. April 4 cluster: 5 of 6 blocked.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">SOURCE_PURITY_FACTOR</div>
+        <span class="mech-mod">S0</span>
+        <div class="mech-desc">T_i = (1−SPF) × SCS × SAS. Strategic distortion + domain competence + accuracy track record independently.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CRITICAL PATH -->
+  <div class="section-rule" style="margin-top:16px">
+    <div class="section-rule-line"></div>
+    <div class="section-title">Critical Path</div>
+    <div class="section-rule-line"></div>
+  </div>
+
+  <div class="crit-wrap">
+    <div class="crit-inner">
+      <div class="crit-header">⚠ Blocking items + next milestones</div>
+      <div class="crit-items">
+        <div class="crit-item">
+          <div class="crit-bullet"></div>
+          <div class="crit-text"><strong>ATOM retirement (95→35)</strong> — BLOCKING before next trade. MICHELANGELO_SUBTRACTION_AUDIT pilot.</div>
+        </div>
+        <div class="crit-item">
+          <div class="crit-bullet"></div>
+          <div class="crit-text"><strong>T=6→10 by April 25</strong> — TLT+TIP exits T=7,8. UNG/FCG exits T=9,10. ε→0.56 at T=10.</div>
+        </div>
+        <div class="crit-item">
+          <div class="crit-bullet"></div>
+          <div class="crit-text"><strong>S9 build — May 13</strong> — feedparser + PRAW + Grok API + APScheduler + ATOM retirement.</div>
+        </div>
+        <div class="crit-item">
+          <div class="crit-bullet"></div>
+          <div class="crit-text"><strong>Gap closes only through T-count + tooling</strong>. Architecture is at saturation. Data is the remaining constraint.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECTION -->
+  <div class="section-rule" style="margin-top:0">
+    <div class="section-rule-line"></div>
+    <div class="section-title">Score Projection to Real Capital</div>
+    <div class="section-rule-line"></div>
+  </div>
+
+  <div class="proj-wrap">
+    <div class="proj-inner">
+      <div class="proj-row">
+        <div class="proj-date">Apr 25</div>
+        <div class="proj-event">T=10 closes · first MW direction signal (ε→0.56)</div>
+        <div class="proj-score">9.58</div>
+        <div class="proj-bar-wrap"><div class="proj-bar-fill" style="width:5%"></div></div>
+      </div>
+      <div class="proj-row">
+        <div class="proj-date">May 31</div>
+        <div class="proj-event">S9 Phase 1 · ATOM retired · full source intelligence stack live</div>
+        <div class="proj-score">9.62</div>
+        <div class="proj-bar-wrap"><div class="proj-bar-fill" style="width:26%"></div></div>
+      </div>
+      <div class="proj-row">
+        <div class="proj-date">Jun 30</div>
+        <div class="proj-event">Phase 2 · FinBERT + Polymarket API + first automated signal</div>
+        <div class="proj-score">9.65</div>
+        <div class="proj-bar-wrap"><div class="proj-bar-fill" style="width:47%"></div></div>
+      </div>
+      <div class="proj-row">
+        <div class="proj-date">Jul 31</div>
+        <div class="proj-event">IBKR paper trading · live MW calibration loop active</div>
+        <div class="proj-score">9.70</div>
+        <div class="proj-bar-wrap"><div class="proj-bar-fill" style="width:68%"></div></div>
+      </div>
+      <div class="proj-row">
+        <div class="proj-date">Aug 2026</div>
+        <div class="proj-event">Real capital · T≥35 · E_operator>0.80 · MW calibrated</div>
+        <div class="proj-score">9.74</div>
+        <div class="proj-bar-wrap"><div class="proj-bar-fill" style="width:89%"></div></div>
+      </div>
+      <div class="proj-row">
+        <div class="proj-date">Ceiling</div>
+        <div class="proj-event">9.76 — residual empirical reserve (cannot be spec'd away)</div>
+        <div class="proj-score">9.76</div>
+        <div class="proj-bar-wrap"><div class="proj-bar-fill" style="width:100%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-left">
+      GEOPOLITICAL SIGNAL PIPELINE V5.7+<br>
+      Score 9.57 · Gap 0.19 · T=6 · ε=1.0 · Ceiling 9.76<br>
+      1900+ sessions · 18 new mechanisms this block
+    </div>
+    <div class="footer-axiom">
+      "Attention precedes capital. Capital follows narrative.<br>
+      Narrative forms before price."
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

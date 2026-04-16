@@ -1,0 +1,201 @@
+═══════════════════════════════════════════════════════════════
+PIPELINE INTEGRATION PROMPT — PASTE FINDINGS FROM DATA CHAT HERE
+═══════════════════════════════════════════════════════════════
+
+CONTEXT:
+You are receiving aggregated findings from a chess PGN + hackathon
+data extraction session. These findings were extracted using the
+Geopolitical Signal Pipeline's module framework.
+
+Your job is to:
+1. Validate each finding against the pipeline's existing named fields
+2. Identify which variables to update
+3. Generate calibration rules
+4. Extract any UNIVERSAL PATTERNS that apply to market behavior
+5. Produce a pipeline integration briefing
+
+═══════════════════════════════════════════════════════════════
+THE PIPELINE — CURRENT STATE (V5.6 + EXTENSIONS)
+═══════════════════════════════════════════════════════════════
+
+Core modules relevant to this integration:
+
+ARCHETYPE_CLASSIFIER:
+  conor_score [0-10] — precision strike, fast, timing sensitive
+  khabib_score [0-10] — structural advantage, slow grind, hold discipline
+  islam_score [0-10] — adaptive, multi-path, dynamic routing
+  execution_style: CONOR / KHABIB / ISLAM / HYBRID
+
+EDGE_DOMINANCE_ENGINE:
+  classification: PASSIVE / ADAPTIVE / EDGE_DOMINANT
+  style: PACE / LIMIT / LIQUIDITY / NARRATIVE / VOLATILITY / STRUCTURAL
+  wind_absorption: LOW / MEDIUM / HIGH
+  follower_dependency: LOW / MEDIUM / HIGH
+  sustainability: SUSTAINABLE / FRAGILE / TERMINAL
+  EDS_score: [0-10]
+
+SONIC_STRUCTURE_ENGINE:
+  SILENT_BUILD / RISING_PRESSURE / RELEASE / ECHO
+
+COLLAPSE_PACKET_DETECTOR:
+  4-step sequence: ignored_warning → weakening → forced_adj → second_forced
+
+NO_RELEASE_MONITOR:
+  Blocks premature exits when: khabib_score HIGH + structure intact
+  + SONIC not at RELEASE/ECHO + no invalidation
+
+TEMPORAL_INERTIA_ENGINE:
+  TRUE_INERTIA / FAKE_INERTIA / EXHAUSTED_INERTIA / REVERSAL_INERTIA
+
+STATE_RECALL_ENGINE:
+  Interpretation sensitivity test across Fear/Greed/Mania/Calm states
+
+DISTORTION_SCORE [0-10]:
+  Belief vs evidence gap (RASPUTIN_LAYER)
+
+ACCURACY_DECAY_RATE:
+  d(DISTORTION_SCORE)/dt — is gap widening or narrowing?
+
+PURE_SIGNAL (ESE-6):
+  voluntary_return_indicator — trust shown through behavior not words
+  performance_contamination_score
+  narrative_to_behavior_consistency
+
+WIND_EXTRACTION_EFFECT:
+  wind_absorption + follower_dependency
+
+═══════════════════════════════════════════════════════════════
+PASTE THE FINDINGS BELOW THIS LINE
+═══════════════════════════════════════════════════════════════
+
+[PASTE THE FULL OUTPUT FROM THE DATA EXTRACTION CHAT HERE]
+
+═══════════════════════════════════════════════════════════════
+INTEGRATION TASKS — PROCESS IN ORDER
+═══════════════════════════════════════════════════════════════
+
+TASK 1 — ARCHETYPE VALIDATION
+For each player/winner profile in the findings:
+→ Assign conor_score, khabib_score, islam_score
+→ Classify execution_style
+→ Note if they are HYBRID and which combination
+→ Extract the TRIGGER CONDITIONS for each archetype
+  (what game state activates each style?)
+→ Produce: ARCHETYPE_CALIBRATION_TABLE
+
+TASK 2 — EDGE_DOMINANCE CALIBRATION
+For each dominant performer identified:
+→ Classify PASSIVE/ADAPTIVE/EDGE_DOMINANT
+→ Identify their primary dominance STYLE
+→ Assess wind_absorption and follower_dependency
+→ Classify sustainability
+→ Produce: EDS_SCORE benchmarks
+  (what real-world EDS_SCORE does Magnus represent?
+   What does a top hackathon winner represent?
+   Use these as reference anchors for market actors.)
+
+TASK 3 — COLLAPSE PACKET TEMPLATE EXTRACTION
+From failure patterns found:
+→ Map to 4-step COLLAPSE_PACKET sequence
+→ Identify the EARLIEST detectable signal (step 1)
+→ What is the optimal exit point (step 2 vs step 3)?
+→ Produce: COLLAPSE_EARLY_WARNING_RULES
+
+TASK 4 — SONIC STATE CALIBRATION
+From tempo and timing patterns found:
+→ Map player/team behavior to SONIC states
+→ What does SILENT_BUILD look like in chess?
+  (deep preparation, no visible signal)
+→ What does RISING_PRESSURE look like?
+  (position improving, clock ticking, opponent cramped)
+→ What is the RELEASE signal?
+  (decisive moment, the position converts)
+→ What does ECHO look like?
+  (opponent is lost but keeps playing, position already decided)
+→ Produce: SONIC_CALIBRATION_EXAMPLES
+
+TASK 5 — PURE SIGNAL EXTRACTION
+From behavioral consistency patterns:
+→ What behaviors are PURE signals (consistent, voluntary, unperformed)?
+→ What behaviors are CONTAMINATED (performed for audience, rating-dependent)?
+→ How does this translate to market actor behavior?
+→ Produce: PURE_SIGNAL_BEHAVIORAL_MARKERS
+
+TASK 6 — UNIVERSAL PATTERN EXTRACTION
+The most valuable output:
+→ What patterns appear in BOTH chess AND hackathons?
+→ These are domain-independent behavioral laws
+→ For each universal pattern:
+  STATE: [behavior]
+  CHESS EVIDENCE: [finding]
+  HACKATHON EVIDENCE: [finding]
+  MARKET ANALOGUE: [how this appears in markets]
+  PIPELINE RULE: [operational rule to add]
+
+TASK 7 — STATE_RECALL CALIBRATION
+From findings:
+→ Do elite performers make decisions that are
+  STABLE across emotional states (Fear/Greed/Mania/Calm)?
+→ What is the signature of a STATE_SENSITIVE decision
+  in chess/hackathon context?
+→ Produce: STATE_SENSITIVITY_DETECTION_RULES
+
+TASK 8 — WIND_EXTRACTION CALIBRATION
+→ Who pays the wind absorption cost in chess opening preparation?
+→ Do followers (players who respond to theory) get a discount?
+→ When does the follower_dependency trap activate?
+  (when the "theory creator" plays something new)
+→ Produce: WIND_EXTRACTION_MARKET_ANALOGUES
+
+═══════════════════════════════════════════════════════════════
+OUTPUT FORMAT
+═══════════════════════════════════════════════════════════════
+
+Produce the following sections:
+
+1. ARCHETYPE_CALIBRATION_TABLE
+   [Player/Winner] → conor_score / khabib_score / islam_score / execution_style
+
+2. EDS_BENCHMARK_ANCHORS
+   [Actor] → EDS_score / style / sustainability
+
+3. COLLAPSE_EARLY_WARNING_RULES
+   [Rule 1]: If [behavior A] followed by [behavior B] within [timeframe] → classify Step 2 COLLAPSE_PACKET
+
+4. SONIC_CALIBRATION_EXAMPLES
+   [State]: [behavioral signature in chess/hackathon context]
+
+5. PURE_SIGNAL_BEHAVIORAL_MARKERS
+   [Marker]: [what it looks like] / [market analogue]
+
+6. UNIVERSAL_PATTERN_LIBRARY
+   [Pattern N]: Cross-domain behavioral law with market analogue
+
+7. STATE_SENSITIVITY_DETECTION_RULES
+   [Rule]: When [condition], interpretation is STATE_SENSITIVE → reduce confidence
+
+8. WIND_EXTRACTION_MARKET_ANALOGUES
+   [Analogue]: [chess/hackathon dynamic] → [market equivalent]
+
+9. PIPELINE_INTEGRATION_BRIEF
+   New calibration rules added: [N]
+   Variables updated: [list]
+   Operational rules generated: [list]
+   Highest confidence finding: [1 sentence]
+   Most surprising pattern: [1 sentence]
+   Recommended paper trading application: [1 sentence]
+
+═══════════════════════════════════════════════════════════════
+CRITICAL RULES
+═══════════════════════════════════════════════════════════════
+
+1. Map EVERYTHING to named pipeline variables
+2. Distinguish HIGH/MEDIUM/LOW confidence per finding
+3. Flag contradictions with expected pipeline behavior
+4. State when findings are INSUFFICIENT to update a variable
+5. Prioritise UNIVERSAL patterns (appear in both domains)
+6. Produce OPERATIONAL RULES not just observations
+
+═══════════════════════════════════════════════════════════════
+END OF INTEGRATION PROMPT
+═══════════════════════════════════════════════════════════════

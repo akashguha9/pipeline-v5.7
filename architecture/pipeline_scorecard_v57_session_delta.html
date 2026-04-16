@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pipeline V5.7+ Scorecard — Session Delta</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fafafa;color:#1a1a1a;padding:24px;font-size:13px}
+.header{margin-bottom:24px}
+.score-old{font-size:14px;color:#888;text-decoration:line-through;margin-bottom:2px}
+.score-new{font-size:48px;font-weight:600;color:#1a1a1a;line-height:1}
+.score-sub{font-size:12px;color:#666;margin-top:4px}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.pill{font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #ddd;color:#555}
+.pill-green{background:#f0faf0;color:#1a7a1a;border-color:#4caf50}
+.pill-red{background:#fff5f5;color:#c62828;border-color:#ef5350}
+.pill-amber{background:#fffbf0;color:#e65100;border-color:#ff9800}
+.pill-blue{background:#f0f6ff;color:#1565c0;border-color:#1976d2}
+.sec-label{font-size:10px;font-weight:600;color:#888;letter-spacing:.06em;text-transform:uppercase;margin:20px 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:20px}
+.card{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:13px 15px;position:relative}
+.card.improved{border:1.5px solid #4caf50;box-shadow:0 0 0 2px #f0faf0}
+.utag{position:absolute;top:8px;right:8px;font-size:9px;font-weight:600;padding:2px 7px;border-radius:4px;background:#f0faf0;color:#1a7a1a}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.mod-code{font-size:10px;font-weight:600;color:#888;letter-spacing:.05em;text-transform:uppercase}
+.badge{font-size:9px;padding:2px 7px;border-radius:4px;font-weight:500}
+.score-num{font-size:28px;font-weight:600;color:#1a1a1a;line-height:1;margin-bottom:3px}
+.delta-text{font-size:11px;margin-bottom:5px}
+.bar-bg{height:3px;background:#eee;border-radius:2px;margin-bottom:5px;position:relative;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px;position:absolute;left:0;top:0}
+.card-note{font-size:10px;color:#777;line-height:1.4}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+@media(max-width:550px){.two-col{grid-template-columns:1fr}}
+.ic{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:14px 16px}
+.ic-title{font-size:10px;font-weight:600;color:#888;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+.hbar{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.hlabel{font-size:10px;color:#666;min-width:100px}
+.hbg{flex:1;height:5px;background:#eee;border-radius:3px;overflow:hidden}
+.hfill{height:100%;border-radius:3px}
+.hval{font-size:10px;color:#1a1a1a;min-width:36px;text-align:right}
+.plist{list-style:none}
+.plist li{font-size:11px;color:#1a1a1a;padding:5px 0;border-bottom:1px solid #f0f0f0;display:flex;align-items:flex-start;gap:7px;line-height:1.4}
+.plist li:last-child{border-bottom:none}
+.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.dr{background:#ef5350}.da{background:#ff9800}.dg{background:#4caf50}.db{background:#1976d2}
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{font-weight:600;color:#888;text-align:left;padding:5px 8px;border-bottom:1px solid #e0e0e0}
+.tbl td{padding:5px 8px;color:#1a1a1a;border-bottom:1px solid #f0f0f0;vertical-align:top;line-height:1.35}
+.tbl tr:last-child td{border-bottom:none}
+.pos{color:#1a7a1a;font-weight:600}
+.new-mech{background:#e8f4fd;color:#1565c0;font-size:10px;padding:2px 7px;border-radius:3px;font-weight:500;display:inline-block;margin-top:3px}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="score-old">9.55 (start of session archive)</div>
+  <div class="score-new">9.57</div>
+  <div class="score-sub">Pipeline V5.7+ · April 15, 2026 · +0.0018 this session · Gap: 0.19</div>
+  <div class="pills">
+    <span class="pill pill-green">+0.0018 this session</span>
+    <span class="pill pill-green">S0 +0.01</span>
+    <span class="pill pill-green">S1 +0.01</span>
+    <span class="pill pill-amber">Gap 0.19</span>
+    <span class="pill pill-red">T = 6 (need T=10)</span>
+    <span class="pill">26 already built</span>
+    <span class="pill pill-blue">2 new mechanisms</span>
+    <span class="pill pill-red">ATOM debt RED</span>
+  </div>
+</div>
+
+<div class="sec-label">Module scores — green border = improved this session</div>
+<div class="grid" id="mg"></div>
+
+<div class="two-col">
+  <div class="ic">
+    <div class="ic-title">2 new mechanisms — this session only</div>
+    <ul class="plist">
+      <li><span class="dot db"></span>
+        <div>
+          <strong>MISCALIBRATION_GAP_TRACKER</strong><br>
+          <span style="font-size:10px;color:#666">Δ_t = S_true − Ŝ^opp_t as a live variable per thesis. Edge = being right while adversary is wrong, not just being right. Enter when Δ_t > 0 AND L_adapt long. Exit when Δ_t → 0.</span><br>
+          <span class="new-mech">→ S0 signal intake</span>
+        </div>
+      </li>
+      <li><span class="dot db"></span>
+        <div>
+          <strong>OPPONENT_ADAPTATION_RATE_REGISTER</strong><br>
+          <span style="font-size:10px;color:#666">OARR: per-thesis estimate of time from gap revelation to gap closure. Enter when L_adapt > remaining hold horizon. Position size ∝ Δ_t × (1/OARR). RTX = high Δ_t + long OARR → win. CVX = Δ_t ≈ 0 → loss.</span><br>
+          <span class="new-mech">→ S1 belief state</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="ic">
+    <div class="ic-title">Gap decomposition — what closes 0.19</div>
+    <div id="gd"></div>
+    <div style="font-size:10px;color:#888;margin-top:10px;line-height:1.5;border-top:1px solid #f0f0f0;padding-top:8px">
+      Architecture is saturating. Gap closes with T (calibration) + S9 build (tooling). Not sessions.
+    </div>
+  </div>
+</div>
+
+<div class="sec-label">Recent session additions — last 10 reflection domains</div>
+<div class="ic" style="margin-bottom:20px">
+  <table class="tbl" id="sl"></table>
+</div>
+
+<div class="two-col">
+  <div class="ic">
+    <div class="ic-title">Critical path — unchanged</div>
+    <ul class="plist">
+      <li><span class="dot dr"></span>ATOM: retire 95→35 CORE fields before next trade</li>
+      <li><span class="dot dr"></span>T=6→10: send snapshot April 25 (TLT+TIP exited, UNG/FCG stops)</li>
+      <li><span class="dot da"></span>MISCALIBRATION_GAP_TRACKER: add to Moltbook entry template NOW</li>
+      <li><span class="dot da"></span>OPPONENT_ADAPTATION_RATE_REGISTER: populate from T=6 closed trades</li>
+      <li><span class="dot db"></span>S9 build: May 13 start — feedparser + PRAW + Grok + FinBERT</li>
+    </ul>
+  </div>
+  <div class="ic">
+    <div class="ic-title">Table tennis doctrine → pipeline translation</div>
+    <ul class="plist">
+      <li><span class="dot dg"></span>"Play weak, reveal at t*" = enter when Δ_t is maximum AND OARR > 5-day hold</li>
+      <li><span class="dot dg"></span>The bluff only works when L_adaptation > remaining game horizon. This is OARR.</li>
+      <li><span class="dot dg"></span>RTX confirmed: high Δ_t (pipeline more bullish than market on defence) + long OARR (~5 days adaptation lag). 26 already-built mechanisms confirmed correct.</li>
+      <li><span class="dot dr"></span>CVX confirmed failure: Δ_t ≈ 0 at entry. War-energy thesis held by everyone. No belief gap to extract. Being right had no edge.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+const gs={ceiling:{bg:"#f0faf0",c:"#1a7a1a"},tooling:{bg:"#e8f4fd",c:"#1565c0"},structural:{bg:"#fffbf0",c:"#e65100"},empirical:{bg:"#f3f0ff",c:"#4527a0"},debt:{bg:"#fff5f5",c:"#c62828"},"data void":{bg:"#fff5f5",c:"#c62828"}};
+
+const mods=[
+  {c:"S0",  s:9.48, prev:9.47, ceil:9.8, gap:"tooling",    col:"#1976d2", note:"MISCALIBRATION_GAP_TRACKER ← this session. + stillness extractor + narrative premium decomposer + signal resolution pyramid + loop closure calibration"},
+  {c:"S1",  s:9.55, prev:9.54, ceil:9.8, gap:"ceiling",    col:"#4caf50", note:"OPPONENT_ADAPTATION_RATE_REGISTER ← this session. + spectral classifier + thesis architecture template + ODA foreshadow + nakama nonlinearity"},
+  {c:"S2",  s:9.80, prev:9.80, ceil:9.8, gap:"ceiling",    col:"#4caf50", note:"At ceiling"},
+  {c:"S3A", s:9.14, prev:9.14, ceil:9.2, gap:"structural", col:"#ff9800", note:"Hydrothermal vent collapse confirmed by CVX/XOM. Avalanche matrix."},
+  {c:"S3B", s:8.95, prev:8.95, ceil:9.8, gap:"tooling",    col:"#1976d2", note:"Awaiting S9 tooling — feedparser + PRAW + FinBERT"},
+  {c:"S35", s:9.80, prev:9.80, ceil:9.8, gap:"ceiling",    col:"#4caf50", note:"At ceiling. COUNT_D_PROTOCOL + GRADUATED_EXIT_PROTOCOL + RETROSYNTHESIS_GATE"},
+  {c:"S4",  s:9.80, prev:9.80, ceil:9.9, gap:"ceiling",    col:"#4caf50", note:"At ceiling. Execution layer fully formalised."},
+  {c:"ATOM",s:8.90, prev:8.90, ceil:9.8, gap:"debt",       col:"#ef5350", note:"⚠ CRITICAL — retire 95→35 before next trade. Unchanged across all sessions."},
+  {c:"S5",  s:8.42, prev:8.42, ceil:9.5, gap:"empirical",  col:"#7e57c2", note:"Motor programme depth + BREATH_RESET + IMAGINAL_REHEARSAL + ENTRY_DESIRE_LOG + GHOST_STANCE prerequisites + COMPAS_PROTOCOL"},
+  {c:"S7",  s:9.65, prev:9.65, ceil:9.8, gap:"empirical",  col:"#7e57c2", note:"SAECULAR_REGIME_LAYER + GENERATIONAL_FLOW_VECTOR + LEGITIMACY_DECAY_TRACKER + NARRATIVE_HALF_LIFE_ENGINE"},
+  {c:"S8",  s:9.80, prev:9.80, ceil:9.9, gap:"ceiling",    col:"#4caf50", note:"At ceiling. COMPAS_PROTOCOL + IMAGINAL_REHEARSAL + POWER_CEILING_INVERSION"},
+  {c:"S9",  s:8.37, prev:8.37, ceil:9.7, gap:"tooling",    col:"#1976d2", note:"GENERATIVE_CONSTRAINT_ENGINE + ADAPTIVE_STRATEGY_POPULATION. Build starts May 13."},
+  {c:"CAL", s:5.37, prev:5.37, ceil:10.0,gap:"data void",  col:"#ef5350", note:"T=6. Closes only with real prospective trades + PQS + CLV. Target: T=10 by April 25."},
+];
+
+const mg=document.getElementById("mg");
+mods.forEach(m=>{
+  const pct=(m.s/10*100).toFixed(1),cp=(m.ceil/10*100).toFixed(1);
+  const g=gs[m.gap]||gs.tooling;
+  const improved=Math.abs(m.s-m.prev)>0.005;
+  const d=document.createElement("div");
+  d.className="card"+(improved?" improved":"");
+  d.innerHTML=(improved?`<div class="utag">+${(m.s-m.prev).toFixed(2)} ↑</div>`:"")+
+    `<div class="card-top"><div class="mod-code">${m.c}</div><div class="badge" style="background:${g.bg};color:${g.c}">${m.gap}</div></div>`+
+    `<div class="score-num">${m.s.toFixed(2)}</div>`+
+    `<div class="delta-text" style="color:${improved?"#1a7a1a":"#aaa"}">${improved?`+${(m.s-m.prev).toFixed(2)} this session`:"—"}</div>`+
+    `<div class="bar-bg"><div class="bar-fill" style="width:${cp}%;background:${m.col}22"></div></div>`+
+    `<div class="bar-bg"><div class="bar-fill" style="width:${pct}%;background:${m.col}"></div></div>`+
+    `<div class="card-note">${m.note}</div>`;
+  mg.appendChild(d);
+});
+
+const gaps=[
+  {l:"Architecture (S0–S8)", pct:97, col:"#4caf50", v:"~9.57"},
+  {l:"Calibration (CAL)",    pct:54, col:"#ef5350", v:"5.37"},
+  {l:"Execution δ",          pct:50, col:"#ff9800", v:"0.50"},
+  {l:"Ecosystem E_op",       pct:30, col:"#1976d2", v:"≈0.30"},
+  {l:"T-count",              pct:17, col:"#4caf50", v:"T=6"},
+  {l:"ATOM debt",            pct:5,  col:"#ef5350", v:"RED"},
+];
+const gd=document.getElementById("gd");
+gaps.forEach(g=>{gd.innerHTML+=`<div class="hbar"><div class="hlabel">${g.l}</div><div class="hbg"><div class="hfill" style="width:${g.pct}%;background:${g.col}"></div></div><div class="hval">${g.v}</div></div>`});
+
+const sessions=[
+  {d:"Wars / civilisations", n:2, mods:"S1+S7", k:"LEGITIMACY_DECAY · COORDINATION_VIABILITY_SCORE"},
+  {d:"Consciousness / Darwin", n:2, mods:"S5+S9", k:"ADAPTIVE_STRATEGY_POPULATION · SELF_MODEL_CALIBRATION"},
+  {d:"GitHub repos (creative)", n:2, mods:"S5+S9", k:"GENERATIVE_CONSTRAINT_ENGINE · IMMEDIATE_FEEDBACK_LOOP"},
+  {d:"MGS + Ghost of Tsushima", n:3, mods:"S1+S5+S7", k:"PSYCHO_MANTIS · GHOST_STANCE · NARRATIVE_DOMINANCE_SCORE"},
+  {d:"Derrida hauntology", n:3, mods:"S0+S1+S7", k:"SPECTRAL_SIGNAL · VISOR_EFFECT · HAUNTOLOGICAL_PERSISTENCE"},
+  {d:"One Piece / DBZ / Naruto", n:3, mods:"S0+S1+S5", k:"POWER_CEILING_INVERSION · ODA_ARCHITECTURE · NAKAMA_NONLINEARITY"},
+  {d:"Strauss-Howe theory", n:2, mods:"S1+S7", k:"SAECULAR_REGIME_LAYER · GENERATIONAL_FLOW_VECTOR"},
+  {d:"Geo-AR GitHub repos", n:2, mods:"S0+S1", k:"LOOP_CLOSURE_CALIBRATION · SIGNAL_RESOLUTION_PYRAMID"},
+  {d:"Pet Shop of Horrors", n:2, mods:"S1+S5", k:"COUNT_D_PROTOCOL · ENTRY_DESIRE_LOG"},
+  {d:"Personal psychology / table tennis ← TODAY", n:2, mods:"S0+S1", k:"MISCALIBRATION_GAP_TRACKER · OPPONENT_ADAPTATION_RATE_REGISTER"},
+];
+const sl=document.getElementById("sl");
+sl.innerHTML=`<thead><tr><th>Domain</th><th>New</th><th>Modules</th><th>Key additions</th></tr></thead><tbody>`;
+sessions.forEach((r,i)=>{
+  const last=i===sessions.length-1;
+  sl.innerHTML+=`<tr style="${last?"background:#f0f6ff;font-weight:500":""}"><td>${r.d}</td><td class="pos">+${r.n}</td><td style="color:#888">${r.mods}</td><td style="font-size:10px;color:#666">${r.k}</td></tr>`;
+});
+sl.innerHTML+="</tbody>";
+</script>
+</body>
+</html>

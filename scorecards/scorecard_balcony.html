@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pipeline V5.7+ — Scorecard</title>
+<style>
+:root{--bg:#0a0a0c;--bg2:#111115;--bg3:#18181f;--bd:#1e1e2a;--bd2:#2a2a3a;--tx:#e8e8f0;--tx2:#9090a8;--tx3:#505068;--ac:#4a7fff;--gr:#22c55e;--rd:#ef4444;--or:#f97316;--yl:#eab308;--pu:#a855f7;--te:#14b8a6;--pk:#ec4899}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'SF Mono',monospace;padding:32px 24px 64px;font-size:13px;min-height:100vh}
+.title-row{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:6px}
+.title{font-size:1.05rem;font-weight:700;letter-spacing:.04em;color:var(--tx)}
+.sub{font-size:.7rem;color:var(--tx3);margin-bottom:28px;font-family:monospace}
+/* HERO */
+.hero{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+.hero-num{background:var(--bg2);border:1px solid var(--bd);border-radius:8px;padding:14px 20px;text-align:center;min-width:90px;flex:1}
+.hn-val{font-size:2rem;font-weight:700;line-height:1;color:var(--tx);font-family:monospace}
+.hn-lbl{font-size:.6rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-top:4px}
+.hero-num.accent{border-color:#1e3a6e;background:#05080f}
+.hero-num.warn{border-color:#7f1d1d;background:#110505}
+.hero-num.ok{border-color:#166534;background:#031109}
+/* SESSION BANNER */
+.session{background:#050a1a;border:1px solid #1a2a5a;border-radius:8px;padding:14px 16px;margin-bottom:28px;font-size:.75rem;color:#7090c0;line-height:1.8}
+.session strong{color:#90b0ff}
+/* MODULE GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:32px}
+.mod{background:var(--bg2);border:1px solid var(--bd);border-radius:8px;padding:14px 16px;position:relative;overflow:hidden}
+.mod::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
+.mod.ceiling::before{background:var(--gr)}
+.mod.tooling::before{background:var(--ac)}
+.mod.structural::before{background:var(--or)}
+.mod.empirical::before{background:var(--pu)}
+.mod.debt::before{background:var(--rd)}
+.mod.improved{border-color:#1e3a6e;background:#050912}
+.badge-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.mod-name{font-size:.68rem;font-weight:700;color:var(--tx3);letter-spacing:.08em;text-transform:uppercase}
+.mod-tag{font-size:.58rem;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:.04em;text-transform:uppercase}
+.tag-ceiling{background:#052a14;color:#22c55e}
+.tag-tooling{background:#051a3a;color:#4a7fff}
+.tag-structural{background:#2a1005;color:#f97316}
+.tag-empirical{background:#1a0a2a;color:#a855f7}
+.tag-debt{background:#2a0505;color:#ef4444}
+.score-row{display:flex;align-items:baseline;gap:6px;margin-bottom:6px}
+.score-val{font-size:2.2rem;font-weight:700;line-height:1;font-family:monospace}
+.score-delta{font-size:.75rem;font-weight:700;padding:2px 6px;border-radius:3px}
+.delta-pos{background:#052a14;color:#22c55e}
+.delta-zero{background:#141420;color:#505068}
+.bar-bg{height:3px;background:var(--bd2);border-radius:2px;position:relative;overflow:hidden;margin-bottom:6px}
+.bar-fill{height:100%;border-radius:2px;position:absolute;left:0;top:0}
+.mod-note{font-size:.67rem;color:var(--tx3);line-height:1.5}
+.new-mech{font-size:.65rem;color:#7090ff;margin-top:4px;font-style:italic}
+/* SESSION HIGHLIGHT */
+.session-new{background:#040d25;border:1px solid #1a3a6e;border-radius:8px;padding:16px 18px;margin-bottom:28px}
+.sn-title{font-size:.68rem;font-weight:700;color:var(--ac);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+.mech-item{background:var(--bg3);border:1px solid var(--bd2);border-radius:5px;padding:10px 12px;margin-bottom:8px;border-left:3px solid var(--ac)}
+.mech-item:last-child{margin-bottom:0}
+.mech-name{font-size:.75rem;font-weight:700;color:var(--tx);font-family:monospace;margin-bottom:4px}
+.mech-desc{font-size:.7rem;color:var(--tx2);line-height:1.6}
+.mech-tag{display:inline-block;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:3px;margin-top:4px}
+/* ALREADY BUILT STAT */
+.stat-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
+.stat{background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:10px 14px;text-align:center;flex:1;min-width:80px}
+.stat-val{font-size:1.4rem;font-weight:700;color:var(--tx);font-family:monospace}
+.stat-lbl{font-size:.6rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+/* CRITICAL PATH */
+.crit{background:#0d0505;border:1px solid #7f1d1d;border-radius:8px;padding:14px 16px;margin-bottom:28px}
+.crit-title{font-size:.68rem;font-weight:700;color:#ef4444;letter-spacing:.07em;text-transform:uppercase;margin-bottom:10px}
+.crit-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:.72rem;color:#fca5a5;line-height:1.5}
+.crit-dot{width:6px;height:6px;border-radius:50%;background:#ef4444;margin-top:4px;flex-shrink:0}
+/* PROJECTION */
+.proj{background:var(--bg2);border:1px solid var(--bd);border-radius:8px;padding:14px 16px;margin-bottom:28px}
+.proj-title{font-size:.68rem;font-weight:700;color:var(--tx2);letter-spacing:.07em;text-transform:uppercase;margin-bottom:12px}
+.proj-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;font-size:.72rem}
+.proj-date{color:var(--tx3);min-width:80px;font-family:monospace}
+.proj-event{color:var(--tx2);flex:1}
+.proj-score{color:var(--gr);font-weight:700;font-family:monospace;min-width:36px;text-align:right}
+.proj-bar{flex:2;height:3px;background:var(--bd2);border-radius:2px;overflow:hidden;position:relative}
+.proj-fill{height:100%;background:var(--gr);border-radius:2px}
+</style>
+</head>
+<body>
+
+<div class="title-row">
+  <div class="title">PIPELINE V5.7+ — SESSION SCORECARD</div>
+  <div style="font-size:.7rem;color:var(--tx3);font-family:monospace">April 16, 2026</div>
+</div>
+<div class="sub">Geopolitical Signal Pipeline · Balcony Incident Session · +0.0024 movement</div>
+
+<!-- HERO NUMBERS -->
+<div class="hero">
+  <div class="hero-num accent">
+    <div class="hn-val">9.57</div>
+    <div class="hn-lbl">Score (holds)</div>
+  </div>
+  <div class="hero-num">
+    <div class="hn-val" style="color:var(--or)">0.19</div>
+    <div class="hn-lbl">Gap to ceiling</div>
+  </div>
+  <div class="hero-num">
+    <div class="hn-val">9.76</div>
+    <div class="hn-lbl">Ceiling</div>
+  </div>
+  <div class="hero-num warn">
+    <div class="hn-val" style="color:var(--rd)">T=6</div>
+    <div class="hn-lbl">Closed trades</div>
+  </div>
+  <div class="hero-num">
+    <div class="hn-val" style="color:var(--ac)">+2.69</div>
+    <div class="hn-lbl">Total V2</div>
+  </div>
+  <div class="hero-num ok">
+    <div class="hn-val" style="color:var(--gr)">+2</div>
+    <div class="hn-lbl">New mechanisms</div>
+  </div>
+  <div class="hero-num">
+    <div class="hn-val">31</div>
+    <div class="hn-lbl">Already built</div>
+  </div>
+</div>
+
+<!-- SESSION BANNER -->
+<div class="session">
+  <strong>Session source:</strong> Balcony Incident (2013) — 8th-floor sprint under intoxication mapped as a broken decision engine case study.<br>
+  <strong>Spec density:</strong> 31/33 mechanisms already in pipeline (94%). Highest personal case study overlap yet.<br>
+  <strong>Movement drivers:</strong> S8 +0.01 (TAIL_RISK_COUNTERFACTUAL in risk management) · CAL +0.02 (LUCKY_PASS_CLASSIFIER + TRC improve calibration precision)<br>
+  <strong>Key insight:</strong> The pipeline was built to prevent exactly the balcony class of error. The 2 genuine additions address precision gaps in the Moltbook learning loop: tagging outcome randomness (LPC) and quantifying stop proximity as fragility signal (TRC).
+</div>
+
+<!-- SESSION NEW MECHANISMS -->
+<div class="session-new">
+  <div class="sn-title">2 New Mechanisms This Session</div>
+  
+  <div class="mech-item">
+    <div class="mech-name">LUCKY_PASS_CLASSIFIER (LPC)</div>
+    <div class="mech-desc">Tags outcomes that were correct for wrong reasons. FCS checks if the ENTRY was contaminated. LPC checks if the OUTCOME was noise-driven even on a clean entry. RTX +3.90% was thesis-confirmed (defence procurement announced). A hypothetical GLD win on an unrelated USD crash looks identical in Moltbook but should receive ~65% lower MW credit. Current pipeline cannot distinguish these. LPC adds: thesis_confirmed (boolean), luck_score [0,1], LPC_adjusted_MW_weight = base × (1 − luck_score × 0.5). The balcony principle: 'you survived, but the sprint is still classified FATAL_RISK_PROCESS. Survival does not update the process tag.'</div>
+    <span class="mech-tag" style="background:#031109;color:#22c55e">CAL +0.01</span>
+    <span class="mech-tag" style="background:#051a3a;color:#4a7fff;margin-left:4px">Moltbook addition</span>
+    <span class="mech-tag" style="background:#1a0520;color:#ec4899;margin-left:4px">NBA: bet confirmed for right reasons?</span>
+  </div>
+  
+  <div class="mech-item">
+    <div class="mech-name">TAIL_RISK_COUNTERFACTUAL (TRC)</div>
+    <div class="mech-desc">For each closed trade, run 4 ±1σ perturbation scenarios: (1) TIMING — entry 2 days earlier/later; (2) STOP_PROXIMITY — how close to -10% did trade come; (3) CATALYST_ABSENCE — what if thesis catalyst hadn't fired; (4) LIQUIDITY_SHOCK — 1σ GLS decline during hold. At T=6: CVX came within 1.18% of stop (proximity=0.882), USO within 0.50% (proximity=0.950). Both show as ordinary 'closed' trades in raw Moltbook. TRC makes stop_proximity visible as fragility indicator — the '8th floor' detail that only becomes salient if you ask. The near miss counts as data.</div>
+    <span class="mech-tag" style="background:#0a0820;color:#a855f7">S8 +0.01</span>
+    <span class="mech-tag" style="background:#031109;color:#22c55e;margin-left:4px">CAL +0.01</span>
+    <span class="mech-tag" style="background:#1a0520;color:#ec4899;margin-left:4px">NBA: how close to ruin was this bet?</span>
+  </div>
+</div>
+
+<!-- STATS ROW -->
+<div class="stat-row">
+  <div class="stat"><div class="stat-val">94%</div><div class="stat-lbl">Already built rate</div></div>
+  <div class="stat"><div class="stat-val">0.50</div><div class="stat-lbl">USO proximity to stop</div></div>
+  <div class="stat"><div class="stat-val">1.18</div><div class="stat-lbl">CVX % from stop</div></div>
+  <div class="stat"><div class="stat-val">4.2</div><div class="stat-lbl">Clean T-count (FCS-adj)</div></div>
+  <div class="stat"><div class="stat-val">ε=1.0</div><div class="stat-lbl">MW uncertainty</div></div>
+</div>
+
+<!-- MODULE GRID -->
+<div class="grid">
+
+  <div class="mod tooling improved">
+    <div class="badge-row"><span class="mod-name">S0</span><span class="mod-tag tag-tooling">tooling</span></div>
+    <div class="score-row">
+      <span class="score-val" style="color:var(--ac)">9.51</span>
+      <span class="score-delta delta-zero">+0.00</span>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" style="width:95.1%;background:var(--ac)"></div></div>
+    <div class="mod-note">Signal intake. STILLNESS_SIGNAL_EXTRACTOR + NARRATIVE_PREMIUM_DECOMPOSER + VISOR_EFFECT_AUDIT active. S9 automation May 13.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="badge-row"><span class="mod-name">S1</span><span class="mod-tag tag-ceiling">ceiling</span></div>
+    <div class="score-row">
+      <span class="score-val" style="color:var(--gr)">9.55</span>
+      <span class="score-delta delta-zero">+0.00</span>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" style="width:95.5%;background:var(--gr)"></div></div>
+    <div class="mod-note">Belief state. SPECTRAL_SIGNAL_CLASSIFIER · LEGITIMACY_DECAY_TRACKER · COORDINATION_VIABILITY_SCORE · PSYCHO_MANTIS_PROTOCOL. Near ceiling.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="badge-row"><span class="mod-name">S2</span><span class="mod-tag tag-ceiling">ceiling</span></div>
+    <div class="score-row">
+      <span class="score-val" style="color:var(--gr)">9.80</span>
+      <span class="score-delta delta-zero">+0.00</span>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mod-note">Narrative engine. At ceiling. TEMPORAL_GRAMMAR · NARRATIVE_HALF_LIFE_ENGINE · HAUNTOLOGICAL_PERSISTENCE_SCORE.</div>
+  </div>
+
+  <div class="mod structural">
+    <div class="badge-row"><span class="mod-name">S3A</span><span class="mod-tag tag-structural">structural</span></div>
+    <div class="score-row">
+      <span class="score-val" style="color:var(--or)">9.14</span>
+      <span class="score-delta delta-zero">+0.00</span>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" style="width:91.4%;background:var(--or)"></div></div>
+    <div class="mod-note">Capital flow. Structural ceiling at 9.14. HYDROTHERMAL_VENT collapse confirmed by CVX/XOM. Requires live institutional flow data.</div>
+  </div>
+
+  <div class="mod tooling">
+    <div class="badge-row"><span class="mod-name">S3B</span><span class="mod-tag tag-tooling">tooling</span></div>
+    <div class="score-row">
+      <span class="score-val" style="color:var(--ac)">8.96</span>
+      <span class="score-delta delta-zero">+0.00</span>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" style="width:89.6%;background:var(--ac)"></div></div>
+    <div class="mod-note">Flow dynamics. INTEGRATION_COST_THRESHOLD added. Awaiting S9 tooling — May 13.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="badge-row"><span class="mod-name">S35</span><span class="mod-tag tag-ceiling">ceiling</span></div>
+    <div class="score-row">
+      <span class="score-val" style="color:var(--gr)">9.80</span>
+      <span class="score-delta delta-zero">+0.00</span>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mod-note">Decision gate. At ceiling. GRADUATED_EXIT_PROTOCOL · OPERATOR_LOCK · COUNT_D_PROTOCOL · CVS threshold gate.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="badge-row"><span class="mod-name">S4</span><span class="mod-tag tag-ceiling">ceiling</span></div>
+    <div class="score-row">
+      <span class="score-val" style="color:var(--gr)">9.80</span>
+      <span class="score-delta delta-zero">+0.00</span>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mod-note">Execution. At ceiling. FIRE_MODE {NONE/SNIPER/M16/UZI} · CHIGURH hard stop enforcer · LALO adversarial timing.</div>
+  </div>
+
+  <div class="mod debt">
+    <div class="badge-row"><span class="mod-name">ATOM</span><span class="mod-tag tag-debt">⚠ DEBT</span></div>
+    <div class="score-row">
+      <span class="score-val" style="color:var(--rd)">8.90</span>
+      <span class="score-delta delta-zero">+0.00</span>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" style="width:89%;background:var(--rd)"></div></div>
+    <div class="mod-note">Execution object. CRITICAL: 95 fields → 35 CORE required before next trade. All 3 complexity debt metrics RED. caddy_packet needs 7-field compression under HIGH_NOREPI.</div>
+  </div>
+
+  <div class="mod empirical">
+    <div class="badge-row"><span class="mod-name">S5</span><span class="mod-tag tag-empirical">empirical</span></div>
+    <div class="score-row">
+      <span class="score-val" style="color:var(--pu)">8.49</span>
+      <span class="score-delta delta-zero">+0.00</span>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" style="width:84.9%;background:var(--pu)"></div></div>
+    <div class="mod-note">Operator layer. THREE_POISONS_BIAS_ENGINE + REALM_CLASSIFIER added last 2 sessions. GHOST_STANCE_EMERGENCE · SELF_MODEL_CALIBRATION_LAYER · SOVEREIGN_IDENTITY_ANCHOR.</div>
+    <div class="new-mech">+0.02 added over last 2 sessions</div>
+  </div>
+
+  <div class="mod empirical">
+    <div class="badge-row"><span class="mod-name">S7</span><span class="mod-tag tag-empirical">empirical</span></div>
+    <div class="score-row">
+      <span class="score-val" style="color:var(--pu)">9.65</span>
+      <span class="score-delta delta-zero">+0.00</span>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" style="width:96.5%;background:var(--pu)"></div></div>
+    <div class="mod-note">Regime detection. LEGITIMACY_DECAY_TRACKER · SAECULAR_REGIME_LAYER · NARRATIVE_DOMINANCE_SCORE · HAUNTOLOGICAL_PERSISTENCE. Near ceiling.</div>
+  </div>
+
+  <div class="mod ceiling improved">
+    <div class="badge-row"><span class="mod-name">S8</span><span class="mod-tag tag-ceiling">ceiling</span></div>
+    <div class="score-row">
+      <span class="score-val" style="color:var(--gr)">9.83</span>
+      <span class="score-delta delta-pos">+0.01</span>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" style="width:98.3%;background:var(--gr)"></div></div>
+    <div class="mod-note">Risk management. TAIL_RISK_COUNTERFACTUAL ← this session. POSITION_ENTANGLEMENT_SCORE · DECOHERENCE_TIMESCALE_GATE · INTEGRATION_COST_THRESHOLD.</div>
+    <div class="new-mech">↑ TRC added — stop_proximity now tracked</div>
+  </div>
+
+  <div class="mod tooling">
+    <div class="badge-row"><span class="mod-name">S9</span><span class="mod-tag tag-tooling">tooling</span></div>
+    <div class="score-row">
+      <span class="score-val" style="color:var(--ac)">8.37</span>
+      <span class="score-delta delta-zero">+0.00</span>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" style="width:83.7%;background:var(--ac)"></div></div>
+    <div class="mod-note">Tooling. Build starts May 13. ADAPTIVE_STRATEGY_POPULATION · GENERATIVE_CONSTRAINT_ENGINE. feedparser + PRAW + Grok + APScheduler. Phase 1: ~$1.50/mo.</div>
+  </div>
+
+  <div class="mod debt">
+    <div class="badge-row"><span class="mod-name">CAL</span><span class="mod-tag tag-debt">data void</span></div>
+    <div class="score-row">
+      <span class="score-val" style="color:var(--yl)">5.41</span>
+      <span class="score-delta delta-pos">+0.02</span>
+    </div>
+    <div class="bar-bg"><div class="bar-fill" style="width:54.1%;background:var(--yl)"></div></div>
+    <div class="mod-note">Calibration. LPC + TRC + FCS improve MW precision. T=6 (4.2 clean). April 25 deadline for T=10. ε=1.0. First direction signal at T=10, ε→0.56.</div>
+    <div class="new-mech">↑ LPC + TRC added — calibration more precise</div>
+  </div>
+
+</div>
+
+<!-- CRITICAL PATH -->
+<div class="crit">
+  <div class="crit-title">⚠ Critical Path — Unchanged</div>
+  <div class="crit-item"><div class="crit-dot"></div>ATOM retirement (95→35 CORE fields) — BLOCKING. Must complete before next trade. This IS the pilot run of MICHELANGELO_SUBTRACTION_AUDIT.</div>
+  <div class="crit-item"><div class="crit-dot"></div>T=6→10 by April 25. TLT+TIP exits = T=7,8. UNG/FCG stops/exits = T=9,10. First MW direction signal at T=10 with ε=0.56.</div>
+  <div class="crit-item"><div class="crit-dot"></div>S9 build — May 13. feedparser + PRAW + Grok API + APScheduler + ATOM retirement. Phase 1 complete by May 31.</div>
+  <div class="crit-item" style="color:#fde68a"><div class="crit-dot" style="background:var(--yl)"></div>Apply SELF_MODEL P1/P2/P3 patterns to next entry. Apply REALM_CLASSIFIER at COMPAS Beat 0. Run TRC on all T=6 closed trades retrospectively.</div>
+</div>
+
+<!-- PROJECTION -->
+<div class="proj">
+  <div class="proj-title">Score Projection Timeline</div>
+  <div class="proj-row">
+    <span class="proj-date">Apr 25</span>
+    <span class="proj-event">T=10 closes — first MW direction signal (ε→0.56)</span>
+    <span class="proj-score">9.58</span>
+    <div class="proj-bar"><div class="proj-fill" style="width:2%"></div></div>
+  </div>
+  <div class="proj-row">
+    <span class="proj-date">May 31</span>
+    <span class="proj-event">Phase 1 S9 complete — ATOM retired, automation live</span>
+    <span class="proj-score">9.62</span>
+    <div class="proj-bar"><div class="proj-fill" style="width:26%"></div></div>
+  </div>
+  <div class="proj-row">
+    <span class="proj-date">Jun 30</span>
+    <span class="proj-event">Phase 2 — FinBERT + Polymarket API + first automated signal</span>
+    <span class="proj-score">9.65</span>
+    <div class="proj-bar"><div class="proj-fill" style="width:42%"></div></div>
+  </div>
+  <div class="proj-row">
+    <span class="proj-date">Jul 31</span>
+    <span class="proj-event">IBKR paper + live MW calibration loop active</span>
+    <span class="proj-score">9.70</span>
+    <div class="proj-bar"><div class="proj-fill" style="width:68%"></div></div>
+  </div>
+  <div class="proj-row">
+    <span class="proj-date">Aug 2026</span>
+    <span class="proj-event">Real capital — T≥35 + E_operator>0.80 + MW calibrated</span>
+    <span class="proj-score">9.74</span>
+    <div class="proj-bar"><div class="proj-fill" style="width:89%"></div></div>
+  </div>
+  <div class="proj-row">
+    <span class="proj-date">Ceiling</span>
+    <span class="proj-event">9.76 maximum — residual empirical reserve</span>
+    <span class="proj-score">9.76</span>
+    <div class="proj-bar"><div class="proj-fill" style="width:100%"></div></div>
+  </div>
+</div>
+
+<div style="font-size:.62rem;color:var(--tx3);text-align:center;line-height:2;font-family:monospace">
+GEOPOLITICAL SIGNAL PIPELINE V5.7+ · April 16, 2026<br>
+Score 9.57 · Gap 0.19 · T=6 · ε=1.0 · Ceiling 9.76 · Total V2 +2.69<br>
+"Capital moves before language. Structure forms before capital. Price reconciles last."
+</div>
+
+</body>
+</html>

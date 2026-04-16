@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pipeline V5.7+ — Englishman in New York Session</title>
+<style>
+:root{--bg:#08090c;--bg2:#0f1018;--bg3:#161720;--bd:#1e1e2c;--bd2:#262638;--tx:#e0e0f0;--tx2:#8888a8;--tx3:#464668;--ac:#6677ff;--gr:#22c55e;--rd:#ef4444;--or:#f97316;--yl:#eab308;--pu:#a855f7;--te:#14b8a6;--pk:#ec4899}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;padding:28px 22px 64px;font-size:13px;line-height:1.5}
+.mono{font-family:'SF Mono',ui-monospace,monospace}
+
+/* HEADER */
+.hdr{margin-bottom:24px;padding-bottom:18px;border-bottom:1px solid var(--bd)}
+.hdr-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.hdr-title{font-size:1rem;font-weight:700;letter-spacing:-.01em}
+.hdr-source{font-size:.68rem;color:var(--ac);font-style:italic;margin-top:2px}
+.hdr-date{font-size:.62rem;color:var(--tx3);font-family:monospace}
+.hdr-sub{font-size:.66rem;color:var(--tx3);margin-top:6px;line-height:1.7}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(8,1fr);gap:7px;margin-bottom:22px}
+@media(max-width:720px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;padding:10px 8px;text-align:center}
+.sv{font-size:1.5rem;font-weight:700;line-height:1;font-family:monospace}
+.sl{font-size:.55rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+/* PHILOSOPHY BANNER */
+.phil{background:linear-gradient(135deg,#0a0820 0%,#080814 100%);border:1px solid #2a2850;border-radius:8px;padding:16px 18px;margin-bottom:22px}
+.phil-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:600px){.phil-grid{grid-template-columns:repeat(2,1fr)}}
+.phil-item{text-align:center;padding:10px 8px;background:#0c0a22;border:1px solid #1e1c3a;border-radius:5px}
+.phil-num{font-size:.58rem;font-weight:700;color:var(--tx3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.phil-line{font-size:.7rem;font-weight:700;color:#8899ff;font-style:italic;line-height:1.4;margin-bottom:4px}
+.phil-map{font-size:.6rem;color:var(--tx3);line-height:1.4}
+
+/* SESSION BANNER */
+.sess{background:#040818;border:1px solid #1c2a5a;border-radius:7px;padding:12px 14px;margin-bottom:20px;font-size:.68rem;color:#6888d0;line-height:1.9}
+.sess strong{color:#8aadff}
+
+/* NEW MECHS */
+.new-box{background:#04081c;border:1px solid #182860;border-radius:7px;padding:14px 16px;margin-bottom:20px}
+.new-t{font-size:.61rem;font-weight:700;color:var(--ac);letter-spacing:.09em;text-transform:uppercase;margin-bottom:12px}
+.mech{background:var(--bg3);border:1px solid var(--bd2);border-radius:5px;padding:11px 13px;margin-bottom:9px;border-left:3px solid var(--ac)}
+.mech:last-child{margin-bottom:0}
+.mech-n{font-size:.74rem;font-weight:700;color:var(--tx);margin-bottom:5px;font-family:monospace}
+.mech-d{font-size:.68rem;color:var(--tx2);line-height:1.65}
+.mtag{display:inline-block;font-size:.58rem;font-weight:700;padding:2px 6px;border-radius:3px;margin-top:5px;margin-right:4px}
+.mt-bl{background:#040e28;color:#6677ff}
+.mt-gr{background:#031a0c;color:#22c55e}
+.mt-pk{background:#1a0518;color:#ec4899}
+.mt-pu{background:#120820;color:#a855f7}
+.mt-or{background:#180a00;color:#f97316}
+
+/* MODULE GRID */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:9px;margin-bottom:22px}
+.mod{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;padding:13px 14px;position:relative;overflow:hidden}
+.mod::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
+.mod.ceiling::before{background:var(--gr)}
+.mod.tooling::before{background:var(--ac)}
+.mod.structural::before{background:var(--or)}
+.mod.empirical::before{background:var(--pu)}
+.mod.debt::before{background:var(--rd)}
+.mod.improved{border-color:#202860}
+.mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.mname{font-size:.62rem;font-weight:700;color:var(--tx3);letter-spacing:.09em;text-transform:uppercase;font-family:monospace}
+.mtag2{font-size:.56rem;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase}
+.t-ceil{background:#031a0c;color:#22c55e}
+.t-tool{background:#040e28;color:#6677ff}
+.t-stru{background:#200c00;color:#f97316}
+.t-emp{background:#120820;color:#a855f7}
+.t-debt{background:#200505;color:#ef4444}
+.srow{display:flex;align-items:baseline;gap:7px;margin-bottom:5px}
+.sval{font-size:2.1rem;font-weight:700;line-height:1;font-family:monospace}
+.sdelta{font-size:.68rem;font-weight:700;padding:2px 6px;border-radius:3px}
+.dp{background:#031a0c;color:#22c55e}
+.dz{background:#12121e;color:#404060}
+.bar{height:2px;background:var(--bd2);border-radius:1px;margin-bottom:6px;overflow:hidden;position:relative}
+.bf{height:100%;border-radius:1px;position:absolute;left:0}
+.mnote{font-size:.63rem;color:var(--tx3);line-height:1.55}
+.mhint{font-size:.6rem;color:#6677ff;margin-top:4px;font-style:italic}
+
+/* SONG→PIPELINE MAP */
+.smap{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;padding:13px 15px;margin-bottom:20px}
+.smap-t{font-size:.61rem;font-weight:700;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:11px}
+.smrow{display:grid;grid-template-columns:1fr 2fr 1.5fr;gap:10px;padding:7px 0;border-bottom:1px solid var(--bd);font-size:.65rem}
+.smrow:last-child{border-bottom:none}
+.sm-lyric{color:#8899ff;font-style:italic;line-height:1.4}
+.sm-map{color:var(--tx2);line-height:1.4}
+.sm-mech{color:var(--te);font-family:monospace;font-size:.6rem}
+
+/* CRITICAL */
+.crit{background:#0e0404;border:1px solid #7f1d1d;border-radius:7px;padding:12px 14px;margin-bottom:20px}
+.crit-t{font-size:.61rem;font-weight:700;color:var(--rd);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.ci{display:flex;gap:8px;margin-bottom:6px;font-size:.67rem;color:#fca5a5;line-height:1.55}
+.cd{width:5px;height:5px;border-radius:50%;background:var(--rd);margin-top:4px;flex-shrink:0}
+
+/* PROJ */
+.proj{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;padding:12px 15px;margin-bottom:20px}
+.proj-t{font-size:.61rem;font-weight:700;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.prow{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:.67rem}
+.pdate{color:var(--tx3);min-width:68px;font-family:monospace;font-size:.63rem}
+.pev{color:var(--tx2);flex:1}
+.pscore{color:var(--gr);font-weight:700;min-width:32px;text-align:right;font-family:monospace}
+.pbar{width:75px;height:2px;background:var(--bd2);border-radius:1px;overflow:hidden}
+.pbf{height:100%;background:var(--gr);border-radius:1px}
+
+footer{font-size:.58rem;color:var(--tx3);text-align:center;line-height:2.3;margin-top:8px;font-family:monospace}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-top">
+    <div>
+      <div class="hdr-title">PIPELINE V5.7+ — SCORECARD</div>
+      <div class="hdr-source">"Englishman in New York" · Sting · 1987 → Pipeline Architecture 2026</div>
+    </div>
+    <div class="hdr-date">Apr 16, 2026</div>
+  </div>
+  <div class="hdr-sub">+0.0013 movement · S1→9.58 · S5→8.50 · Gap 0.19 · 29 already built · 2 new mechanisms</div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="sv" style="color:var(--ac)">9.57</div><div class="sl">Score</div></div>
+  <div class="stat"><div class="sv" style="color:var(--or)">0.19</div><div class="sl">Gap</div></div>
+  <div class="stat"><div class="sv">9.76</div><div class="sl">Ceiling</div></div>
+  <div class="stat"><div class="sv" style="color:var(--rd)">T=6</div><div class="sl">Trades</div></div>
+  <div class="stat"><div class="sv" style="color:var(--ac)">+2.69</div><div class="sl">Total V2</div></div>
+  <div class="stat"><div class="sv" style="color:var(--gr)">+2</div><div class="sl">New mechs</div></div>
+  <div class="stat"><div class="sv">29</div><div class="sl">Already built</div></div>
+  <div class="stat"><div class="sv" style="color:var(--yl)">94%</div><div class="sl">Overlap</div></div>
+</div>
+
+<!-- PHILOSOPHY BANNER -->
+<div class="phil">
+  <div style="font-size:.6rem;font-weight:700;color:var(--tx3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px">Four Favorite Lines → Four-Layer Operating Philosophy</div>
+  <div class="phil-grid">
+    <div class="phil-item">
+      <div class="phil-num">L1 — Code</div>
+      <div class="phil-line">"Manners maketh man"</div>
+      <div class="phil-map">→ OPERATOR_READINESS_ENGINE<br>Internal operating stability</div>
+    </div>
+    <div class="phil-item">
+      <div class="phil-num">L2 — Consistency</div>
+      <div class="phil-line">"He's the hero of the day"</div>
+      <div class="phil-map">→ MONDO_PROTOCOL<br>Quiet code retention under stress</div>
+    </div>
+    <div class="phil-item">
+      <div class="phil-num">L3 — Stress Control</div>
+      <div class="phil-line">"Suffer ignorance and smile"</div>
+      <div class="phil-map">→ CREATION_OVER_RETALIATION_GATE<br>Non-reactive strength</div>
+    </div>
+    <div class="phil-item">
+      <div class="phil-num">L4 — Identity</div>
+      <div class="phil-line">"Be yourself no matter what they say"</div>
+      <div class="phil-map">→ SOVEREIGN_IDENTITY_ANCHOR<br>Core invariant under pressure</div>
+    </div>
+  </div>
+</div>
+
+<!-- SESSION BANNER -->
+<div class="sess">
+  <strong>Session:</strong> "Englishman in New York" mapped as identity framework, behavioral architecture, and outsider advantage model.<br>
+  <strong>Density:</strong> 29/31 mechanisms already built (94%). The pipeline was built from the same values: discipline, non-reactive strength, identity invariance, selective engagement, quiet consistency over spectacle.<br>
+  <strong>Movement:</strong> S1 +0.01 (OUTSIDER_ADVANTAGE_DETECTOR in belief state) · S5 +0.01 (BEHAVIORAL_INTEGRITY_SCORER in operator layer)<br>
+  <strong>Convergence note:</strong> SOVEREIGN_IDENTITY_ANCHOR IS 'be yourself no matter what they say.' CREATION_OVER_RETALIATION_GATE IS 'suffer ignorance and smile.' GHOST_STANCE_EMERGENCE IS 'he's the hero of the day' — earned through cost, not purchased.
+</div>
+
+<!-- NEW MECHS -->
+<div class="new-box">
+  <div class="new-t">2 New Mechanisms This Session</div>
+  
+  <div class="mech" style="border-left-color:var(--pu)">
+    <div class="mech-n">BEHAVIORAL_INTEGRITY_SCORER (BIS)</div>
+    <div class="mech-d">Longitudinal tracking of operator conduct consistency across sessions. The pipeline knows what good conduct IS (COMPAS beats, CVS checks, Moltbook logging, ENTRY_DESIRE_LOG). It doesn't track whether the operator executes these consistently over time. BIS tracks per-session: ENTRY_DESIRE_LOG completed, Beat 0 run, CVS computed, no CHAOS_ENTRY, SELF_MODEL consulted, Moltbook logged, BCS gap ≤ 0.3. BIS_session = items_completed/total. BIS_rolling = EMA(α=0.3). If BIS_rolling < 0.6: CONDUCT_DEGRADATION flag → PROBE-only mode. If BIS_rolling > 0.85 for 10+ consecutive sessions: CONDUCT_ANCHOR → earned GHOST_STANCE_EMERGENCE. BIS_trend < 0 (declining): early warning signal — April 4 CHAOS_ENTRY cluster would have been preceded by declining BIS (shortcuts, missing Beat 0, incomplete Moltbook). 'Manners × cross-context consistency = true character.' BIS IS that cross-context consistency metric.</div>
+    <span class="mtag mt-pu">S5 +0.01</span>
+    <span class="mtag mt-gr">Start tracking NOW</span>
+    <span class="mtag mt-pk">NBA: session protocol adherence over time</span>
+  </div>
+  
+  <div class="mech" style="border-left-color:var(--or)">
+    <div class="mech-n">OUTSIDER_ADVANTAGE_DETECTOR (OAD)</div>
+    <div class="mech-d">Formal scoring of when being counter-consensus creates HIGHER expected value than conforming. ADVERSARIAL_OCCUPANCY asks 'is the adversary in my position?' OAD asks 'when does the absence of the crowd FROM my position create edge?' OAD = C_internal × (1 − D_consensus) − P_conformity × 0.3. D_consensus = how aligned is the current narrative with mainstream. C_internal = thesis quality independent of market consensus (COMPOSITE_EDGE × (1−D_t) × L(t)). When OAD > 0.3: OUTSIDER_ADVANTAGE — internal coherence AND market ignoring it = full edge. The Englishman in New York state: misread by the dominant culture, internally coherent, standing at a genuine mispricing. RTX had moderate OAD. A hypothetical Polymarket market where 90% says NO but your high-C_internal thesis says YES = maximum OAD window. OAD adds: even leave_score of 7.5 may justify SNIPER when OAD is high — the edge is in the market's misreading, not just signal strength.</div>
+    <span class="mtag mt-or">S1 +0.01</span>
+    <span class="mtag mt-gr">T=10 first test</span>
+    <span class="mtag mt-pk">NBA: sharp vs public divergence scoring</span>
+  </div>
+</div>
+
+<!-- SONG → PIPELINE MAP -->
+<div class="smap">
+  <div class="smap-t">Song Line → Pipeline Mechanism Mapping</div>
+  <div class="smrow" style="font-size:.58rem;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--bd2)">
+    <span>Song Line</span><span>Pipeline Translation</span><span>Mechanism</span>
+  </div>
+  <div class="smrow">
+    <div class="sm-lyric">"Manners maketh man"</div>
+    <div class="sm-map">Internal operating stability = emotional regulation + discipline + respect under stress</div>
+    <div class="sm-mech">OPERATOR_READINESS_ENGINE<br>+ BIS (new)</div>
+  </div>
+  <div class="smrow">
+    <div class="sm-lyric">"He's the hero of the day"</div>
+    <div class="sm-map">Heroism = quiet code retention, not spectacle. Consistent execution under pressure</div>
+    <div class="sm-mech">MONDO_PROTOCOL<br>COUNT_D_PROTOCOL</div>
+  </div>
+  <div class="smrow">
+    <div class="sm-lyric">"Suffer ignorance and smile"</div>
+    <div class="sm-map">Non-reactive strength. Respond iff V_s > C_r. Emotional leakage weakens position</div>
+    <div class="sm-mech">CREATION_OVER_RETALIATION<br>CVS threshold gate</div>
+  </div>
+  <div class="smrow">
+    <div class="sm-lyric">"Be yourself no matter what they say"</div>
+    <div class="sm-map">I_c = constant. Core identity invariant. Tactics adapt; essence does not</div>
+    <div class="sm-mech">SOVEREIGN_IDENTITY_ANCHOR<br>GHOST_STANCE_EMERGENCE</div>
+  </div>
+  <div class="smrow">
+    <div class="sm-lyric">"An alien in this century"</div>
+    <div class="sm-map">Outsider position = not deficiency. High internal coherence × counter-consensus = edge</div>
+    <div class="sm-mech">OAD (new)<br>PSYCHO_MANTIS_PROTOCOL</div>
+  </div>
+</div>
+
+<!-- MODULE GRID -->
+<div class="mgrid">
+
+  <div class="mod tooling">
+    <div class="mhdr"><span class="mname">S0</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--ac)">9.53</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:95.3%;background:var(--ac)"></div></div>
+    <div class="mnote">ENTRY_TAX_LAYER + SOURCE_BUBBLE_SCORE (prior sessions). STILLNESS_SIGNAL_EXTRACTOR · NARRATIVE_PREMIUM_DECOMPOSER · VISOR_EFFECT_AUDIT.</div>
+  </div>
+
+  <div class="mod ceiling improved">
+    <div class="mhdr"><span class="mname">S1</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.58</span><span class="sdelta dp">+0.01</span></div>
+    <div class="bar"><div class="bf" style="width:95.8%;background:var(--gr)"></div></div>
+    <div class="mnote">OUTSIDER_ADVANTAGE_DETECTOR ← this session. TSL · NLR · SPECTRAL_SIGNAL_CLASSIFIER · LEGITIMACY_DECAY_TRACKER · CVS · PSYCHO_MANTIS.</div>
+    <div class="mhint">↑ OAD: counter-consensus edge scoring</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S2</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">At ceiling. TEMPORAL_GRAMMAR · NARRATIVE_HALF_LIFE · HAUNTOLOGICAL_PERSISTENCE_SCORE. Unchanged.</div>
+  </div>
+
+  <div class="mod structural">
+    <div class="mhdr"><span class="mname">S3A</span><span class="mtag2 t-stru">structural</span></div>
+    <div class="srow"><span class="sval" style="color:var(--or)">9.14</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:91.4%;background:var(--or)"></div></div>
+    <div class="mnote">Capital flow. Structural ceiling at 9.14. Requires live institutional flow (S9 Phase 2).</div>
+  </div>
+
+  <div class="mod tooling">
+    <div class="mhdr"><span class="mname">S3B</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--ac)">8.96</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:89.6%;background:var(--ac)"></div></div>
+    <div class="mnote">INTEGRATION_COST_THRESHOLD active. Awaiting S9 May 13.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S35</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">At ceiling. GRADUATED_EXIT · OPERATOR_LOCK · COUNT_D · CVS · THREE_POISONS gate.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S4</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">At ceiling. FIRE_MODE · CHIGURH · LALO timing · GHOST_STANCE prerequisites.</div>
+  </div>
+
+  <div class="mod debt">
+    <div class="mhdr"><span class="mname">ATOM</span><span class="mtag2 t-debt">⚠ DEBT</span></div>
+    <div class="srow"><span class="sval" style="color:var(--rd)">8.90</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:89%;background:var(--rd)"></div></div>
+    <div class="mnote">95→35 CORE fields. BLOCKING. MICHELANGELO_SUBTRACTION_AUDIT pilot. 7-field caddy_packet crisis compression required before next trade.</div>
+  </div>
+
+  <div class="mod empirical improved">
+    <div class="mhdr"><span class="mname">S5</span><span class="mtag2 t-emp">empirical</span></div>
+    <div class="srow"><span class="sval" style="color:var(--pu)">8.50</span><span class="sdelta dp">+0.01</span></div>
+    <div class="bar"><div class="bf" style="width:85%;background:var(--pu)"></div></div>
+    <div class="mnote">BEHAVIORAL_INTEGRITY_SCORER ← this session. THREE_POISONS_BIAS_ENGINE + REALM_CLASSIFIER (prior week). SELF_MODEL_CALIBRATION · GHOST_STANCE · SIA.</div>
+    <div class="mhint">↑ BIS: longitudinal conduct consistency tracking</div>
+  </div>
+
+  <div class="mod empirical">
+    <div class="mhdr"><span class="mname">S7</span><span class="mtag2 t-emp">empirical</span></div>
+    <div class="srow"><span class="sval" style="color:var(--pu)">9.65</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:96.5%;background:var(--pu)"></div></div>
+    <div class="mnote">LEGITIMACY_DECAY_TRACKER · SAECULAR_REGIME_LAYER · NARRATIVE_DOMINANCE_SCORE · HPS. Near ceiling.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S8</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.83</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98.3%;background:var(--gr)"></div></div>
+    <div class="mnote">TAIL_RISK_COUNTERFACTUAL · POSITION_ENTANGLEMENT_SCORE · DECOHERENCE_TIMESCALE_GATE · INTEGRATION_COST_THRESHOLD.</div>
+  </div>
+
+  <div class="mod tooling">
+    <div class="mhdr"><span class="mname">S9</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--ac)">8.37</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:83.7%;background:var(--ac)"></div></div>
+    <div class="mnote">Build May 13. BIS logging infrastructure needed here. ETL + TSL + SBS + NLR all build in Phase 1.</div>
+  </div>
+
+  <div class="mod debt">
+    <div class="mhdr"><span class="mname">CAL</span><span class="mtag2 t-debt">data void</span></div>
+    <div class="srow"><span class="sval" style="color:var(--yl)">5.41</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:54.1%;background:var(--yl)"></div></div>
+    <div class="mnote">T=6 (4.2 clean FCS-adj). April 25→T=10. ε=1.0→0.56. LPC + TRC + FCS improve MW precision.</div>
+  </div>
+
+</div>
+
+<!-- CRITICAL PATH -->
+<div class="crit">
+  <div class="crit-t">⚠ Critical Path — Unchanged</div>
+  <div class="ci"><div class="cd"></div>ATOM retirement (95→35) — BLOCKING before next trade. Pilot run of MICHELANGELO_SUBTRACTION_AUDIT.</div>
+  <div class="ci"><div class="cd"></div>T=6→10 by April 25. TLT+TIP=T=7,8. UNG/FCG=T=9,10. ε→0.56 at T=10.</div>
+  <div class="ci"><div class="cd"></div>S9 build May 13. BIS logging starts immediately (no tooling required — just manual tracking).</div>
+  <div class="ci" style="color:#fde68a"><div class="cd" style="background:var(--yl)"></div>BEGIN BIS TRACKING NOW: log session conduct items for every remaining paper trade session. The April 4 cluster was preceded by a declining BIS that wasn't measured.</div>
+</div>
+
+<!-- PROJ -->
+<div class="proj">
+  <div class="proj-t">Score Projection</div>
+  <div class="prow"><span class="pdate">Apr 25</span><span class="pev">T=10 · ε→0.56 · first MW direction signal</span><span class="pscore">9.58</span><div class="pbar"><div class="pbf" style="width:5%"></div></div></div>
+  <div class="prow"><span class="pdate">May 31</span><span class="pev">S9 Phase 1 · ATOM retired · all source intelligence stack live</span><span class="pscore">9.62</span><div class="pbar"><div class="pbf" style="width:26%"></div></div></div>
+  <div class="prow"><span class="pdate">Jun 30</span><span class="pev">Phase 2 · FinBERT + Polymarket API + first automated signal</span><span class="pscore">9.65</span><div class="pbar"><div class="pbf" style="width:47%"></div></div></div>
+  <div class="prow"><span class="pdate">Jul 31</span><span class="pev">IBKR paper · live MW loop · OAD first empirical test</span><span class="pscore">9.70</span><div class="pbar"><div class="pbf" style="width:68%"></div></div></div>
+  <div class="prow"><span class="pdate">Aug 2026</span><span class="pev">Real capital · T≥35 · E_op>0.80 · BIS_rolling>0.85 earned</span><span class="pscore">9.74</span><div class="pbar"><div class="pbf" style="width:89%"></div></div></div>
+  <div class="prow"><span class="pdate">Ceiling</span><span class="pev">9.76 — residual empirical reserve</span><span class="pscore">9.76</span><div class="pbar"><div class="pbf" style="width:100%"></div></div></div>
+</div>
+
+<footer>
+PIPELINE V5.7+ · Apr 16, 2026 · Score 9.57 · Gap 0.19 · T=6 · ε=1.0 · Ceiling 9.76<br>
+S0=9.53 · S1=9.58 · S2=9.80 · S3A=9.14 · S3B=8.96 · S35=9.80 · S4=9.80<br>
+ATOM=8.90 · S5=8.50 · S7=9.65 · S8=9.83 · S9=8.37 · CAL=5.41 · Total V2=+2.69<br>
+<br>
+"Be yourself no matter what they say."
+</footer>
+
+</body>
+</html>

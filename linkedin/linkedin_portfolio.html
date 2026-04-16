@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pipeline V5.7+ · Portfolio Scorecard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --tar:    #111010;
+  --tar2:   #0c0b0b;
+  --pit:    #191717;
+  --coal:   #242120;
+  --seam:   #2e2b29;
+  --ash:    #b5b0a8;
+  --bone:   #e8e2d8;
+  --acid:   #d6e820;
+  --heat:   #ff4422;
+  --cyan:   #00dfdf;
+  --gold:   #e8a820;
+  --green:  #38d870;
+  --mute:   #5a5650;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #080707;
+  display: flex;
+  justify-content: center;
+  padding: 40px 16px 60px;
+  font-family: 'DM Mono', monospace;
+}
+
+.page {
+  width: 920px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+/* ─── SHARED PANEL ─── */
+.panel {
+  background: var(--tar);
+  border: 1px solid var(--seam);
+  position: relative;
+  overflow: hidden;
+}
+
+/* grain overlay */
+.panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23g)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 100;
+  mix-blend-mode: screen;
+}
+
+/* ─── MASTHEAD ─── */
+.masthead {
+  background: var(--tar2);
+  border-color: var(--seam);
+}
+
+.acid-bar {
+  height: 4px;
+  background: linear-gradient(90deg, var(--acid) 0 60%, var(--heat) 60% 78%, var(--cyan) 78%);
+}
+
+.masthead-body {
+  padding: 26px 32px 22px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 20px;
+  align-items: end;
+}
+
+.m-eyebrow {
+  font-size: .55rem;
+  font-weight: 300;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--acid);
+  margin-bottom: 6px;
+}
+
+.m-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 5.8rem;
+  line-height: .88;
+  color: var(--bone);
+  letter-spacing: -.01em;
+}
+
+.m-title span { color: var(--acid); }
+
+.m-sub {
+  margin-top: 10px;
+  font-size: .5rem;
+  font-weight: 300;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.m-right {
+  text-align: right;
+  padding-bottom: 4px;
+}
+
+.m-date {
+  font-size: .52rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin-bottom: 10px;
+}
+
+.m-axiom {
+  font-size: .58rem;
+  font-style: italic;
+  font-weight: 300;
+  color: var(--ash);
+  line-height: 1.75;
+  max-width: 220px;
+  text-align: right;
+}
+
+/* hero row */
+.hero-row {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  border-top: 1px solid var(--seam);
+}
+
+.hero-cell {
+  padding: 16px 0 14px;
+  text-align: center;
+  border-right: 1px solid var(--seam);
+}
+.hero-cell:last-child { border-right: none; }
+
+.hc-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.6rem;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.hc-lbl {
+  font-size: .44rem;
+  font-weight: 300;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+/* ─── SECTION LABEL ─── */
+.sec {
+  padding: 14px 28px 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.sec-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.05rem;
+  letter-spacing: .06em;
+  color: var(--bone);
+  white-space: nowrap;
+}
+
+.sec-line { flex: 1; height: 1px; background: var(--seam); }
+
+.sec-badge {
+  font-size: .44rem;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mute);
+  white-space: nowrap;
+}
+
+/* ─── MOLTBOOK ─── */
+.moltbook-table {
+  margin: 0 28px 20px;
+  border: 1px solid var(--seam);
+}
+
+.mt-head {
+  display: grid;
+  grid-template-columns: 2rem 60px 80px 80px 72px 90px 1fr;
+  gap: 0;
+  background: var(--coal);
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--seam);
+}
+
+.mt-hcell {
+  font-size: .44rem;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.mt-row {
+  display: grid;
+  grid-template-columns: 2rem 60px 80px 80px 72px 90px 1fr;
+  gap: 0;
+  padding: 9px 12px;
+  border-bottom: 1px solid #1e1c1a;
+  align-items: center;
+}
+.mt-row:last-child { border-bottom: none; }
+.mt-row.win  { background: rgba(56, 216, 112, 0.04); }
+.mt-row.loss { background: rgba(255, 68, 34, 0.03); }
+.mt-row.chaos{ background: rgba(0, 223, 223, 0.03); }
+
+.mt-num {
+  font-size: .52rem;
+  color: var(--mute);
+}
+
+.mt-ticker {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: .04em;
+  color: var(--bone);
+}
+
+.mt-price {
+  font-size: .58rem;
+  color: var(--ash);
+  font-weight: 300;
+}
+
+.mt-pnl {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+}
+
+.mt-cls {
+  font-size: .46rem;
+  font-weight: 500;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  display: inline-block;
+}
+
+.mt-note {
+  font-size: .5rem;
+  font-weight: 300;
+  color: var(--mute);
+  line-height: 1.5;
+}
+
+/* ─── MW STATE ─── */
+.mw-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  margin: 0 28px 20px;
+  border: 1px solid var(--seam);
+}
+
+.mw-cell {
+  padding: 14px 0 12px;
+  text-align: center;
+  border-right: 1px solid var(--seam);
+}
+.mw-cell:last-child { border-right: none; }
+
+.mw-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.mw-lbl {
+  font-size: .44rem;
+  font-weight: 300;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+/* ─── PORTFOLIO TABLE ─── */
+.port-wrap {
+  margin: 0 28px 20px;
+  border: 1px solid var(--seam);
+}
+
+.port-head {
+  display: grid;
+  grid-template-columns: 68px 72px 72px 64px 80px 1fr;
+  padding: 8px 14px;
+  background: var(--coal);
+  border-bottom: 1px solid var(--seam);
+}
+
+.ph-cell {
+  font-size: .44rem;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.port-row {
+  display: grid;
+  grid-template-columns: 68px 72px 72px 64px 80px 1fr;
+  padding: 8px 14px;
+  border-bottom: 1px solid #1a1818;
+  align-items: center;
+}
+.port-row:last-child { border-bottom: none; }
+
+.port-row.exit-now  { background: rgba(232, 168, 32, 0.06); border-left: 3px solid var(--gold); }
+.port-row.watch     { background: rgba(255, 68, 34, 0.05);  border-left: 3px solid var(--heat); }
+.port-row.chaos-h   { background: rgba(0, 223, 223, 0.04);  border-left: 3px solid var(--cyan); }
+.port-row.new-entry { background: rgba(214, 232, 32, 0.04); border-left: 3px solid var(--acid); }
+.port-row.hold      { border-left: 3px solid transparent; }
+
+.pr-ticker {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  color: var(--bone);
+  letter-spacing: .03em;
+}
+
+.pr-price {
+  font-size: .54rem;
+  color: var(--ash);
+  font-weight: 300;
+}
+
+.pr-pnl {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+}
+
+.pr-status {
+  font-size: .44rem;
+  font-weight: 500;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: 2px 5px;
+  display: inline-block;
+}
+
+.pr-thesis {
+  font-size: .5rem;
+  font-weight: 300;
+  color: var(--mute);
+  line-height: 1.5;
+}
+
+/* group dividers inside port table */
+.port-divider {
+  padding: 5px 14px 4px;
+  background: var(--pit);
+  border-bottom: 1px solid var(--seam);
+  font-size: .44rem;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+/* ─── SELF MODEL ─── */
+.sm-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0 28px 20px;
+  border: 1px solid var(--seam);
+}
+
+.sm-cell {
+  padding: 14px 16px;
+  border-right: 1px solid var(--seam);
+}
+.sm-cell:last-child { border-right: none; }
+
+.sm-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1rem;
+  letter-spacing: .04em;
+  margin-bottom: 6px;
+}
+
+.sm-pattern {
+  font-size: .52rem;
+  font-weight: 500;
+  color: var(--ash);
+  margin-bottom: 5px;
+  line-height: 1.4;
+}
+
+.sm-detail {
+  font-size: .5rem;
+  font-weight: 300;
+  color: var(--mute);
+  line-height: 1.6;
+}
+
+/* ─── CRITICAL PATH ─── */
+.crit-inner {
+  margin: 0 28px 20px;
+  border: 1px solid var(--heat);
+  padding: 16px 18px;
+  background: rgba(255,68,34,.04);
+}
+
+.crit-hdr {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  color: var(--heat);
+  letter-spacing: .06em;
+  margin-bottom: 12px;
+}
+
+.crit-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 32px;
+}
+
+.crit-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.crit-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--heat);
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.crit-txt {
+  font-size: .54rem;
+  font-weight: 300;
+  color: var(--ash);
+  line-height: 1.65;
+}
+
+.crit-txt strong {
+  font-weight: 500;
+  color: var(--bone);
+}
+
+/* ─── FOOTER ─── */
+.footer {
+  background: var(--tar2);
+  border-color: var(--seam);
+  padding: 14px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.foot-l {
+  font-size: .48rem;
+  font-weight: 300;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mute);
+  line-height: 2;
+}
+
+.foot-r {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
+  color: var(--seam);
+  letter-spacing: .04em;
+  text-align: right;
+  line-height: 1.1;
+}
+
+/* ─── UTILITY COLORS ─── */
+.ca { color: var(--acid); }
+.ch { color: var(--heat); }
+.cc { color: var(--cyan); }
+.cg { color: var(--green); }
+.cgo{ color: var(--gold); }
+.cb { color: var(--bone); }
+.cm { color: var(--mute); }
+
+.bg-a { background: rgba(214,232,32,.15);  color: var(--acid); }
+.bg-h { background: rgba(255,68,34,.15);   color: var(--heat); }
+.bg-c { background: rgba(0,223,223,.15);   color: var(--cyan); }
+.bg-g { background: rgba(56,216,112,.15);  color: var(--green); }
+.bg-go{ background: rgba(232,168,32,.15);  color: var(--gold); }
+.bg-m { background: rgba(90,86,80,.25);    color: var(--mute); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══ MASTHEAD ══ -->
+  <div class="panel masthead">
+    <div class="acid-bar"></div>
+    <div class="masthead-body">
+      <div>
+        <div class="m-eyebrow">Geopolitical Signal Pipeline · Live Portfolio</div>
+        <div class="m-title">V5.<span>7+</span></div>
+        <div class="m-sub">Paper Trading · 1900+ Sessions · Spot Longs Only · No Futures · No Shorts</div>
+      </div>
+      <div class="m-right">
+        <div class="m-date">April 16, 2026</div>
+        <div class="m-axiom">"Attention precedes capital.<br>Capital follows narrative.<br>Narrative forms before price."</div>
+      </div>
+    </div>
+    <div class="hero-row">
+      <div class="hero-cell">
+        <div class="hc-val ca">9.57</div>
+        <div class="hc-lbl">Pipeline Score</div>
+      </div>
+      <div class="hero-cell">
+        <div class="hc-val ch">0.19</div>
+        <div class="hc-lbl">Gap to Ceiling</div>
+      </div>
+      <div class="hero-cell">
+        <div class="hc-val cb">9.76</div>
+        <div class="hc-lbl">Ceiling</div>
+      </div>
+      <div class="hero-cell">
+        <div class="hc-val cc">24</div>
+        <div class="hc-lbl">Open Positions</div>
+      </div>
+      <div class="hero-cell">
+        <div class="hc-val ca">T=6</div>
+        <div class="hc-lbl">Closed Trades</div>
+      </div>
+      <div class="hero-cell">
+        <div class="hc-val ch">8/10</div>
+        <div class="hc-lbl">Drift Risk</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MOLTBOOK ══ -->
+  <div class="panel">
+    <div class="sec">
+      <div class="sec-title">Moltbook — Closed Trades</div>
+      <div class="sec-line"></div>
+      <div class="sec-badge">T=6 · FCS-Adj 4.4 · Hit Rate 1/5</div>
+    </div>
+
+    <div class="moltbook-table">
+      <div class="mt-head">
+        <div class="mt-hcell">#</div>
+        <div class="mt-hcell">Ticker</div>
+        <div class="mt-hcell">Entry</div>
+        <div class="mt-hcell">Exit</div>
+        <div class="mt-hcell">P&amp;L</div>
+        <div class="mt-hcell">Class</div>
+        <div class="mt-hcell">Pattern</div>
+      </div>
+
+      <div class="mt-row loss">
+        <div class="mt-num">01</div>
+        <div class="mt-ticker">MP</div>
+        <div class="mt-price">$53.29</div>
+        <div class="mt-price">$47.96</div>
+        <div class="mt-pnl ch">−10.00%</div>
+        <div><span class="mt-cls bg-m">SYSTEM</span></div>
+        <div class="mt-note">Hard stop hit. Clean protocol. CHIGURH enforced.</div>
+      </div>
+      <div class="mt-row loss">
+        <div class="mt-num">02</div>
+        <div class="mt-ticker">ZIM</div>
+        <div class="mt-price">$26.46</div>
+        <div class="mt-price">$25.88</div>
+        <div class="mt-pnl ch">−2.19%</div>
+        <div><span class="mt-cls bg-m">SYSTEM</span></div>
+        <div class="mt-note">Thesis inversion. Iran 64%. Correct THESIS_BREAK exit. P1: PRESENT_PERFECT entered as PRESENT_CONTINUOUS.</div>
+      </div>
+      <div class="mt-row win">
+        <div class="mt-num">03</div>
+        <div class="mt-ticker">RTX</div>
+        <div class="mt-price">$194.00</div>
+        <div class="mt-price">$201.56</div>
+        <div class="mt-pnl cg">+3.90%</div>
+        <div><span class="mt-cls bg-g">WIN</span></div>
+        <div class="mt-note">SYSTEM_WIN. Defence thesis confirmed. LPC: thesis_confirmed=True. Full MW weight.</div>
+      </div>
+      <div class="mt-row loss">
+        <div class="mt-num">04</div>
+        <div class="mt-ticker">CVX</div>
+        <div class="mt-price">$206.79</div>
+        <div class="mt-price">$188.55</div>
+        <div class="mt-pnl ch">−8.82%</div>
+        <div><span class="mt-cls bg-m">SYSTEM</span></div>
+        <div class="mt-note">PoNR gap. τ=90d vs τ_D=7d. Stop proximity=0.882. P1+P3. NLR: entry Day 80, edge window Day 0–5.</div>
+      </div>
+      <div class="mt-row chaos">
+        <div class="mt-num">05</div>
+        <div class="mt-ticker">USO</div>
+        <div class="mt-price">$137.92</div>
+        <div class="mt-price">$124.82</div>
+        <div class="mt-pnl ch">−9.50%</div>
+        <div><span class="mt-cls bg-c">CHAOS</span></div>
+        <div class="mt-note">CHAOS_ENTRY Apr 4 cluster. DRAINED state. FCS≈0.85 → MW weight 15%. Stop proximity=0.950. P2.</div>
+      </div>
+      <div class="mt-row loss">
+        <div class="mt-num">06</div>
+        <div class="mt-ticker">XOM</div>
+        <div class="mt-price">$163.50</div>
+        <div class="mt-price">$152.51</div>
+        <div class="mt-pnl ch">−6.72%</div>
+        <div><span class="mt-cls bg-m">SYSTEM</span></div>
+        <div class="mt-note">War thesis duration error. Same cluster as CVX. τ=90d. DECOHERENCE gate would have blocked.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ MW STATE ══ -->
+  <div class="panel">
+    <div class="sec">
+      <div class="sec-title">MW Calibration State</div>
+      <div class="sec-line"></div>
+      <div class="sec-badge">ε=1.0 · No Direction Yet · T=10 Target Apr 25</div>
+    </div>
+    <div class="mw-row">
+      <div class="mw-cell">
+        <div class="mw-val ca">T=6</div>
+        <div class="mw-lbl">Raw Closes</div>
+      </div>
+      <div class="mw-cell">
+        <div class="mw-val cc">4.4</div>
+        <div class="mw-lbl">FCS-Adjusted T</div>
+      </div>
+      <div class="mw-cell">
+        <div class="mw-val ch">20%</div>
+        <div class="mw-lbl">SYSTEM Hit Rate</div>
+      </div>
+      <div class="mw-cell">
+        <div class="mw-val cb">1.0</div>
+        <div class="mw-lbl">Uncertainty ε</div>
+      </div>
+      <div class="mw-cell">
+        <div class="mw-val ca">T=10</div>
+        <div class="mw-lbl">First Direction Signal</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ OPEN PORTFOLIO ══ -->
+  <div class="panel">
+    <div class="sec">
+      <div class="sec-title">Open Portfolio</div>
+      <div class="sec-line"></div>
+      <div class="sec-badge">24 Positions · Drift 8/10 Max · Quarter-Unit Sizing Only</div>
+    </div>
+
+    <div class="port-wrap">
+      <div class="port-head">
+        <div class="ph-cell">Ticker</div>
+        <div class="ph-cell">Entry</div>
+        <div class="ph-cell">Current</div>
+        <div class="ph-cell">P&amp;L</div>
+        <div class="ph-cell">Status</div>
+        <div class="ph-cell">Thesis / Note</div>
+      </div>
+
+      <!-- EXIT NOW -->
+      <div class="port-divider" style="color:var(--gold)">⟶ Exit Now — Thesis Signal Received (T=7, T=8)</div>
+      <div class="port-row exit-now">
+        <div class="pr-ticker">TLT</div>
+        <div class="pr-price">$86.01</div>
+        <div class="pr-price">$86.49</div>
+        <div class="pr-pnl cgo">+0.56%</div>
+        <div><span class="pr-status bg-go">Exit Now</span></div>
+        <div class="pr-thesis">Rate thesis signal received. Exit → T=7. Unlocks MW progression.</div>
+      </div>
+      <div class="port-row exit-now">
+        <div class="pr-ticker">TIP</div>
+        <div class="pr-price">$107.00</div>
+        <div class="pr-price">$111.02</div>
+        <div class="pr-pnl cgo">+3.76%</div>
+        <div><span class="pr-status bg-go">Exit Now</span></div>
+        <div class="pr-thesis">Inflation thesis signal received. Exit → T=8. Unlocks MW progression.</div>
+      </div>
+
+      <!-- WATCH STOP -->
+      <div class="port-divider" style="color:var(--heat)">⚠ Watch Stop — Approaching −10% (T=9, T=10 candidates)</div>
+      <div class="port-row watch">
+        <div class="pr-ticker">UNG</div>
+        <div class="pr-price">$11.35</div>
+        <div class="pr-price">$10.77</div>
+        <div class="pr-pnl ch">−5.11%</div>
+        <div><span class="pr-status bg-h">Watch Stop</span></div>
+        <div class="pr-thesis">Natural gas. Stop=$10.22. 5.1% from hard stop. If hit → T=9.</div>
+      </div>
+      <div class="port-row watch">
+        <div class="pr-ticker">FCG</div>
+        <div class="pr-price">$31.16</div>
+        <div class="pr-price">$29.97</div>
+        <div class="pr-pnl ch">−3.82%</div>
+        <div><span class="pr-status bg-h">Watch Stop</span></div>
+        <div class="pr-thesis">Natural gas E&amp;P. Stop=$28.04. 6.4% from hard stop. If hit → T=10.</div>
+      </div>
+
+      <!-- CHAOS HOLDINGS -->
+      <div class="port-divider" style="color:var(--cyan)">⟳ Chaos Holdings — Apr 4 Cluster · consequence_persistence=2.5 · FCS≈0 for MW</div>
+      <div class="port-row chaos-h">
+        <div class="pr-ticker">JPM</div>
+        <div class="pr-price">$294.60</div>
+        <div class="pr-price">$309.87</div>
+        <div class="pr-pnl cc">+5.18%</div>
+        <div><span class="pr-status bg-c">Chaos</span></div>
+        <div class="pr-thesis">CHAOS_ENTRY. Gains are real. Exit = LUCKY_PASS_CLASSIFIER runs. Zero MW update weight.</div>
+      </div>
+      <div class="port-row chaos-h">
+        <div class="pr-ticker">MSFT</div>
+        <div class="pr-price">$373.46</div>
+        <div class="pr-price">$370.87</div>
+        <div class="pr-pnl ch">−0.69%</div>
+        <div><span class="pr-status bg-c">Chaos</span></div>
+        <div class="pr-thesis">CHAOS_ENTRY. Near flat. Monitor thesis integrity.</div>
+      </div>
+      <div class="port-row chaos-h">
+        <div class="pr-ticker">EWZ</div>
+        <div class="pr-price">$38.35</div>
+        <div class="pr-price">$41.33</div>
+        <div class="pr-pnl cc">+7.77%</div>
+        <div><span class="pr-status bg-c">Chaos</span></div>
+        <div class="pr-thesis">CHAOS_ENTRY. EM Brazil. Gains don't validate Apr 4 process.</div>
+      </div>
+
+      <!-- HOLD -->
+      <div class="port-divider" style="color:var(--mute)">↗ Hold — Active Thesis</div>
+
+      <!-- War/safe haven cluster -->
+      <div class="port-row hold">
+        <div class="pr-ticker">GLD</div>
+        <div class="pr-price">$404.13</div>
+        <div class="pr-price">$437.13</div>
+        <div class="pr-pnl cg">+8.17%</div>
+        <div><span class="pr-status bg-g">Hold</span></div>
+        <div class="pr-thesis">War/Iran escalation + safe haven. PES: GLD+SGOL = 1 bet, not 2.</div>
+      </div>
+      <div class="port-row hold" style="border-left:3px solid var(--acid)">
+        <div class="pr-ticker ca">SGOL</div>
+        <div class="pr-price">$43.00</div>
+        <div class="pr-price">$45.34</div>
+        <div class="pr-pnl cg">+5.44%</div>
+        <div><span class="pr-status bg-a">Today</span></div>
+        <div class="pr-thesis">NEW Apr 16 @ $45.74. Hard stop $41.17. Physical gold proxy. War/safe haven.</div>
+      </div>
+      <div class="port-row hold">
+        <div class="pr-ticker">EIS</div>
+        <div class="pr-price">$120.60</div>
+        <div class="pr-price">$125.59</div>
+        <div class="pr-pnl cg">+4.14%</div>
+        <div><span class="pr-status bg-go">Reduce</span></div>
+        <div class="pr-thesis">Israel ETF. War thesis. REDUCE signal — trim at next review.</div>
+      </div>
+      <div class="port-row hold">
+        <div class="pr-ticker">GS</div>
+        <div class="pr-price">$839.74</div>
+        <div class="pr-price">$907.80</div>
+        <div class="pr-pnl cg">+8.10%</div>
+        <div><span class="pr-status bg-g">Hold</span></div>
+        <div class="pr-thesis">Investment banking / AI infrastructure thesis.</div>
+      </div>
+      <div class="port-row hold">
+        <div class="pr-ticker">PBR</div>
+        <div class="pr-price">$19.75</div>
+        <div class="pr-price">$21.51</div>
+        <div class="pr-pnl cg">+8.91%</div>
+        <div><span class="pr-status bg-g">Hold</span></div>
+        <div class="pr-thesis">EM Brazil political transition. Strong thesis intact.</div>
+      </div>
+      <div class="port-row hold">
+        <div class="pr-ticker">VNM</div>
+        <div class="pr-price">$16.80</div>
+        <div class="pr-price">$18.20</div>
+        <div class="pr-pnl cg">+8.33%</div>
+        <div><span class="pr-status bg-g">Hold</span></div>
+        <div class="pr-thesis">Vietnam EM growth thesis.</div>
+      </div>
+      <div class="port-row hold">
+        <div class="pr-ticker">BMW.F</div>
+        <div class="pr-price">€77.86</div>
+        <div class="pr-price">€84.06</div>
+        <div class="pr-pnl cg">+7.96%</div>
+        <div><span class="pr-status bg-g">Hold</span></div>
+        <div class="pr-thesis">German auto sector. PES: BMW+MBG = 1 bet.</div>
+      </div>
+      <div class="port-row hold">
+        <div class="pr-ticker">MBG.F</div>
+        <div class="pr-price">€51.69</div>
+        <div class="pr-price">€54.25</div>
+        <div class="pr-pnl cg">+4.95%</div>
+        <div><span class="pr-status bg-g">Hold</span></div>
+        <div class="pr-thesis">German auto sector.</div>
+      </div>
+      <div class="port-row hold">
+        <div class="pr-ticker">BTC</div>
+        <div class="pr-price">€60,308</div>
+        <div class="pr-price">€62,214</div>
+        <div class="pr-pnl cg">+3.16%</div>
+        <div><span class="pr-status bg-g">Hold</span></div>
+        <div class="pr-thesis">Crypto risk-on / macro narrative.</div>
+      </div>
+      <div class="port-row hold">
+        <div class="pr-ticker">ETH</div>
+        <div class="pr-price">€1,846</div>
+        <div class="pr-price">€1,914</div>
+        <div class="pr-pnl cc">+3.68%</div>
+        <div><span class="pr-status bg-c">Observe</span></div>
+        <div class="pr-thesis">Crypto risk-on. OBSERVE mode — thesis monitoring.</div>
+      </div>
+      <div class="port-row hold">
+        <div class="pr-ticker">XLF</div>
+        <div class="pr-price">$49.28</div>
+        <div class="pr-price">$50.77</div>
+        <div class="pr-pnl cg">+3.02%</div>
+        <div><span class="pr-status bg-g">Hold</span></div>
+        <div class="pr-thesis">Rate environment / financial sector.</div>
+      </div>
+      <div class="port-row hold">
+        <div class="pr-ticker">NEE</div>
+        <div class="pr-price">$91.44</div>
+        <div class="pr-price">$94.08</div>
+        <div class="pr-pnl cg">+2.89%</div>
+        <div><span class="pr-status bg-g">Hold</span></div>
+        <div class="pr-thesis">Clean energy / rate sensitive infrastructure.</div>
+      </div>
+      <div class="port-row hold">
+        <div class="pr-ticker">BP</div>
+        <div class="pr-price">$45.50</div>
+        <div class="pr-price">$46.44</div>
+        <div class="pr-pnl cg">+2.07%</div>
+        <div><span class="pr-status bg-g">Hold</span></div>
+        <div class="pr-thesis">Energy transition thesis.</div>
+      </div>
+      <div class="port-row hold">
+        <div class="pr-ticker">ICLN</div>
+        <div class="pr-price">$18.80</div>
+        <div class="pr-price">$18.92</div>
+        <div class="pr-pnl cg">+0.64%</div>
+        <div><span class="pr-status bg-g">Hold</span></div>
+        <div class="pr-thesis">Clean energy basket.</div>
+      </div>
+      <div class="port-row hold">
+        <div class="pr-ticker">COIN</div>
+        <div class="pr-price">$171.46</div>
+        <div class="pr-price">$167.85</div>
+        <div class="pr-pnl ch">−2.11%</div>
+        <div><span class="pr-status bg-g">Hold</span></div>
+        <div class="pr-thesis">Crypto exchange. Stop=$154.31. Monitoring.</div>
+      </div>
+
+      <!-- NEW -->
+      <div class="port-divider" style="color:var(--acid)">+ New Entries Apr 11 — Entry Price TBC</div>
+      <div class="port-row new-entry">
+        <div class="pr-ticker ca">SLV</div>
+        <div class="pr-price">—</div>
+        <div class="pr-price">$69.08</div>
+        <div class="pr-pnl cm">TBC</div>
+        <div><span class="pr-status bg-a">New</span></div>
+        <div class="pr-thesis">Silver. Entry price needed to set hard stop. Confirm thesis.</div>
+      </div>
+      <div class="port-row new-entry">
+        <div class="pr-ticker ca">EWG</div>
+        <div class="pr-price">—</div>
+        <div class="pr-price">$41.60</div>
+        <div class="pr-pnl cm">TBC</div>
+        <div><span class="pr-status bg-a">New</span></div>
+        <div class="pr-thesis">Germany ETF. Entry price needed to set hard stop. Confirm thesis.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SELF MODEL ══ -->
+  <div class="panel">
+    <div class="sec">
+      <div class="sec-title">Self-Model Failure Patterns</div>
+      <div class="sec-line"></div>
+      <div class="sec-badge">3 Patterns at T=6</div>
+    </div>
+    <div class="sm-grid">
+      <div class="sm-cell">
+        <div class="sm-label ch">P1 — Temporal Grammar</div>
+        <div class="sm-pattern">PRESENT_PERFECT entered as PRESENT_CONTINUOUS</div>
+        <div class="sm-detail">CVX, XOM, ZIM — war thesis was 60–90 days old at entry. NLR: edge window was Day 0–5. Entry at Day 80 = chasing the finish tape. NARRATIVE_LAG_REGISTER would have fired LATE_ENTRY_WARNING on all three. Drives 60% of SYSTEM losses.</div>
+      </div>
+      <div class="sm-cell">
+        <div class="sm-label cc">P2 — Operator State</div>
+        <div class="sm-pattern">DRAINED state produced entire CHAOS cluster</div>
+        <div class="sm-detail">April 4: USO, JPM, MSFT, EWZ, UNG, FCG entered in one session. REALM_CLASSIFIER = ANIMAL. Monthly cadence didn't prevent intra-session stacking. BURST_RECOVERY_PROTOCOL (BRP) post-USO: +14 days. BRP would have blocked entries 2–6 completely.</div>
+      </div>
+      <div class="sm-cell">
+        <div class="sm-label cgo">P3 — Inertia Blindness</div>
+        <div class="sm-pattern">High-inertia thesis past decoherence timescale</div>
+        <div class="sm-detail">CVX + XOM: τ=90 days vs τ_D=7 days (war thesis decoherence). TYNDALL_VISIBILITY_GATE on CVX Day 80: M_total≈0.12 → AUTO-BLOCKED. SANGAM_SIGNAL_STATE_CLASSIFIER: BOUNDARY_TENSION state (capital flow SC=−0.2 disagreed with narrative). Dissenting flow was the signal.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ CRITICAL PATH ══ -->
+  <div class="panel">
+    <div class="sec">
+      <div class="sec-title">Critical Path</div>
+      <div class="sec-line"></div>
+      <div class="sec-badge">4 Actions · T=10 Target Apr 25</div>
+    </div>
+    <div class="crit-inner">
+      <div class="crit-hdr">⚠ Blocking + Milestones</div>
+      <div class="crit-cols">
+        <div class="crit-item">
+          <div class="crit-dot"></div>
+          <div class="crit-txt"><strong>Exit TLT + TIP now.</strong> Thesis signals received. Locks in T=7 and T=8. Clear MW path to T=10.</div>
+        </div>
+        <div class="crit-item">
+          <div class="crit-dot"></div>
+          <div class="crit-txt"><strong>ATOM retirement (95→35 fields)</strong> — BLOCKING before next trade. MICHELANGELO_SUBTRACTION_AUDIT pilot run.</div>
+        </div>
+        <div class="crit-item">
+          <div class="crit-dot"></div>
+          <div class="crit-txt"><strong>Confirm SLV + EWG entry prices.</strong> Cannot set hard stops without actual entry basis. Flag for next review.</div>
+        </div>
+        <div class="crit-item">
+          <div class="crit-dot"></div>
+          <div class="crit-txt"><strong>BRP clears ~Apr 18.</strong> USO CHAOS_LOSS (Apr 4) → +14 day minimum. No new entries until BRP elapsed.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <div class="panel footer">
+    <div class="foot-l">
+      Pipeline V5.7+ · April 16 2026 · Score 9.57 · Gap 0.19 · Ceiling 9.76<br>
+      T=6 · ε=1.0 · Drift 8/10 · 24 open · Quarter-Unit sizing only<br>
+      1900+ sessions · 18 new mechanisms this block · All positions spot longs
+    </div>
+    <div class="foot-r">
+      CAPITAL MOVES<br>
+      BEFORE LANGUAGE
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

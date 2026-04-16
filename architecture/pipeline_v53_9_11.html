@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
+body{font-size:12px;padding:16px;background:#fff;color:#111}
+.hero{border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:12px;background:#0f1117;color:#e2e8f0}
+.sec{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#888;margin:14px 0 7px;padding-bottom:4px;border-bottom:1px solid #e5e7eb}
+
+/* sonic states */
+.sonic{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.sc{border:1px solid #e5e7eb;border-radius:8px;padding:9px 11px}
+.sc-t{font-size:11px;font-weight:700;margin-bottom:3px}
+.sc-d{font-size:9px;color:#444;line-height:1.4;margin-bottom:4px}
+.sc-trigger{font-size:8px;font-weight:600;padding:2px 6px;border-radius:3px;line-height:1.4}
+.sc-div{font-size:8px;color:#888;margin-top:4px;padding-top:3px;border-top:1px dashed #e5e7eb}
+
+/* rasputin */
+.rasp{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.rp{border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px}
+.rp-t{font-size:11px;font-weight:700;margin-bottom:4px}
+.rp-row{font-size:9px;padding:3px 0;border-bottom:1px solid #f3f4f6;line-height:1.5;display:flex;gap:8px}
+.rp-row:last-child{border:none}
+
+/* divergence signal */
+.div-signal{border:1px solid #E2C97E;border-left:4px solid #E2C97E;background:#FFFDF0;border-radius:8px;padding:10px 13px;margin-bottom:12px}
+
+/* 12-step pipeline */
+.pipe{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-bottom:12px}
+.ps{border:1px solid #e5e7eb;border-radius:6px;padding:6px 7px}
+.ps-n{font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#888;margin-bottom:1px}
+.ps-t{font-size:9px;font-weight:600;margin-bottom:2px;line-height:1.2}
+.ps-map{font-size:7.5px;color:#555;line-height:1.3}
+.new-b{display:inline-block;font-size:7px;font-weight:700;background:#27500A;color:#fff;padding:1px 3px;border-radius:2px;margin-bottom:1px}
+
+/* scorecard */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.card{border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;border-left:4px solid #888}
+.ch{padding:8px 10px 6px}
+.ct{display:flex;justify-content:space-between;margin-bottom:3px}
+.ccode{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#888}
+.cwt{font-size:9px;color:#888;background:#f3f4f6;padding:1px 4px;border-radius:3px}
+.crow{display:flex;align-items:flex-end;gap:5px;margin-bottom:4px}
+.cs{font-size:24px;font-weight:500;line-height:1}
+.cbar{height:4px;background:#f3f4f6;border-radius:2px;position:relative;overflow:hidden;margin-bottom:4px}
+.cbl{height:100%;border-radius:2px;position:absolute;left:0;top:0}
+.cn{font-size:9px;color:#555;line-height:1.3}
+.bottom{border:1px solid #e5e7eb;border-left:3px solid #1F3864;border-radius:10px;padding:11px 14px;font-size:11px;color:#444;line-height:1.75}
+</style></head><body>
+
+<div class="hero">
+  <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px">
+    <div>
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <span style="font-size:36px;font-weight:400;color:#666;text-decoration:line-through">9.10</span>
+        <span style="font-size:20px;color:#666">→</span>
+        <span style="font-size:56px;font-weight:500;color:#E2C97E">9.11</span>
+      </div>
+    </div>
+    <div style="flex:1;padding-top:4px">
+      <div style="font-size:13px;font-weight:600;color:#E2C97E;margin-bottom:4px">Pipeline V5.3 — Quantum Reactor Final Form · April 2026</div>
+      <div style="font-size:11px;color:#aaa;line-height:1.75">
+        2 genuine additions · Score +0.01 · S0 +0.01 · S2 +0.03 · S3A +0.02<br>
+        <strong style="color:#E2C97E">SONIC_STRUCTURE_ENGINE</strong> + <strong style="color:#E2C97E">RASPUTIN_LAYER</strong> · Total V2: <strong style="color:#E2C97E">+2.23</strong><br>
+        <strong style="color:#A0C4FF">Key divergence signal: capital RELEASE before narrative RELEASE = smart money exiting before crowd knows it's over.</strong>
+      </div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px">
+    <div style="background:rgba(255,255,255,.08);border-radius:6px;padding:7px;text-align:center"><div style="font-size:16px;font-weight:600;color:#E2C97E">9.11</div><div style="font-size:8px;color:#888">New score</div></div>
+    <div style="background:rgba(255,255,255,.08);border-radius:6px;padding:7px;text-align:center"><div style="font-size:16px;font-weight:600;color:#A0C4FF">SONIC</div><div style="font-size:8px;color:#888">4-state tension/<br>release cycle</div></div>
+    <div style="background:rgba(255,255,255,.08);border-radius:6px;padding:7px;text-align:center"><div style="font-size:16px;font-weight:600;color:#A0C4FF">RASPUTIN</div><div style="font-size:8px;color:#888">Inevitability +<br>Distortion score</div></div>
+    <div style="background:rgba(255,255,255,.08);border-radius:6px;padding:7px;text-align:center"><div style="font-size:16px;font-weight:600;color:#888780">+2.23</div><div style="font-size:8px;color:#888">Total V2</div></div>
+    <div style="background:rgba(255,255,255,.08);border-radius:6px;padding:7px;text-align:center"><div style="font-size:16px;font-weight:600;color:#A32D2D">4.58</div><div style="font-size:8px;color:#888">CAL — T=2<br>unchanged</div></div>
+  </div>
+</div>
+
+<div class="sec">SONIC_STRUCTURE_ENGINE — 4-state tension/release cycle</div>
+<div class="sonic">
+  <div class="sc" style="border-top:2px solid #1F3864;background:#f9f9f9">
+    <div class="sc-t" style="color:#1F3864">🎵 SILENT_BUILD</div>
+    <div class="sc-d">Pre-signal. Nothing visible. Structural tension accumulating without audience. PRE_SIGNAL field_state FORMING. Crowd unaware.</div>
+    <div class="sc-trigger" style="background:#DEEAF1;color:#1F3864">→ SNIPER watch. Maximum patience. This is the widest edge window.</div>
+    <div class="sc-div">Distinct from FLOW_DYNAMICS NONE: structural capital not yet moving either.</div>
+  </div>
+  <div class="sc" style="border-top:2px solid #854F0B">
+    <div class="sc-t" style="color:#854F0B">📈 RISING_PRESSURE</div>
+    <div class="sc-d">Signal audible. Attention building. PRE_SIGNAL BUILDING → RELEASE_IMMINENT. Crowd starting to notice. FEMI/DEMI risk emerging.</div>
+    <div class="sc-trigger" style="background:#FFF2E2;color:#854F0B">→ Entry zone if capital flow confirming. SNIPER eligible. Watch for FEMI/DEMI attempting to front-run.</div>
+    <div class="sc-div">Divergence check: is capital RELEASE already happening while narrative still RISING_PRESSURE?</div>
+  </div>
+  <div class="sc" style="border-top:2px solid #27500A">
+    <div class="sc-t" style="color:#27500A">⚡ RELEASE</div>
+    <div class="sc-d">Breakout or collapse. Narrative resolves. Pent-up attention converts to action. PRE_SIGNAL → MID_TEMP → crowd synchronization rising fast.</div>
+    <div class="sc-trigger" style="background:#E2EFDA;color:#27500A">→ If entered in SILENT_BUILD or RISING_PRESSURE: manage exit, watch EXHAUSTED_INERTIA. If not entered: evaluate for remaining edge.</div>
+    <div class="sc-div">Rule: bigger silence → bigger release. SILENT_BUILD duration predicts RELEASE magnitude.</div>
+  </div>
+  <div class="sc" style="border-top:2px solid #888780">
+    <div class="sc-t" style="color:#888780">🔁 ECHO</div>
+    <div class="sc-d">Late/decay phase. Release has happened. Crowd still reacting to past release. narrative_maturity SATURATION/DECAY. EXHAUSTED_INERTIA.</div>
+    <div class="sc-trigger" style="background:#f3f4f6;color:#888780">→ Avoid new entry. Review open positions for exit. narrative_residue_flag risk. Loop detection active.</div>
+    <div class="sc-div">ECHO = crowd trading yesterday's release. The edge has passed.</div>
+  </div>
+</div>
+
+<div class="sec">The key divergence signal — sonic vs capital</div>
+<div class="div-signal">
+  <div style="font-size:11px;font-weight:600;color:#854F0B;margin-bottom:8px">Capital release timing ≠ Narrative release timing — the divergence IS the edge</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:10px">
+    <div style="border:1px solid #e5e7eb;border-radius:6px;padding:8px">
+      <div style="font-weight:600;color:#27500A;margin-bottom:3px">Aligned (no edge)</div>
+      <div style="color:#555;line-height:1.5">Capital RELEASE + Narrative RELEASE simultaneously. Crowd and smart money exiting together. Already priced. Edge near zero.</div>
+    </div>
+    <div style="border:1px solid #e5e7eb;border-radius:6px;padding:8px;border-color:#E2C97E">
+      <div style="font-weight:600;color:#854F0B;margin-bottom:3px">Capital RELEASE before Narrative ← EDGE</div>
+      <div style="color:#555;line-height:1.5">capital_flow_engine shows RELEASE while sonic_state = RISING_PRESSURE. Smart money exiting before crowd realises it's over. Follow capital, not narrative.</div>
+    </div>
+    <div style="border:1px solid #e5e7eb;border-radius:6px;padding:8px">
+      <div style="font-weight:600;color:#A32D2D;margin-bottom:3px">Narrative RELEASE before Capital ← TRAP</div>
+      <div style="color:#555;line-height:1.5">Crowd exits before structure confirms. FAKE_INERTIA or NARRATIVE_PROJECTED. Capital flow doesn't confirm the narrative release. Do not chase.</div>
+    </div>
+  </div>
+</div>
+
+<div class="sec">RASPUTIN_LAYER — 2 new perception components</div>
+<div class="rasp">
+  <div class="rp" style="border-top:2px solid #A32D2D">
+    <div class="rp-t" style="color:#A32D2D">INEVITABILITY_INDEX [0-10]</div>
+    <div class="rp-row"><span style="font-weight:600;width:140px;flex-shrink:0">What it measures</span><span>Has the crowd psychologically committed to an outcome BEFORE structural confirmation?</span></div>
+    <div class="rp-row"><span style="font-weight:600;width:140px;flex-shrink:0">Behavioural signal</span><span>Reduced counter-positioning. Options market compresses (result "obvious"). Self-fulfilling dynamics emerging.</span></div>
+    <div class="rp-row"><span style="font-weight:600;width:140px;flex-shrink:0">HIGH inevitability</span><span>Crowd has pre-committed. Even correct signals get ignored. Entry: dangerous if you're late. Fade: very valuable if structural read contradicts.</span></div>
+    <div class="rp-row"><span style="font-weight:600;width:140px;flex-shrink:0">Trigger condition</span><span>INEVITABILITY_INDEX HIGH + OBSERVABLE_STATE = NARRATIVE_PROJECTED → crowd committed to unconfirmed narrative → maximum distortion setup and maximum fade signal.</span></div>
+    <div class="rp-row"><span style="font-weight:600;width:140px;flex-shrink:0">Distinct from</span><span>narrative_maturity SATURATION (lifecycle) and IDENTITY_CONFIRMED (identity activation). Inevitability = pre-commitment intensity before confirmation.</span></div>
+  </div>
+  <div class="rp" style="border-top:2px solid #185FA5">
+    <div class="rp-t" style="color:#185FA5">DISTORTION_SCORE [0-10]</div>
+    <div class="rp-row"><span style="font-weight:600;width:140px;flex-shrink:0">What it measures</span><span>Gap between crowd subjective certainty and what the evidence actually supports for that certainty.</span></div>
+    <div class="rp-row"><span style="font-weight:600;width:140px;flex-shrink:0">Distinct from IRG</span><span>IRG_formula = structural gap (narrative_heat vs constraint_reality). DISTORTION_SCORE = epistemic gap (how certain are people vs how justified is that certainty?).</span></div>
+    <div class="rp-row"><span style="font-weight:600;width:140px;flex-shrink:0">HIGH distortion</span><span>Crowd believes more than they can verify. Narrative_projected claiming observable_confirmed status. Maximum fade opportunity when capital flow contradicts.</span></div>
+    <div class="rp-row"><span style="font-weight:600;width:140px;flex-shrink:0">LOW distortion</span><span>Crowd certainty = evidence quality. Signal is genuinely strong. Not a fade — a confirmation of true signal quality.</span></div>
+    <div class="rp-row"><span style="font-weight:600;width:140px;flex-shrink:0">Combined rule</span><span>INEVITABILITY HIGH + DISTORTION HIGH + capital_flow ABSENT = classic Rasputin trap. Crowd will be wrong. Position accordingly with SNIPER + strict invalidation.</span></div>
+  </div>
+</div>
+
+<div class="sec">V5.3 full 12-step pipeline</div>
+<div class="pipe">
+  <div class="ps"><div class="ps-n">Step 1</div><div class="ps-t">INGESTION</div><div class="ps-map">S1. UNVERIFIED. OBSERVABLE_STATE.</div></div>
+  <div class="ps"><div class="ps-n">Step 2</div><div class="ps-t">FISSION</div><div class="ps-map">NARRATIVE_FISSION_MAP. Branches A-N. clock_position per branch.</div></div>
+  <div class="ps" style="background:#f0f4ff;border-color:#185FA5"><div class="new-b">V5.3</div><div class="ps-n">Step 3</div><div class="ps-t">RASPUTIN</div><div class="ps-map">INEVITABILITY_INDEX + DISTORTION_SCORE. belief vs reality gap.</div></div>
+  <div class="ps"><div class="ps-n">Step 4</div><div class="ps-t">TIME + INERTIA</div><div class="ps-map">TIME_STACK. TEMPORAL_INERTIA TRUE/FAKE/EXHAUSTED/REVERSAL.</div></div>
+  <div class="ps" style="background:#f0f4ff;border-color:#185FA5"><div class="new-b">V5.3</div><div class="ps-n">Step 5</div><div class="ps-t">SONIC</div><div class="ps-map">SILENT_BUILD → RISING_PRESSURE → RELEASE → ECHO. capital vs narrative divergence.</div></div>
+  <div class="ps"><div class="ps-n">Step 6</div><div class="ps-t">FUSION</div><div class="ps-map">signal_distillation PREMIUM. wave_collapse. VRIN_gate.</div></div>
+  <div class="ps"><div class="ps-n">Step 7</div><div class="ps-t">QUANTUM PROB</div><div class="ps-map">MW_weight_vector. Scenario A/B/C distribution.</div></div>
+  <div class="ps"><div class="ps-n">Step 8</div><div class="ps-t">PARALLEL CLOCKS</div><div class="ps-map">COMPETITOR_SIMULATION. diffusion_lag. clock_position.</div></div>
+  <div class="ps"><div class="ps-n">Step 9</div><div class="ps-t">ENTANGLEMENT</div><div class="ps-map">NARRATIVE_ENTANGLEMENT. hidden source C. entanglement_strength.</div></div>
+  <div class="ps"><div class="ps-n">Step 10</div><div class="ps-t">OBSERVER FILTER</div><div class="ps-map">SIGNAL_VISIBILITY OBVIOUS → reduce. edge = 1/visibility.</div></div>
+  <div class="ps" style="background:#f9fff7"><div class="ps-n">Step 11</div><div class="ps-t">COLLAPSE</div><div class="ps-map">FIRE_MODE. LEICESTER_PRIME. ATOM_CORE output.</div></div>
+  <div class="ps"><div class="ps-n">Step 12</div><div class="ps-t">FEEDBACK</div><div class="ps-map">Moltbook. NARRATIVE_REWRITE_DETECTOR. MW update.</div></div>
+</div>
+
+<div class="sec">13 module scorecards — V5.3 state</div>
+<div class="grid" id="cards"></div>
+
+<div class="bottom">
+<strong style="color:#27500A">Score: 9.10 → 9.11. +0.01. S0 +0.01, S2 +0.03, S3A +0.02. 2 genuine additions. Total V2: +2.23.</strong><br><br>
+V5.3 adds two layers that the quantum spec left open. The 10-step pipeline and 7 principles were all already built — every concept from the previous session remains exact. What V5.3 contributes is the SONIC layer and the RASPUTIN perception layer.<br><br>
+<strong style="color:#185FA5">SONIC_STRUCTURE_ENGINE</strong> adds the narrative-attention tension-release cycle as a named 4-state dimension. The pipeline already had PRE_SIGNAL_TENSION_CHECK (structural capital tension) and FLOW_DYNAMICS pressure_release (capital flow tension). SONIC covers the attention/narrative dimension: SILENT_BUILD (tension without audience), RISING_PRESSURE (signal becoming audible), RELEASE (narrative resolves), ECHO (crowd reacting to past release). The most operationally important output is the divergence signal: when capital RELEASE precedes narrative RELEASE, smart money is exiting before the crowd realises the thesis has resolved. That divergence — capital_flow_engine showing RELEASE while sonic_state is still RISING_PRESSURE — is one of the clearest edge signals in the system. The rule is mechanical: bigger silence in SILENT_BUILD → bigger release magnitude.<br><br>
+<strong style="color:#A32D2D">RASPUTIN_LAYER</strong> adds two genuinely new perception measures. INEVITABILITY_INDEX captures pre-commitment intensity — when the crowd has psychologically committed to an outcome before structural confirmation, specific behavioural changes occur: counter-positioning disappears, options market compresses, self-fulfilling dynamics emerge. This is distinct from narrative_maturity SATURATION (lifecycle stage) and IDENTITY_CONFIRMED (identity activation). DISTORTION_SCORE measures the epistemic gap specifically: how certain are people vs how justified is that certainty? IRG_formula measures the structural gap (narrative_heat vs constraint_reality). DISTORTION_SCORE measures the belief gap. High INEVITABILITY + high DISTORTION + absent capital_flow = the classic Rasputin trap. The crowd will be wrong. The invalidation is capital flow in the opposite direction.
+</div>
+
+<script>
+const mods=[
+  {code:'S0',wt:12,v2:6.5,prev:8.75,cur:8.76,ceil:9.8,gap:'TOOLING',note:'+0.01 — SONIC_STATE feeds into regime context classification.'},
+  {code:'S1',wt:10,v2:7.0,prev:9.02,cur:9.02,ceil:9.8,gap:'CEILING',note:'No change.'},
+  {code:'S2',wt:10,v2:6.8,prev:9.36,cur:9.39,ceil:9.8,gap:'CEILING',note:'+0.03 — SONIC_STRUCTURE_ENGINE + RASPUTIN perception layer. S2 at 9.39.'},
+  {code:'S3A',wt:10,v2:6.5,prev:8.64,cur:8.66,ceil:9.2,gap:'STRUCTURAL',note:'+0.02 — RASPUTIN: INEVITABILITY_INDEX + DISTORTION_SCORE in actor/belief modeling.'},
+  {code:'S3B',wt:8,v2:7.2,prev:8.69,cur:8.69,ceil:9.8,gap:'TOOLING',note:'No change.'},
+  {code:'S35',wt:10,v2:6.8,prev:9.13,cur:9.13,ceil:9.8,gap:'CEILING',note:'No change.'},
+  {code:'S4',wt:10,v2:6.5,prev:9.17,cur:9.17,ceil:9.9,gap:'EMPIRICAL',note:'No change.'},
+  {code:'ATOM',wt:10,v2:6.0,prev:8.90,cur:8.90,ceil:9.8,gap:'DESIGN DEBT',note:'No change. Retire before next trade.'},
+  {code:'S5',wt:6,v2:6.5,prev:7.84,cur:7.84,ceil:9.5,gap:'EMPIRICAL',note:'No change.'},
+  {code:'S7',wt:8,v2:6.8,prev:8.84,cur:8.84,ceil:9.8,gap:'EMPIRICAL',note:'No change.'},
+  {code:'S8',wt:8,v2:6.5,prev:9.50,cur:9.50,ceil:9.9,gap:'CEILING',note:'No change.'},
+  {code:'S9',wt:7,v2:6.8,prev:8.00,cur:8.00,ceil:9.7,gap:'TOOLING',note:'No change.'},
+  {code:'CAL',wt:10,v2:3.0,prev:4.58,cur:4.58,ceil:10.0,gap:'DATA VOID',note:'62% of gap. T=2. ε=1.0. Unchanged.'},
+];
+const gapC={'TOOLING':'#185FA5','EMPIRICAL':'#3B6D11','STRUCTURAL':'#888780','CEILING':'#27500A','DESIGN DEBT':'#854F0B','DATA VOID':'#A32D2D'};
+const sc=v=>v>=9.2?'#27500A':v>=9.0?'#3B6D11':v>=8.85?'#0F6E56':v>=7.5?'#185FA5':v>=5.0?'#854F0B':'#A32D2D';
+const g=document.getElementById('cards');
+mods.forEach(m=>{
+  const d2=(m.cur-m.v2).toFixed(1);
+  const dp=(m.cur-m.prev).toFixed(2);
+  const pN=(m.cur/10*100).toFixed(0);const pC=(m.ceil/10*100).toFixed(0);
+  const col=sc(m.cur);const cc=sc(m.ceil);const gc=gapC[m.gap]||'#888780';
+  const moved=parseFloat(dp)>0;
+  const card=document.createElement('div');card.className='card';card.style.borderLeftColor=col;
+  if(moved)card.style.outline='2px solid #185FA5';
+  card.innerHTML=`<div class="ch">
+<div class="ct"><span class="ccode">${m.code}</span><span class="cwt">wt:${m.wt}%</span></div>
+<div class="crow"><div class="cs" style="color:${col}">${m.cur.toFixed(2)}</div>
+<div style="display:flex;flex-direction:column;gap:1px;padding-bottom:2px">
+<span style="font-size:9px;color:#888">v2:${m.v2}(+${d2})</span>
+<span style="font-size:10px;font-weight:700;color:${moved?'#185FA5':'#ccc'}">${moved?'+'+dp:'—'}</span>
+</div></div>
+<div class="cbar">
+<div class="cbl" style="width:${pC}%;background:${cc};opacity:.15"></div>
+<div class="cbl" style="width:${pN}%;background:${col};opacity:.7"></div></div>
+<div style="font-size:8px;font-weight:600;color:${gc};margin-bottom:2px">${m.gap}</div>
+<div class="cn">${m.note}</div></div>`;
+  g.appendChild(card);
+});
+</script>
+</body></html>

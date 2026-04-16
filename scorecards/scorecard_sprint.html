@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pipeline V5.7+ — Sprint / Burst Session</title>
+<style>
+:root{--bg:#080808;--bg2:#101010;--bg3:#161618;--bd:#1e1e20;--bd2:#262628;--tx:#e8e8e8;--tx2:#909090;--tx3:#484848;--ac:#ff6644;--gr:#22c55e;--rd:#ef4444;--or:#f97316;--yl:#eab308;--pu:#a855f7;--te:#14b8a6;--bl:#3b82f6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:28px 22px 64px;font-size:13px;line-height:1.5}
+
+/* HEADER */
+.hdr{margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--bd)}
+.hdr-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap}
+.hdr-title{font-size:.95rem;font-weight:700;letter-spacing:-.01em}
+.hdr-source{font-size:.67rem;color:var(--ac);margin-top:2px}
+.hdr-date{font-size:.62rem;color:var(--tx3);font-family:monospace}
+.hdr-sub{font-size:.65rem;color:var(--tx3);margin-top:6px;line-height:1.75}
+
+/* ATHLETE STACK */
+.ath-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:22px}
+@media(max-width:640px){.ath-grid{grid-template-columns:repeat(2,1fr)}}
+.ath{background:var(--bg2);border:1px solid var(--bd2);border-radius:7px;padding:11px 12px}
+.ath-icon{font-size:1.3rem;margin-bottom:5px}
+.ath-name{font-size:.62rem;font-weight:700;color:var(--ac);letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px}
+.ath-meta{font-size:.65rem;color:var(--tx);font-weight:600;margin-bottom:3px}
+.ath-map{font-size:.61rem;color:var(--tx3);line-height:1.5}
+.ath-mech{font-size:.58rem;color:var(--te);font-family:monospace;margin-top:4px}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(8,1fr);gap:7px;margin-bottom:20px}
+@media(max-width:700px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:9px 7px;text-align:center}
+.sv{font-size:1.45rem;font-weight:700;line-height:1;font-family:monospace}
+.sl{font-size:.55rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+/* SESSION */
+.sess{background:#100c08;border:1px solid #2a1a10;border-radius:7px;padding:12px 14px;margin-bottom:20px;font-size:.68rem;color:#b07050;line-height:1.9}
+.sess strong{color:#e09060}
+
+/* PBSC CLASSIFIER */
+.pbsc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+@media(max-width:640px){.pbsc-grid{grid-template-columns:repeat(2,1fr)}}
+.pbsc{background:var(--bg2);border:1px solid var(--bd2);border-radius:7px;padding:11px 13px}
+.pbsc-name{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;font-family:monospace}
+.pbsc-def{font-size:.64rem;color:var(--tx2);line-height:1.55;margin-bottom:5px}
+.pbsc-exec{font-size:.6rem;color:var(--te);font-family:monospace;line-height:1.4}
+.pbsc-elite{border-color:#1a3a18;background:#050e04}
+.pbsc-pre{border-color:#2a3018;background:#08100a}
+.pbsc-fast{border-color:#2a2018;background:#0a0a04}
+.pbsc-slow{border-color:#181818;background:#0c0c0c}
+
+/* NEW MECHS */
+.new-box{background:#0e0a08;border:1px solid #2a1810;border-radius:7px;padding:14px 16px;margin-bottom:20px}
+.new-t{font-size:.61rem;font-weight:700;color:var(--ac);letter-spacing:.09em;text-transform:uppercase;margin-bottom:12px}
+.mech{background:var(--bg3);border:1px solid var(--bd2);border-radius:5px;padding:11px 13px;margin-bottom:9px;border-left:3px solid var(--ac)}
+.mech:last-child{margin-bottom:0}
+.mech-n{font-size:.73rem;font-weight:700;color:var(--tx);margin-bottom:5px;font-family:monospace}
+.mech-d{font-size:.68rem;color:var(--tx2);line-height:1.65}
+.mech-retro{background:#0a0808;border:1px solid #201008;border-radius:4px;padding:8px 10px;margin-top:7px;font-size:.63rem;color:#905030;font-family:monospace;line-height:1.75}
+.mtag{display:inline-block;font-size:.57rem;font-weight:700;padding:2px 6px;border-radius:3px;margin-top:5px;margin-right:4px}
+.mt-or{background:#181008;color:#f97316}
+.mt-gr{background:#031a0c;color:#22c55e}
+.mt-pk{background:#1a0518;color:#ec4899}
+.mt-te{background:#021812;color:#14b8a6}
+.mt-pu{background:#120820;color:#a855f7}
+
+/* BRP TABLE */
+.brp-table{width:100%;border-collapse:collapse;font-size:.66rem;margin-bottom:14px}
+.brp-table th{background:var(--bg3);color:var(--tx3);padding:6px 10px;text-align:left;border:1px solid var(--bd);font-size:.58rem;letter-spacing:.05em;text-transform:uppercase}
+.brp-table td{padding:6px 10px;border:1px solid var(--bd);color:var(--tx2);vertical-align:top;line-height:1.4}
+.brp-table tr:nth-child(even) td{background:#0c0c0e}
+.bad{color:#ef4444;font-weight:700}
+.good{color:#22c55e;font-weight:700}
+.warn{color:#eab308;font-weight:700}
+
+/* MODULE GRID */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(193px,1fr));gap:8px;margin-bottom:20px}
+.mod{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;padding:12px 13px;position:relative}
+.mod::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:7px 0 0 7px}
+.mod.ceiling::before{background:var(--gr)}
+.mod.tooling::before{background:var(--bl)}
+.mod.structural::before{background:var(--or)}
+.mod.empirical::before{background:var(--pu)}
+.mod.debt::before{background:var(--rd)}
+.mod.improved{border-color:#2a1408}
+.mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.mname{font-size:.62rem;font-weight:700;color:var(--tx3);letter-spacing:.09em;text-transform:uppercase;font-family:monospace}
+.mtag2{font-size:.55rem;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase}
+.t-ceil{background:#031a0c;color:#22c55e}
+.t-tool{background:#04101c;color:#3b82f6}
+.t-stru{background:#200c00;color:#f97316}
+.t-emp{background:#120820;color:#a855f7}
+.t-debt{background:#200505;color:#ef4444}
+.srow{display:flex;align-items:baseline;gap:6px;margin-bottom:4px}
+.sval{font-size:2rem;font-weight:700;line-height:1;font-family:monospace}
+.sdelta{font-size:.67rem;font-weight:700;padding:2px 5px;border-radius:3px}
+.dp{background:#031a0c;color:#22c55e}
+.dz{background:#121214;color:#404040}
+.bar{height:2px;background:var(--bd2);border-radius:1px;margin-bottom:5px;overflow:hidden;position:relative}
+.bf{height:100%;border-radius:1px;position:absolute;left:0}
+.mnote{font-size:.62rem;color:var(--tx3);line-height:1.55}
+.mhint{font-size:.59rem;color:var(--ac);margin-top:3px;font-style:italic}
+
+/* CRIT */
+.crit{background:#0e0404;border:1px solid #7f1d1d;border-radius:7px;padding:12px 14px;margin-bottom:20px}
+.crit-t{font-size:.6rem;font-weight:700;color:var(--rd);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.ci{display:flex;gap:8px;margin-bottom:6px;font-size:.67rem;color:#fca5a5;line-height:1.55}
+.cd{width:5px;height:5px;border-radius:50%;background:var(--rd);margin-top:4px;flex-shrink:0}
+
+/* PROJ */
+.proj{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;padding:12px 14px;margin-bottom:20px}
+.proj-t{font-size:.6rem;font-weight:700;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.prow{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:.67rem}
+.pdate{color:var(--tx3);min-width:68px;font-family:monospace;font-size:.63rem}
+.pev{color:var(--tx2);flex:1}
+.pscore{color:var(--gr);font-weight:700;min-width:32px;text-align:right;font-family:monospace}
+.pbar{width:75px;height:2px;background:var(--bd2);border-radius:1px;overflow:hidden}
+.pbf{height:100%;background:var(--gr);border-radius:1px}
+
+footer{font-size:.57rem;color:var(--tx3);text-align:center;line-height:2.3;margin-top:8px;font-family:monospace}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-row">
+    <div>
+      <div class="hdr-title">PIPELINE V5.7+ — SCORECARD</div>
+      <div class="hdr-source">Sprint / Burst / Athlete Architecture Session · First 5–10m / Table Tennis / Drago</div>
+    </div>
+    <div class="hdr-date">Apr 16, 2026</div>
+  </div>
+  <div class="hdr-sub">+0.0015 · S0→9.55 · S5→8.51 · Gap 0.19 · 35 already built · 2 new mechanisms</div>
+</div>
+
+<!-- ATHLETE ARCHETYPES -->
+<div class="ath-grid">
+  <div class="ath">
+    <div class="ath-icon">🏃</div>
+    <div class="ath-name">Table Tennis</div>
+    <div class="ath-meta">Repeated micro-burst</div>
+    <div class="ath-map">Scan → burst → exit → reset. Short reactive windows. Many rallies beat one long race.</div>
+    <div class="ath-mech">COMPAS_PROTOCOL<br>BRP ← NEW</div>
+  </div>
+  <div class="ath">
+    <div class="ath-icon">⚡</div>
+    <div class="ath-name">Olympic Sprinter</div>
+    <div class="ath-meta">Selective explosion</div>
+    <div class="ath-map">Max force reserved for max-quality setups. Recovery IS performance. Precision beats aggression.</div>
+    <div class="ath-mech">FIRE_MODE ladder<br>GHOST_STANCE_EMERGENCE</div>
+  </div>
+  <div class="ath">
+    <div class="ath-icon">🏅</div>
+    <div class="ath-name">Marathoner</div>
+    <div class="ath-meta">Compounding bursts</div>
+    <div class="ath-map">Long-term wealth from repeated short wins. Monthly cadence × 5-day hold. Pacing discipline.</div>
+    <div class="ath-mech">W_T = W₀ × Π(1+r_i)<br>MW calibration</div>
+  </div>
+  <div class="ath">
+    <div class="ath-icon">🤖</div>
+    <div class="ath-name">Drago / Engineered</div>
+    <div class="ath-meta">Machine governance</div>
+    <div class="ath-map">Non-negotiable rules. No emotional override. D(x) = 1 if S(x) ≥ τ. Systems > instinct.</div>
+    <div class="ath-mech">COUNT_D_PROTOCOL<br>BEHAVIORAL_INTEGRITY_SCORER</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="sv" style="color:var(--ac)">9.57</div><div class="sl">Score</div></div>
+  <div class="stat"><div class="sv" style="color:var(--or)">0.19</div><div class="sl">Gap</div></div>
+  <div class="stat"><div class="sv">9.76</div><div class="sl">Ceiling</div></div>
+  <div class="stat"><div class="sv" style="color:var(--rd)">T=6</div><div class="sl">Trades</div></div>
+  <div class="stat"><div class="sv" style="color:var(--ac)">+2.69</div><div class="sl">Total V2</div></div>
+  <div class="stat"><div class="sv" style="color:var(--gr)">+2</div><div class="sl">New mechs</div></div>
+  <div class="stat"><div class="sv">35</div><div class="sl">Already built</div></div>
+  <div class="stat"><div class="sv" style="color:var(--yl)">97%</div><div class="sl">Overlap</div></div>
+</div>
+
+<!-- SESSION -->
+<div class="sess">
+  <strong>Session:</strong> Sprint/burst/athlete architecture — latent build → threshold activation → burst → recovery → reset.<br>
+  <strong>Density:</strong> 35/37 built (97%). Pipeline was built from the same design: selective burst, early repricing, leave as default, monthly cadence, threshold-only execution, machine governance.<br>
+  <strong>Movement:</strong> S0 +0.01 (PRE_BURST_SIGNAL_CLASSIFIER) · S5 +0.01 (BURST_RECOVERY_PROTOCOL)<br>
+  <strong>April 4 cluster through this lens:</strong> No PBSC existed to say "NO_SIGNAL at Day 80." No BRP existed to block entries 2–6 after entry 1 failed.
+</div>
+
+<!-- PBSC STATES -->
+<div style="font-size:.61rem;font-weight:700;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">PRE_BURST_SIGNAL_CLASSIFIER — Four Developmental States</div>
+<div class="pbsc-grid">
+  <div class="pbsc pbsc-elite">
+    <div class="pbsc-name" style="color:#22c55e">PRE_BURST_COIL</div>
+    <div class="pbsc-def">v_t ≈ 0, σ_compression &lt; 0, volume_divergence rising. The blocks. The compressed spring. BEFORE the stand-up-run. Highest-quality entry window.</div>
+    <div class="pbsc-exec">→ SHADOW_BOOK → prepare for STAND_UP_RUN<br>Elite entry = coil → transition</div>
+  </div>
+  <div class="pbsc pbsc-pre">
+    <div class="pbsc-name" style="color:#eab308">STAND_UP_RUN</div>
+    <div class="pbsc-def">a_t &gt; threshold, v_t was recently near zero. Threshold just released. The sprint has started. First 5–10m window. Check σ_compression — if already expanding, you may be late.</div>
+    <div class="pbsc-exec">→ SNIPER window (if σ_compression still ≤ 0)<br>Check NLR — is entry in lag window?</div>
+  </div>
+  <div class="pbsc pbsc-fast">
+    <div class="pbsc-name" style="color:#f97316">FAST_CRAWLER</div>
+    <div class="pbsc-def">v_t moderate-high, a_t moderate. Signal building. Pre-burst coil may be forming or race is mid-run. Not at threshold yet.</div>
+    <div class="pbsc-exec">→ WATCH_CLOSELY<br>Check TVG medium density<br>Prepare entry conditions</div>
+  </div>
+  <div class="pbsc pbsc-slow">
+    <div class="pbsc-name" style="color:#606060">SLOW_CRAWLER</div>
+    <div class="pbsc-def">v_t low, a_t low. Signal drifting. Or race long since run (CVX Day 80). Standard TEMPORAL_GRAMMAR processing applies. No urgency.</div>
+    <div class="pbsc-exec">→ PROBE or SHADOW_BOOK<br>No urgency. Monthly review cadence.</div>
+  </div>
+</div>
+
+<!-- NEW MECHS -->
+<div class="new-box">
+  <div class="new-t">2 New Mechanisms This Session</div>
+  
+  <div class="mech">
+    <div class="mech-n">PRE_BURST_SIGNAL_CLASSIFIER (PBSC)</div>
+    <div class="mech-d">Developmental velocity profile for signals: SLOW_CRAWLER (low v, low a), FAST_CRAWLER (moderate v/a), STAND_UP_RUN (sudden high a from near-zero v), PRE_BURST_COIL (v≈0, σ_compression&lt;0, volume_divergence rising). REACTION_CLASSIFIER (SN1/SN2/E2/ARO) classifies mechanism type. PBSC classifies the DEVELOPMENTAL STAGE. Both needed. The PRE_BURST_COIL class is the 5-10m sprint blocks — before the stand-up-run, while the spring is still compressed. This is the highest-quality entry window the pipeline couldn't formally name. Amateur entry = noticing STAND_UP_RUN has started. Elite entry = PRE_BURST_COIL → STAND_UP_RUN transition. PBSC integrates with SSSC: PRE_BURST_COIL + SUBSURFACE_CONTROL = maximum edge setup.</div>
+    <div class="mech-retro">
+      CVX/XOM Day 0-5: a_t=HIGH (sudden geopolitical shock acceleration) → STAND_UP_RUN
+      CVX/XOM Day 80:  v_t≈0, a_t≈0, σ=flat → NO_SIGNAL (race long since run)
+      Entry on Day 80: PBSC = NO_SIGNAL. Race ended at Day 7. Entry at Day 80 = chasing the finish tape.
+    </div>
+    <span class="mtag mt-or">S0 +0.01</span>
+    <span class="mtag mt-gr">Manual tagging from T=7 forward</span>
+    <span class="mtag mt-pk">NBA: is this bet before or after the move?</span>
+  </div>
+  
+  <div class="mech" style="border-left-color:var(--pu)">
+    <div class="mech-n">BURST_RECOVERY_PROTOCOL (BRP)</div>
+    <div class="mech-d">Session-level cooldown mechanics after each closed position. Monthly cadence prevents season-level overtrading. BRP prevents SESSION-LEVEL overtrading — the April 4 gap. BRP_minimum = base_recovery (7 days) + outcome_modifier + complexity_modifier. SYSTEM_WIN: +0. SYSTEM_LOSS: +7. CHAOS_LOSS: +14. CHAOS_WIN: +14 (LUCKY — do not reinforce). STOP_LOSS (−10%): +21. Novel thesis: +3. High-inertia thesis (τ&gt;60d): +3. Maximum: 21 days. Also enforces minimum signal count before re-entering same thesis. Olympic sprinters don't run twice in 5 minutes. Between table tennis rallies, the player resets.</div>
+    <div class="mech-retro">
+      April 4 CHAOS cluster through BRP:
+      Entry 1 (USO): logged. CHAOS_LOSS detected. BRP_minimum = 14 days.
+      Entry 2 (JPM): BRP_minimum not elapsed. → BLOCKED.
+      Entry 3 (MSFT): BLOCKED. Entry 4 (EWZ): BLOCKED.
+      Entry 5 (UNG): BLOCKED. Entry 6 (FCG): BLOCKED.
+      BRP would have stopped 5 of 6 April 4 CHAOS entries.
+    </div>
+    <span class="mtag mt-pu">S5 +0.01</span>
+    <span class="mtag mt-gr">Apply from next trade forward</span>
+    <span class="mtag mt-pk">NBA: min recovery between bet of same game type</span>
+  </div>
+</div>
+
+<!-- BRP LOOKUP TABLE -->
+<div style="font-size:.61rem;font-weight:700;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">BRP Recovery Lookup</div>
+<table class="brp-table">
+  <tr><th>Outcome Class</th><th>Base Recovery</th><th>Modifier</th><th>Min Wait</th><th>Rationale</th></tr>
+  <tr><td><span class="good">SYSTEM_WIN</span> (thesis confirmed)</td><td>7 days</td><td>+0</td><td>7 days</td><td>Clean exit. Reset fully.</td></tr>
+  <tr><td><span class="warn">SYSTEM_LOSS</span> (thesis failed)</td><td>7 days</td><td>+7</td><td>14 days</td><td>Understand the failure before re-entering.</td></tr>
+  <tr><td><span class="bad">CHAOS_LOSS</span> (CHAOS entry failed)</td><td>7 days</td><td>+14</td><td>21 days</td><td>Entered against signals. Understand the chaos.</td></tr>
+  <tr><td><span class="warn">CHAOS_WIN</span> (lucky CHAOS entry won)</td><td>7 days</td><td>+14</td><td>21 days</td><td>LUCKY PASS — do not reinforce the chaos.</td></tr>
+  <tr><td><span class="bad">STOP_LOSS</span> (−10% hit)</td><td>7 days</td><td>+21</td><td>28 days</td><td>Hard stop burns capital AND cognition. Full reset.</td></tr>
+  <tr><td>Novel thesis (first entry)</td><td>—</td><td>+3</td><td>base+3</td><td>Unfamiliar situation → more reflection.</td></tr>
+  <tr><td>High-inertia thesis (τ &gt; 60d)</td><td>—</td><td>+3</td><td>base+3</td><td>Flagged as SELF_MODEL P3 pattern.</td></tr>
+</table>
+
+<!-- MODULE GRID -->
+<div class="mgrid">
+
+  <div class="mod tooling improved">
+    <div class="mhdr"><span class="mname">S0</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--bl)">9.55</span><span class="sdelta dp">+0.01</span></div>
+    <div class="bar"><div class="bf" style="width:95.5%;background:var(--bl)"></div></div>
+    <div class="mnote">PRE_BURST_SIGNAL_CLASSIFIER ← this session. TVG + ETL + SOURCE_BUBBLE_SCORE. STILLNESS_SIGNAL_EXTRACTOR · NARRATIVE_PREMIUM_DECOMPOSER · VISOR_EFFECT_AUDIT.</div>
+    <div class="mhint">↑ PBSC: developmental velocity profile for signals</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S1</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.59</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:95.9%;background:var(--gr)"></div></div>
+    <div class="mnote">SANGAM_SIGNAL_STATE_CLASSIFIER + OAD + TSL + NLR. PBSC integrates here: PRE_BURST_COIL + SUBSURFACE_CONTROL = maximum edge configuration.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S2</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">At ceiling. TEMPORAL_GRAMMAR · NARRATIVE_HALF_LIFE · HAUNTOLOGICAL_PERSISTENCE. PBSC + SSSC feed here.</div>
+  </div>
+
+  <div class="mod structural">
+    <div class="mhdr"><span class="mname">S3A</span><span class="mtag2 t-stru">structural</span></div>
+    <div class="srow"><span class="sval" style="color:var(--or)">9.14</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:91.4%;background:var(--or)"></div></div>
+    <div class="mnote">Capital flow structural ceiling. GLS_t direction (SSSC SC dimension). S9 Phase 2.</div>
+  </div>
+
+  <div class="mod tooling">
+    <div class="mhdr"><span class="mname">S3B</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--bl)">8.96</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:89.6%;background:var(--bl)"></div></div>
+    <div class="mnote">INTEGRATION_COST_THRESHOLD active. Awaiting S9 May 13.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S35</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">At ceiling. GRADUATED_EXIT · OPERATOR_LOCK · COUNT_D · CVS · THREE_POISONS. PBSC state feeds FIRE_MODE here.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S4</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">At ceiling. FIRE_MODE · CHIGURH · LALO · GHOST_STANCE prerequisites. Olympic Selectivity Layer = FIRE_MODE design.</div>
+  </div>
+
+  <div class="mod debt">
+    <div class="mhdr"><span class="mname">ATOM</span><span class="mtag2 t-debt">⚠ DEBT</span></div>
+    <div class="srow"><span class="sval" style="color:var(--rd)">8.90</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:89%;background:var(--rd)"></div></div>
+    <div class="mnote">95→35 CORE. BLOCKING. BRP adds 3 new ATOM fields: PBSC_state_at_entry, BRP_minimum_at_exit, BRP_elapsed_days.</div>
+  </div>
+
+  <div class="mod empirical improved">
+    <div class="mhdr"><span class="mname">S5</span><span class="mtag2 t-emp">empirical</span></div>
+    <div class="srow"><span class="sval" style="color:var(--pu)">8.51</span><span class="sdelta dp">+0.01</span></div>
+    <div class="bar"><div class="bf" style="width:85.1%;background:var(--pu)"></div></div>
+    <div class="mnote">BURST_RECOVERY_PROTOCOL ← this session. BIS + THREE_POISONS_BIAS_ENGINE + REALM_CLASSIFIER. SELF_MODEL_CALIBRATION · GHOST_STANCE · SIA.</div>
+    <div class="mhint">↑ BRP: session-level cooldown prevents CHAOS clusters</div>
+  </div>
+
+  <div class="mod empirical">
+    <div class="mhdr"><span class="mname">S7</span><span class="mtag2 t-emp">empirical</span></div>
+    <div class="srow"><span class="sval" style="color:var(--pu)">9.65</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:96.5%;background:var(--pu)"></div></div>
+    <div class="mnote">LEGITIMACY_DECAY_TRACKER · SAECULAR_REGIME_LAYER · NARRATIVE_DOMINANCE_SCORE · HPS. Near ceiling.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S8</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.83</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98.3%;background:var(--gr)"></div></div>
+    <div class="mnote">TAIL_RISK_COUNTERFACTUAL · POSITION_ENTANGLEMENT_SCORE · DECOHERENCE_TIMESCALE · INTEGRATION_COST_THRESHOLD.</div>
+  </div>
+
+  <div class="mod tooling">
+    <div class="mhdr"><span class="mname">S9</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--bl)">8.37</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:83.7%;background:var(--bl)"></div></div>
+    <div class="mnote">Build May 13. PBSC requires price velocity tracking. BRP requires Moltbook outcome tracking. Both infrastructure requirements are simple — start manually.</div>
+  </div>
+
+  <div class="mod debt">
+    <div class="mhdr"><span class="mname">CAL</span><span class="mtag2 t-debt">data void</span></div>
+    <div class="srow"><span class="sval" style="color:var(--yl)">5.41</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:54.1%;background:var(--yl)"></div></div>
+    <div class="mnote">T=6 (4.2 clean FCS-adj). April 25→T=10. ε=1.0→0.56. Log PBSC state at entry for all future trades. First PBSC distribution data at T=35.</div>
+  </div>
+
+</div>
+
+<!-- CRITICAL PATH -->
+<div class="crit">
+  <div class="crit-t">⚠ Critical Path — Unchanged</div>
+  <div class="ci"><div class="cd"></div>ATOM retirement (95→35) — BLOCKING. BRP adds 3 fields to CORE_35: PBSC_state, BRP_minimum, BRP_elapsed.</div>
+  <div class="ci"><div class="cd"></div>T=6→10 by April 25. TLT+TIP=T=7,8. UNG/FCG=T=9,10. BRP applies from today: USO CHAOS_LOSS → 21-day BRP minimum active.</div>
+  <div class="ci"><div class="cd"></div>S9 build May 13. PBSC velocity tracking in Phase 1. BIS + BRP logging in Phase 1.</div>
+  <div class="ci" style="color:#fde68a"><div class="cd" style="background:var(--yl)"></div>IMMEDIATE: check BRP status. USO CHAOS_LOSS (Apr 4) → +21 days → BRP clears ~Apr 25. Coincides with T=10 target. Clean reset.</div>
+</div>
+
+<!-- PROJ -->
+<div class="proj">
+  <div class="proj-t">Score Projection</div>
+  <div class="prow"><span class="pdate">Apr 25</span><span class="pev">T=10 · ε→0.56 · BRP clears after April 4 cluster</span><span class="pscore">9.58</span><div class="pbar"><div class="pbf" style="width:5%"></div></div></div>
+  <div class="prow"><span class="pdate">May 31</span><span class="pev">S9 Phase 1 · ATOM retired · PBSC + BRP automated</span><span class="pscore">9.62</span><div class="pbar"><div class="pbf" style="width:26%"></div></div></div>
+  <div class="prow"><span class="pdate">Jun 30</span><span class="pev">Phase 2 · FinBERT + Polymarket + SSSC automated</span><span class="pscore">9.65</span><div class="pbar"><div class="pbf" style="width:47%"></div></div></div>
+  <div class="prow"><span class="pdate">Jul 31</span><span class="pev">IBKR paper · live MW · first PBSC class distribution</span><span class="pscore">9.70</span><div class="pbar"><div class="pbf" style="width:68%"></div></div></div>
+  <div class="prow"><span class="pdate">Aug 2026</span><span class="pev">Real capital · T≥35 · E_op>0.80 · BRP calibrated</span><span class="pscore">9.74</span><div class="pbar"><div class="pbf" style="width:89%"></div></div></div>
+  <div class="prow"><span class="pdate">Ceiling</span><span class="pev">9.76 — residual empirical reserve</span><span class="pscore">9.76</span><div class="pbar"><div class="pbf" style="width:100%"></div></div></div>
+</div>
+
+<footer>
+PIPELINE V5.7+ · Apr 16, 2026 · Score 9.57 · Gap 0.19 · T=6 · ε=1.0 · Ceiling 9.76<br>
+S0=9.55 · S1=9.59 · S2=9.80 · S3A=9.14 · S3B=8.96 · S35=9.80 · S4=9.80<br>
+ATOM=8.90 · S5=8.51 · S7=9.65 · S8=9.83 · S9=8.37 · CAL=5.41 · V2=+2.69<br>
+<br>
+"Edge lives in the first 5–10 meters. Pressure builds before price moves."
+</footer>
+
+</body>
+</html>

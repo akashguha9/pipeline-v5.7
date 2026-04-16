@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
+body{font-size:12px;padding:16px;background:#fff;color:#111}
+.hero{border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:12px;background:#f9fafb}
+.sec{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#888;margin:14px 0 7px;padding-bottom:4px;border-bottom:1px solid #e5e7eb}
+
+/* lens grid */
+.lenses{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:12px}
+.lens{border:1px solid #e5e7eb;border-radius:7px;padding:8px 9px}
+.lens-sym{font-size:14px;margin-bottom:2px}
+.lens-n{font-size:9px;font-weight:700;margin-bottom:2px;line-height:1.2}
+.lens-q{font-size:8px;color:#888;font-style:italic;margin-bottom:3px;line-height:1.3}
+.lens-map{font-size:8px;color:#185FA5;line-height:1.3;padding-top:3px;border-top:1px dashed #e5e7eb}
+.new-b{display:inline-block;font-size:8px;font-weight:700;background:#27500A;color:#fff;padding:1px 4px;border-radius:2px;margin-bottom:2px}
+
+/* state recall */
+.sr{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.sr-box{border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px}
+.sr-t{font-size:11px;font-weight:600;margin-bottom:5px}
+.sr-row{font-size:9px;padding:3px 0;border-bottom:1px solid #f3f4f6;line-height:1.5;display:flex;gap:8px}
+.sr-row:last-child{border:none}
+
+/* state simulation */
+.states{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:12px}
+.st{border:1px solid #e5e7eb;border-radius:6px;padding:7px 9px;text-align:center}
+.st-label{font-size:10px;font-weight:600;margin-bottom:3px}
+.st-q{font-size:8px;color:#555;line-height:1.3}
+
+/* decision engine */
+.decision{border:1px solid #e5e7eb;border-left:4px solid #1F3864;border-radius:8px;padding:10px 13px;margin-bottom:12px}
+
+/* scorecard */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.card{border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;border-left:4px solid #888}
+.ch{padding:8px 10px 6px}
+.ct{display:flex;justify-content:space-between;margin-bottom:3px}
+.ccode{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#888}
+.cwt{font-size:9px;color:#888;background:#f3f4f6;padding:1px 4px;border-radius:3px}
+.crow{display:flex;align-items:flex-end;gap:5px;margin-bottom:4px}
+.cs{font-size:24px;font-weight:500;line-height:1}
+.cbar{height:4px;background:#f3f4f6;border-radius:2px;position:relative;overflow:hidden;margin-bottom:4px}
+.cbl{height:100%;border-radius:2px;position:absolute;left:0;top:0}
+.cn{font-size:9px;color:#555;line-height:1.3}
+.bottom{border:1px solid #e5e7eb;border-left:3px solid #1F3864;border-radius:10px;padding:11px 14px;font-size:11px;color:#444;line-height:1.75}
+</style></head><body>
+
+<div class="hero">
+  <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px">
+    <div style="font-size:56px;font-weight:500;line-height:1;color:#27500A;flex-shrink:0">9.11</div>
+    <div style="flex:1;padding-top:4px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px">Pipeline V5.5 — Multi-Lens Decision Engine · April 2026</div>
+      <div style="font-size:11px;color:#555;line-height:1.75">
+        1 genuine addition · 19/20 concepts already built · Sub-threshold (+0.0022)<br>
+        S35 +0.01 · S8 +0.02 · Score: <strong>9.11</strong> (unchanged) · Total V2: <strong style="color:#27500A">+2.23</strong><br>
+        <strong style="color:#1F3864">STATE_RECALL_ENGINE: does your interpretation of the signal change depending on what emotional state you're in? State-sensitive = lower confidence.</strong>
+      </div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px">
+    <div style="border:1px solid #e5e7eb;border-radius:6px;padding:7px;text-align:center;background:#fff"><div style="font-size:16px;font-weight:600;color:#888780">19</div><div style="font-size:8px;color:#555">Already built</div></div>
+    <div style="border:1px solid #e5e7eb;border-radius:6px;padding:7px;text-align:center;background:#fff"><div style="font-size:16px;font-weight:600;color:#185FA5">1</div><div style="font-size:8px;color:#555">Genuine new<br>STATE_RECALL</div></div>
+    <div style="border:1px solid #e5e7eb;border-radius:6px;padding:7px;text-align:center;background:#fff"><div style="font-size:16px;font-weight:600;color:#888780">9.11</div><div style="font-size:8px;color:#555">Unchanged<br>sub-threshold</div></div>
+    <div style="border:1px solid #e5e7eb;border-radius:6px;padding:7px;text-align:center;background:#fff"><div style="font-size:16px;font-weight:600;color:#27500A">+2.23</div><div style="font-size:8px;color:#555">Total V2</div></div>
+  </div>
+</div>
+
+<div class="sec">10 lenses → exact pipeline field mapping</div>
+<div class="lenses">
+  <div class="lens"><div class="lens-sym">🔴</div><div class="lens-n">STRUCTURE</div><div class="lens-q">"What is happening?"</div><div class="lens-map">NARRATIVE_FISSION_MAP · path_interference_matrix · VRIN_gate</div></div>
+  <div class="lens"><div class="lens-sym">👁️</div><div class="lens-n">PERCEPTION</div><div class="lens-q">"What do people believe?"</div><div class="lens-map">RASPUTIN_LAYER · INEVITABILITY_INDEX · DISTORTION_SCORE · IRG_formula</div></div>
+  <div class="lens" style="border-color:#27500A;background:#f9fff7"><div class="new-b">NEW</div><div class="lens-sym">🧠</div><div class="lens-n">STATE RECALL</div><div class="lens-q">"Does interpretation change by state?"</div><div class="lens-map">STATE_RECALL_ENGINE · STABLE vs STATE_SENSITIVE · reduce confidence if sensitive</div></div>
+  <div class="lens"><div class="lens-sym">🦇</div><div class="lens-n">BEHAVIOR</div><div class="lens-q">"How are participants acting?"</div><div class="lens-map">emotional_charge_quadrant · crowd_synchronization · war_style_classifier</div></div>
+  <div class="lens"><div class="lens-sym">🧪</div><div class="lens-n">STABILITY</div><div class="lens-q">"Is the system overloaded?"</div><div class="lens-map">PAIRWISE_FAILURE_MAP · SYSTEM_FATIGUE · complexity_debt_monitor</div></div>
+  <div class="lens"><div class="lens-sym">⏳</div><div class="lens-n">TIME</div><div class="lens-q">"Where in the cycle?"</div><div class="lens-map">TIME_STACK_ALIGNMENT · TEMPORAL_INERTIA · narrative_maturity</div></div>
+  <div class="lens"><div class="lens-sym">🎧</div><div class="lens-n">RHYTHM</div><div class="lens-q">"What phase is the move in?"</div><div class="lens-map">SONIC_STRUCTURE: SILENT_BUILD / RISING_PRESSURE / RELEASE / ECHO</div></div>
+  <div class="lens"><div class="lens-sym">🟣</div><div class="lens-n">PROBABILITY</div><div class="lens-q">"What outcomes exist?"</div><div class="lens-map">MW_weight_vector · Kalshi/Poly anchor · Scenario A/B/C — no scenario >70%</div></div>
+  <div class="lens"><div class="lens-sym">🌍</div><div class="lens-n">SPATIAL</div><div class="lens-q">"Where is it priced?"</div><div class="lens-map">COMPETITOR_SIMULATION · diffusion_lag · SIGNAL_VISIBILITY HIDDEN/SEMI/OBVIOUS</div></div>
+  <div class="lens"><div class="lens-sym">🔗</div><div class="lens-n">RELATION</div><div class="lens-q">"What else is affected?"</div><div class="lens-map">NARRATIVE_ENTANGLEMENT · transmission_mapping · beneficiary_registry</div></div>
+</div>
+
+<div class="sec">STATE_RECALL_ENGINE — the genuine addition</div>
+<div class="sr">
+  <div class="sr-box" style="border-top:2px solid #1F3864">
+    <div class="sr-t" style="color:#1F3864">What STATE_RECALL tests</div>
+    <div class="sr-row"><span style="font-weight:600;width:130px;flex-shrink:0">Core question</span><span>Does my interpretation of this signal change depending on what emotional state I'm in?</span></div>
+    <div class="sr-row"><span style="font-weight:600;width:130px;flex-shrink:0">Simulation</span><span>Before any ENTER: run the read through Fear, Greed, Mania, and Calm states. Does the trade still make sense in all four?</span></div>
+    <div class="sr-row"><span style="font-weight:600;width:130px;flex-shrink:0">STABLE output</span><span>Interpretation consistent across all states. Proceed with normal confidence. Signal reads the same from any angle.</span></div>
+    <div class="sr-row"><span style="font-weight:600;width:130px;flex-shrink:0">STATE_SENSITIVE output</span><span>Interpretation changes depending on state. Reduce leave_score by 1-2. Require OBSERVABLE_CONFIRMED. The trade is emotionally dependent.</span></div>
+    <div class="sr-row"><span style="font-weight:600;width:130px;flex-shrink:0">Worst case</span><span>Only ONE state triggers entry (e.g. only Greed says yes). That is a state-dependent signal, not a structural one. Do not proceed.</span></div>
+  </div>
+  <div class="sr-box" style="border-top:2px solid #A32D2D">
+    <div class="sr-t" style="color:#A32D2D">What it is distinct from</div>
+    <div class="sr-row"><span style="font-weight:600;width:160px;flex-shrink:0">STRUCTURAL_OPERATOR_STATE</span><span>Your actual current financial pressure, identity alignment, dependency. Real conditions.</span></div>
+    <div class="sr-row"><span style="font-weight:600;width:160px;flex-shrink:0">operator_state_classifier</span><span>Your real-time arousal (BALANCED/HIGH_NOREPI). What you are now.</span></div>
+    <div class="sr-row"><span style="font-weight:600;width:160px;flex-shrink:0">ESE-4 hormonal proxies</span><span>Crowd's collective state. Oxytocin/cortisol proxy of the market, not the operator.</span></div>
+    <div class="sr-row"><span style="font-weight:600;width:160px;flex-shrink:0">ASTRO bias flags</span><span>Periodic known bias windows for the operator. Structural self-knowledge.</span></div>
+    <div class="sr-row"><span style="font-weight:600;width:160px;flex-shrink:0">STATE_RECALL ← NEW</span><span>Tests robustness of THIS SPECIFIC SIGNAL INTERPRETATION across the full emotional state space. Not what you are — what you would believe.</span></div>
+  </div>
+</div>
+
+<div class="sec">4-state simulation — before every ENTER decision</div>
+<div class="states">
+  <div class="st" style="border-top:2px solid #A32D2D">
+    <div class="st-label" style="color:#A32D2D">😨 FEAR state</div>
+    <div class="st-q">If I were in maximum fear right now — would I still take this trade?<br>If YES: signal is robust under stress.</div>
+  </div>
+  <div class="st" style="border-top:2px solid #854F0B">
+    <div class="st-label" style="color:#854F0B">💰 GREED state</div>
+    <div class="st-q">If I were chasing returns — would I still take this trade on the same logic?<br>If YES: entry reason is structural, not desire-driven.</div>
+  </div>
+  <div class="st" style="border-top:2px solid #185FA5">
+    <div class="st-label" style="color:#185FA5">🌀 MANIA state</div>
+    <div class="st-q">If I were overconfident and high-conviction — would I still enter with the same sizing?<br>If YES without upsizing: discipline intact.</div>
+  </div>
+  <div class="st" style="border-top:2px solid #27500A">
+    <div class="st-label" style="color:#27500A">😌 CALM state</div>
+    <div class="st-q">In a neutral, detached state — does the structural case for this trade still hold?<br>If NO: signal was emotionally amplified.</div>
+  </div>
+</div>
+
+<div class="sec">Decision engine — all conditions must hold (no change to gate logic)</div>
+<div class="decision">
+  <div style="font-size:11px;font-weight:600;color:#1F3864;margin-bottom:8px">7 conditions for ACT — all must hold simultaneously</div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:5px;font-size:9px">
+    <div style="border:1px solid #e5e7eb;border-radius:5px;padding:6px;background:#f9fff7"><span style="font-weight:600;color:#27500A">Structure coherent</span><br>VRIN_gate PASS</div>
+    <div style="border:1px solid #e5e7eb;border-radius:5px;padding:6px"><span style="font-weight:600;color:#185FA5">Stability ≠ unstable</span><br>ARCHITECTURE_PAUSE not triggered</div>
+    <div style="border:1px solid #e5e7eb;border-radius:5px;padding:6px"><span style="font-weight:600;color:#185FA5">Time ≠ late</span><br>TIME_STACK alignment HIGH</div>
+    <div style="border:1px solid #e5e7eb;border-radius:5px;padding:6px"><span style="font-weight:600;color:#185FA5">Rhythm ≠ exhaustion</span><br>SONIC_STATE ≠ ECHO</div>
+    <div style="border:1px solid #e5e7eb;border-radius:5px;padding:6px"><span style="font-weight:600;color:#185FA5">Perception not saturated</span><br>narrative_maturity ≠ SATURATION</div>
+    <div style="border:1px solid #e5e7eb;border-radius:5px;padding:6px;background:#f9fff7"><span style="font-weight:600;color:#27500A">State recall = stable</span><br>All 4 states → YES ← NEW</div>
+    <div style="border:1px solid #e5e7eb;border-radius:5px;padding:6px"><span style="font-weight:600;color:#185FA5">Probability asymmetry</span><br>temporal_arbitrage HIGH</div>
+    <div style="border:1px solid #e5e7eb;border-radius:5px;padding:6px;background:#FCE4D6"><span style="font-weight:600;color:#A32D2D">Capital flow confirms</span><br>LEICESTER_PRIME condition 4</div>
+  </div>
+</div>
+
+<div class="sec">13 module scorecards</div>
+<div class="grid" id="cards"></div>
+
+<div class="bottom">
+<strong>Score: 9.11. Unchanged (sub-threshold +0.0022). S35 +0.01, S8 +0.02. 1 genuine addition. 19 validations. Total V2: +2.23.</strong><br><br>
+The V5.5 multi-lens framework is the pipeline's evaluation structure named as 10 non-overlapping lenses. The architecture already implements every lens: STRUCTURE = NARRATIVE_FISSION_MAP + VRIN_gate. PERCEPTION = RASPUTIN_LAYER. BEHAVIOR = emotional_charge + crowd_synchronization. STABILITY = PAIRWISE_FAILURE_MAP + SYSTEM_FATIGUE. TIME = TIME_STACK_ALIGNMENT. RHYTHM = SONIC_STRUCTURE_ENGINE. PROBABILITY = MW_weight_vector. SPATIAL = COMPETITOR_SIMULATION + SIGNAL_VISIBILITY. RELATION = NARRATIVE_ENTANGLEMENT. 19 of 20 exact.<br><br>
+<strong style="color:#1F3864">STATE_RECALL_ENGINE</strong> adds the one genuine gap. Before every ENTER decision: simulate the read across four states — Fear, Greed, Mania, Calm. Does the trade still make sense in all four? If interpretation is consistent across all four states, the signal is STABLE — the trade is structural not emotional. If interpretation changes depending on state, the signal is STATE_SENSITIVE — the trade is at least partially emotionally dependent. Reduce leave_score by 1-2, require OBSERVABLE_CONFIRMED before proceeding. If only one state says yes, do not enter — the trade is fully state-dependent. This is an adversarial self-test on the interpretation itself. Distinct from STRUCTURAL_OPERATOR_STATE (actual current conditions), operator_state_classifier (real-time arousal), and ESE-4 hormonal proxies (crowd state). STATE_RECALL tests interpretation ROBUSTNESS, not current operator condition.
+</div>
+
+<script>
+const mods=[
+  {code:'S0',wt:12,v2:6.5,prev:8.76,cur:8.76,ceil:9.8,gap:'TOOLING',note:'No change.'},
+  {code:'S1',wt:10,v2:7.0,prev:9.02,cur:9.02,ceil:9.8,gap:'CEILING',note:'No change.'},
+  {code:'S2',wt:10,v2:6.8,prev:9.39,cur:9.39,ceil:9.8,gap:'CEILING',note:'No change.'},
+  {code:'S3A',wt:10,v2:6.5,prev:8.66,cur:8.66,ceil:9.2,gap:'STRUCTURAL',note:'No change.'},
+  {code:'S3B',wt:8,v2:7.2,prev:8.69,cur:8.69,ceil:9.8,gap:'TOOLING',note:'No change.'},
+  {code:'S35',wt:10,v2:6.8,prev:9.13,cur:9.14,ceil:9.8,gap:'CEILING',note:'+0.01 — STATE_RECALL adds interpretation robustness as a quality gate dimension.'},
+  {code:'S4',wt:10,v2:6.5,prev:9.17,cur:9.17,ceil:9.9,gap:'EMPIRICAL',note:'No change.'},
+  {code:'ATOM',wt:10,v2:6.0,prev:8.90,cur:8.90,ceil:9.8,gap:'DESIGN DEBT',note:'No change. Retire before next trade.'},
+  {code:'S5',wt:6,v2:6.5,prev:7.84,cur:7.84,ceil:9.5,gap:'EMPIRICAL',note:'No change.'},
+  {code:'S7',wt:8,v2:6.8,prev:8.84,cur:8.84,ceil:9.8,gap:'EMPIRICAL',note:'No change.'},
+  {code:'S8',wt:8,v2:6.5,prev:9.50,cur:9.52,ceil:9.9,gap:'CEILING',note:'+0.02 — STATE_RECALL adds pre-ENTER adversarial self-test to operator protocol.'},
+  {code:'S9',wt:7,v2:6.8,prev:8.00,cur:8.00,ceil:9.7,gap:'TOOLING',note:'No change.'},
+  {code:'CAL',wt:10,v2:3.0,prev:4.58,cur:4.58,ceil:10.0,gap:'DATA VOID',note:'62% of gap. T=2. ε=1.0. Unchanged.'},
+];
+const gapC={'TOOLING':'#185FA5','EMPIRICAL':'#3B6D11','STRUCTURAL':'#888780','CEILING':'#27500A','DESIGN DEBT':'#854F0B','DATA VOID':'#A32D2D'};
+const sc=v=>v>=9.2?'#27500A':v>=9.0?'#3B6D11':v>=8.85?'#0F6E56':v>=7.5?'#185FA5':v>=5.0?'#854F0B':'#A32D2D';
+const g=document.getElementById('cards');
+mods.forEach(m=>{
+  const d2=(m.cur-m.v2).toFixed(1);
+  const dp=(m.cur-m.prev).toFixed(2);
+  const pN=(m.cur/10*100).toFixed(0);const pC=(m.ceil/10*100).toFixed(0);
+  const col=sc(m.cur);const cc=sc(m.ceil);const gc=gapC[m.gap]||'#888780';
+  const moved=parseFloat(dp)>0;
+  const card=document.createElement('div');card.className='card';card.style.borderLeftColor=col;
+  if(moved)card.style.outline='2px solid #185FA5';
+  card.innerHTML=`<div class="ch">
+<div class="ct"><span class="ccode">${m.code}</span><span class="cwt">wt:${m.wt}%</span></div>
+<div class="crow"><div class="cs" style="color:${col}">${m.cur.toFixed(2)}</div>
+<div style="display:flex;flex-direction:column;gap:1px;padding-bottom:2px">
+<span style="font-size:9px;color:#888">v2:${m.v2}(+${d2})</span>
+<span style="font-size:10px;font-weight:700;color:${moved?'#185FA5':'#ccc'}">${moved?'+'+dp:'—'}</span>
+</div></div>
+<div class="cbar">
+<div class="cbl" style="width:${pC}%;background:${cc};opacity:.15"></div>
+<div class="cbl" style="width:${pN}%;background:${col};opacity:.7"></div></div>
+<div style="font-size:8px;font-weight:600;color:${gc};margin-bottom:2px">${m.gap}</div>
+<div class="cn">${m.note}</div></div>`;
+  g.appendChild(card);
+});
+</script>
+</body></html>

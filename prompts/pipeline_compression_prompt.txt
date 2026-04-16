@@ -1,0 +1,217 @@
+═══════════════════════════════════════════════════════════════
+PIPELINE COMPRESSION PROMPT — FOR CHATGPT
+Upload this prompt + your notepad file together.
+The output gets pasted directly into Claude.
+═══════════════════════════════════════════════════════════════
+
+WHAT YOU ARE DOING:
+Read every word of the attached file.
+Your ONLY job is to compress it into a dense, structured format
+that preserves maximum signal in minimum tokens.
+This output will be pasted into a separate Claude session
+for pipeline integration. Token budget is tight.
+Every wasted word blocks a useful one.
+
+DO NOT:
+- Summarise generically
+- Write introductions or preambles
+- Use filler phrases ("it is worth noting that...")
+- Repeat the same idea twice
+- Write full sentences when a structured list is cleaner
+- Add commentary, opinions, or meta-text
+- Include anything that is just process description
+  (e.g. "the author argues..." or "this section discusses...")
+
+DO:
+- Extract the raw insight, mechanism, or data point directly
+- Use tight structured format throughout
+- If something has a number/formula/threshold — keep the exact number
+- If something describes a failure mode — name it precisely
+- If something has a named concept — keep the exact name
+- Preserve causal chains: A → B → C (not "A leads to B which causes C")
+- Mark uncertainty: ~ for approximate, ? for unclear, * for disputed
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OUTPUT FORMAT — FOLLOW EXACTLY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Produce this exact structure. Use the headers as written.
+Keep each section as short as possible while being complete.
+
+---
+
+# COMPRESSED PIPELINE FEED
+# Source: [file name or topic]
+# Date compressed: [today's date]
+# Original size: ~[X] words → Compressed: ~[Y] words
+# Compression ratio: [Z]x
+
+---
+
+## A. CORE CONCEPTS
+One line per concept. Format: [Concept name]: [mechanism in ≤15 words]
+Only include if it has pipeline relevance (signal detection, regime analysis,
+narrative tracking, decision-making, execution, risk, or behaviour under pressure).
+Skip anything purely academic with no operational use.
+
+---
+
+## B. MECHANISMS & CAUSAL CHAINS
+Format: [Trigger] → [Process] → [Outcome]
+Include numbers/thresholds where given.
+Max 20 entries. Only the ones with direct investment/decision relevance.
+
+---
+
+## C. NAMED MODELS / FRAMEWORKS
+Format:
+[Model name] | [Source/author] | [Core equation or rule] | [Operational use]
+
+---
+
+## D. FAILURE MODES & COGNITIVE TRAPS
+Format: [TRAP NAME IN CAPS]: [what it is] | [when it fires] | [how to prevent it]
+These are gold for the Moltbook error taxonomy. Extract all of them.
+
+---
+
+## E. EMPIRICAL DATA POINTS
+Format: [Variable]: [value or range] | [source/context] | [confidence: HIGH/MED/LOW]
+ONLY include actual numbers, rates, percentages, timelines.
+No estimated or vague quantifiers ("often", "usually", "tends to").
+
+---
+
+## F. SIGNAL CANDIDATES
+Any real-world events, trends, or market situations described in the file
+that could be active signals right now (April 2026).
+Format:
+[Signal]: [mechanism] | [asset affected] | [stage: early/mid/late] | [urgency: HIGH/MED/LOW]
+
+---
+
+## G. QUOTES WORTH KEEPING
+Max 5. Only if the exact phrasing is irreplaceable.
+Format: "[exact quote]" — [who said it / source]
+
+---
+
+## H. UNKNOWN UNKNOWNS
+Anything in the file that does NOT fit neatly into the pipeline's
+existing framework but might matter. Flag it as a question.
+Format: ? [what this might mean for the pipeline]
+
+---
+
+## I. WHAT TO IGNORE
+List the sections/topics from the file that you deliberately excluded
+and why. Format: [topic]: [reason skipped — already known / irrelevant / no operational value]
+This tells Claude what was cut and confirms nothing was missed by accident.
+
+---
+
+## J. RAW NOTEPAD ENTRIES (if file contains notes/fragments)
+If the file contains raw personal notes, bullet points, or fragments
+rather than structured content — compress them here exactly as written
+but remove any duplicate lines, blank lines, and stray characters.
+Keep the original wording. Do not paraphrase personal notes.
+Group by apparent theme if possible.
+
+---
+
+## K. ONE-LINE SUMMARY
+Single sentence: what is this file about and what is the single most
+important thing it contains for the pipeline?
+
+---
+
+## TOKEN ESTIMATE
+Approximate token count of this compressed output: [N] tokens
+(Target: under 3,000 tokens for standard Claude paste.
+Under 6,000 tokens for complex multi-topic files.
+If over 6,000, flag which sections to split across two pastes.)
+
+═══════════════════════════════════════════════════════════════
+COMPRESSION RULES
+═══════════════════════════════════════════════════════════════
+
+LANGUAGE:
+- Write in telegraphic style. Drop articles (a, the) where meaning is clear.
+- Use → for causal chains. Use | for separating fields. Use : for definitions.
+- Use ≥ ≤ ~ ≈ instead of "greater than", "approximately", etc.
+- Abbreviations are fine if unambiguous in context.
+
+WHAT ALWAYS GETS KEPT (never cut these):
+- Any specific number, percentage, threshold, or timeframe
+- Any named cognitive bias or failure mode
+- Any named model with an equation or structured rule
+- Any empirical finding with a cited source
+- Any causal mechanism that goes A → B → C
+- Any direct quote that is irreplaceable in its original form
+
+WHAT ALWAYS GETS CUT (never keep these):
+- Motivational or inspirational framing with no operational content
+- Historical background that leads nowhere actionable
+- Definitions of terms that any informed reader already knows
+- Repetition of the same point in different words
+- Academic hedging language ("it could be argued", "some suggest")
+- Course logistics, platform instructions, grading information
+- Anything describing what the next section will cover
+
+SPECIAL CASES:
+- If the file is personal notes/journal: preserve raw phrasing, do not interpret
+- If the file is a course transcript: extract only insight + mechanism, cut pedagogy
+- If the file is a research paper: keep findings + numbers, cut literature review
+- If the file is a book summary: keep frameworks + key examples, cut narrative
+- If the file is news/analysis: keep event + mechanism + affected assets, cut opinion
+
+═══════════════════════════════════════════════════════════════
+PIPELINE REFERENCE (for relevance filtering)
+═══════════════════════════════════════════════════════════════
+
+Keep content that is relevant to ANY of these:
+
+SIGNAL DETECTION: geopolitical events, macro shifts, narrative formation,
+prediction market movements, institutional flows, sentiment changes,
+earnings surprises, policy announcements, regulatory changes
+
+REGIME ANALYSIS: market regime classification, rate environments,
+risk-on/risk-off transitions, crypto regime, liquidity conditions,
+geopolitical stability scores
+
+DECISION QUALITY: cognitive biases, decision under uncertainty,
+game theory, negotiation, incentive structures, information asymmetry,
+Bayesian updating, commitment and credibility
+
+EXECUTION: entry/exit timing, position sizing, stop-loss logic,
+portfolio construction, concentration risk, correlation
+
+BEHAVIOURAL CALIBRATION: operator state, emotional regulation,
+overconfidence, tilt, revenge trading, attachment to thesis,
+process vs outcome separation
+
+NARRATIVE TRACKING: media cycles, cultural narratives, viral spread,
+social contagion, backlash dynamics, narrative saturation
+
+EMPIRICAL DECAY: how long signals last, narrative half-lives,
+momentum persistence, mean reversion timescales
+
+Skip content about: general productivity, unrelated industries,
+personal development without decision relevance, coding/technical
+topics not related to the above domains, sports/arts unless
+directly mapped to an operational concept already.
+
+═══════════════════════════════════════════════════════════════
+START NOW
+═══════════════════════════════════════════════════════════════
+
+Read the attached file completely.
+Then produce the compressed output following the format above.
+Start directly with the header line:
+
+# COMPRESSED PIPELINE FEED
+
+No preamble. No "I have read the file and will now...".
+Just the output.
+
+═══════════════════════════════════════════════════════════════

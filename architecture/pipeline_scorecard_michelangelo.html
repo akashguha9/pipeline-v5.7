@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pipeline V5.7+ — Michelangelo Subtraction Session</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fafafa;color:#1a1a1a;padding:24px;font-size:13px}
+.hrow{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+.sold{font-size:13px;color:#aaa;text-decoration:line-through}
+.snew{font-size:52px;font-weight:600;line-height:1;color:#1a1a1a}
+.ssub{font-size:12px;color:#777;margin-top:4px}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.pill{font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #ddd;color:#555}
+.pg{background:#f0faf0;color:#1a7a1a;border-color:#4caf50}
+.pr{background:#fff5f5;color:#c62828;border-color:#ef5350}
+.pa{background:#fffbf0;color:#e65100;border-color:#ff9800}
+.pb{background:#f0f6ff;color:#1565c0;border-color:#1976d2}
+.sec{font-size:10px;font-weight:700;color:#888;letter-spacing:.06em;text-transform:uppercase;margin:20px 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:20px}
+.card{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:13px 15px;position:relative}
+.card.improved{border:2px solid #1976d2;background:#f5f9ff}
+.utag{position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;background:#e3f2fd;color:#1565c0}
+.ch{display:flex;justify-content:space-between;margin-bottom:8px}
+.mod{font-size:10px;font-weight:700;color:#888;letter-spacing:.05em;text-transform:uppercase}
+.badge{font-size:9px;padding:2px 7px;border-radius:4px;font-weight:600}
+.snum{font-size:28px;font-weight:700;color:#1a1a1a;line-height:1;margin-bottom:3px}
+.dt{font-size:11px;margin-bottom:5px}
+.bar{height:3px;background:#eee;border-radius:2px;margin-bottom:5px;position:relative;overflow:hidden}
+.bf{height:100%;border-radius:2px;position:absolute;left:0;top:0}
+.note{font-size:10px;color:#777;line-height:1.4}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+@media(max-width:540px){.twocol{grid-template-columns:1fr}}
+.box{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:14px 16px}
+.bt{font-size:10px;font-weight:700;color:#888;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+.plist{list-style:none}
+.plist li{font-size:11px;color:#1a1a1a;padding:5px 0;border-bottom:1px solid #f5f5f5;display:flex;gap:8px;line-height:1.4}
+.plist li:last-child{border-bottom:none}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.dr{background:#ef5350}.da{background:#ff9800}.dg{background:#4caf50}.db{background:#1976d2}
+.hbar{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.hl{font-size:10px;color:#666;min-width:100px}
+.hbg{flex:1;height:5px;background:#eee;border-radius:3px;overflow:hidden}
+.hf{height:100%;border-radius:3px}
+.hv{font-size:10px;color:#1a1a1a;min-width:40px;text-align:right}
+.tag{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:600;display:inline-block;margin-top:3px}
+.tag-b{background:#e3f2fd;color:#1565c0}
+.tag-a{background:#fff8e1;color:#e65100}
+.quote{border-left:3px solid #1976d2;padding:10px 16px;background:#f5f9ff;border-radius:0 8px 8px 0;margin-bottom:20px;font-size:12px;color:#333;line-height:1.7}
+.formula-box{background:#f8f8f8;border:1px solid #e0e0e0;border-radius:8px;padding:14px 16px;margin-bottom:20px;font-size:12px}
+.formula-box code{font-family:monospace;color:#1565c0}
+.formula-title{font-size:10px;font-weight:700;color:#888;letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<div class="hrow">
+  <div>
+    <div class="sold">9.57 (prior session)</div>
+    <div class="snew">9.57</div>
+    <div class="ssub">V5.7+ · April 15, 2026 · +0.0010 · Only S0 improved (+0.01)</div>
+    <div class="pills">
+      <span class="pill pb">S0 +0.01 → 9.50</span>
+      <span class="pill pa">Gap 0.19</span>
+      <span class="pill pr">T=6 unchanged</span>
+      <span class="pill">26 already built</span>
+      <span class="pill pb">2 new mechanisms</span>
+      <span class="pill pr">ATOM debt RED</span>
+    </div>
+  </div>
+</div>
+
+<div class="quote">
+  "David was always in the marble. Michelangelo removed everything that was not David."<br><br>
+  The pipeline has been in continuous <strong>addition</strong> mode. These two mechanisms are the first formal <strong>subtraction</strong> tools.
+</div>
+
+<div class="sec">Module scores — S0 is the only block that improved (blue border)</div>
+<div class="grid" id="mg"></div>
+
+<div class="twocol">
+  <div class="box">
+    <div class="bt">2 new mechanisms — subtraction tools</div>
+    <ul class="plist">
+      <li><span class="dot db"></span>
+        <div>
+          <strong>MICHELANGELO_SUBTRACTION_AUDIT</strong><br>
+          <span style="font-size:10px;color:#666">Scheduled after T=10 and T=35. For each mechanism: has it contributed to SYSTEM_WIN or prevented SYSTEM_LOSS? If empirical answer is NO → retire. For ceiling modules (S2, S35, S4, S8): any mechanism adding cognitive overhead without score movement → retire. ATOM 95→35 is the pilot run. The pipeline has HARD_STOP for positions. No equivalent for mechanisms until now.</span><br>
+          <span class="tag tag-a">→ Architecture governance (cross-module)</span>
+        </div>
+      </li>
+      <li><span class="dot db"></span>
+        <div>
+          <strong>DISTORTION_SCORE_PER_THESIS: D_t = w_E·E_t + w_N·N_t + w_I·I_t + w_L·L_t</strong><br>
+          <span style="font-size:10px;color:#666">All four distortion dimensions measured simultaneously at entry (not sequentially at different COMPAS beats). COMPOSITE_EDGE_adjusted = COMPOSITE_EDGE × (1 − D_t). D_t > 0.4 → PROBE only. D_t > 0.7 → SHADOW_BOOK only. CVX retrospective: D_t ≈ 0.32 → Effective_Edge = 0.65×0.68 = 0.44 (below 0.55 threshold → should have been PROBE).</span><br>
+          <span class="tag tag-b">→ S0 signal intake (+0.01)</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="box">
+    <div class="bt">Why 26 already built</div>
+    <ul class="plist">
+      <li><span class="dot dg"></span>This spec is largely the prior session's Explorer/Operator content (OPERATOR_LOCK_PROTOCOL + PHASE_AWARE_INPUT_GATING) restated with the Michelangelo/David metaphor added on top</li>
+      <li><span class="dot dg"></span>D_t = E+N+I+L already existed as LEAKAGE_REGISTER. The new thing: combining all four at entry simultaneously as a single pre-trade quality gate</li>
+      <li><span class="dot dg"></span>Realized Output = Potential × (1−L) already existed as Real_Edge formula. What's new: the MICHELANGELO_SUBTRACTION_AUDIT gives the pipeline a mechanism to retire its own mechanisms</li>
+      <li><span class="dot da"></span>ATOM retirement (95→35) is not just tech debt — it IS the first run of the subtraction audit. The pipeline can subtract as well as add.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="formula-box">
+  <div class="formula-title">DISTORTION_SCORE_PER_THESIS — CVX retrospective</div>
+  <code>
+    E_t (emotional noise):    operator arousal during war-energy thesis ≈ 0.30<br>
+    N_t (input noise):        Layer 2 RSS source, adequate ≈ 0.20<br>
+    I_t (identity instability): possible validation component ≈ 0.30<br>
+    L_t (execution leakage):  L_info very HIGH (90-day narrative) ≈ 0.60<br><br>
+    D_t = 0.35×0.30 + 0.25×0.20 + 0.25×0.30 + 0.15×0.60 ≈ 0.32<br>
+    Effective_Edge = 0.65 × (1 − 0.32) = 0.65 × 0.68 ≈ 0.44<br><br>
+    0.44 < 0.55 entry threshold → PROBE only (0.5 × QUARTER_UNIT)<br>
+    Actual outcome: −8.82% on QUARTER_UNIT
+  </code>
+</div>
+
+<div class="sec">Gap decomposition</div>
+<div class="box" style="margin-bottom:20px">
+  <div id="gd"></div>
+  <div style="font-size:10px;color:#888;margin-top:10px;padding-top:8px;border-top:1px solid #f0f0f0;line-height:1.5">
+    S0 has moved from 9.40 → 9.50 across this session archive. It is the module that has received the most precision additions: LEAKAGE_REGISTER, STILLNESS_SIGNAL_EXTRACTOR, NARRATIVE_PREMIUM_DECOMPOSER, SIGNAL_RESOLUTION_PYRAMID, PHASE_AWARE_INPUT_GATING, MISCALIBRATION_GAP_TRACKER, and now DISTORTION_SCORE_PER_THESIS.
+  </div>
+</div>
+
+<script>
+const gs={
+  ceiling:{bg:"#f0faf0",c:"#1b5e20"},
+  tooling:{bg:"#e8f4fd",c:"#1565c0"},
+  structural:{bg:"#fffbf0",c:"#e65100"},
+  empirical:{bg:"#f3f0ff",c:"#4527a0"},
+  debt:{bg:"#fff5f5",c:"#c62828"},
+  "data void":{bg:"#fff5f5",c:"#c62828"}
+};
+const mods=[
+  {c:"S0",  s:9.50,prev:9.49,ceil:9.8,gap:"tooling",   col:"#1976d2",note:"DISTORTION_SCORE_PER_THESIS ← THIS SESSION. D_t = w_E·E_t + w_N·N_t + w_I·I_t + w_L·L_t measured simultaneously at entry. + phase-aware gating + loop closure + signal resolution pyramid + miscalibration gap tracker."},
+  {c:"S1",  s:9.55,prev:9.55,ceil:9.8,gap:"ceiling",   col:"#4caf50",note:"Near ceiling. OARR + spectral signal + ODA architecture. No change."},
+  {c:"S2",  s:9.80,prev:9.80,ceil:9.8,gap:"ceiling",   col:"#4caf50",note:"At ceiling."},
+  {c:"S3A", s:9.14,prev:9.14,ceil:9.2,gap:"structural",col:"#ff9800",note:"No change."},
+  {c:"S3B", s:8.95,prev:8.95,ceil:9.8,gap:"tooling",   col:"#1976d2",note:"Awaiting S9 — May 13."},
+  {c:"S35", s:9.80,prev:9.80,ceil:9.8,gap:"ceiling",   col:"#4caf50",note:"At ceiling. MICHELANGELO_SUBTRACTION_AUDIT is governance, not a scored mechanism."},
+  {c:"S4",  s:9.80,prev:9.80,ceil:9.9,gap:"ceiling",   col:"#4caf50",note:"At ceiling."},
+  {c:"ATOM",s:8.90,prev:8.90,ceil:9.8,gap:"debt",      col:"#ef5350",note:"⚠ CRITICAL. ATOM retirement IS the pilot run of MICHELANGELO_SUBTRACTION_AUDIT. Do before next trade."},
+  {c:"S5",  s:8.46,prev:8.46,ceil:9.5,gap:"empirical", col:"#7e57c2",note:"Sovereign identity anchor + creation-over-retaliation gate + internal signal audit. No change this session."},
+  {c:"S7",  s:9.65,prev:9.65,ceil:9.8,gap:"empirical", col:"#7e57c2",note:"No change."},
+  {c:"S8",  s:9.80,prev:9.80,ceil:9.9,gap:"ceiling",   col:"#4caf50",note:"At ceiling."},
+  {c:"S9",  s:8.37,prev:8.37,ceil:9.7,gap:"tooling",   col:"#1976d2",note:"Build May 13."},
+  {c:"CAL", s:5.37,prev:5.37,ceil:10.0,gap:"data void",col:"#ef5350",note:"T=6. April 25 deadline. Unchanged."},
+];
+const mg=document.getElementById("mg");
+mods.forEach(m=>{
+  const pct=(m.s/10*100).toFixed(1),cp=(m.ceil/10*100).toFixed(1);
+  const g=gs[m.gap]||gs.tooling;
+  const imp=Math.abs(m.s-m.prev)>0.005;
+  const d=document.createElement("div");
+  d.className="card"+(imp?" improved":"");
+  d.innerHTML=(imp?`<div class="utag">+${(m.s-m.prev).toFixed(2)} ↑</div>`:"")+
+    `<div class="ch"><div class="mod">${m.c}</div><div class="badge" style="background:${g.bg};color:${g.c}">${m.gap}</div></div>`+
+    `<div class="snum">${m.s.toFixed(2)}</div>`+
+    `<div class="dt" style="color:${imp?"#1565c0":"#ccc"}">${imp?`+${(m.s-m.prev).toFixed(2)} this session`:"—"}</div>`+
+    `<div class="bar"><div class="bf" style="width:${cp}%;background:${m.col}22"></div></div>`+
+    `<div class="bar"><div class="bf" style="width:${pct}%;background:${m.col}"></div></div>`+
+    `<div class="note">${m.note}</div>`;
+  mg.appendChild(d);
+});
+const gaps=[
+  {l:"Architecture (S0–S8)", pct:97,col:"#4caf50",v:"~9.57"},
+  {l:"Calibration (CAL)",    pct:54,col:"#ef5350",v:"5.37"},
+  {l:"Execution δ",          pct:50,col:"#ff9800",v:"0.50"},
+  {l:"Ecosystem E_op",       pct:30,col:"#1976d2",v:"≈0.30"},
+  {l:"T-count",              pct:17,col:"#4caf50",v:"T=6"},
+  {l:"ATOM debt",            pct:5, col:"#ef5350",v:"RED"},
+];
+const gd=document.getElementById("gd");
+gaps.forEach(g=>{gd.innerHTML+=`<div class="hbar"><div class="hl">${g.l}</div><div class="hbg"><div class="hf" style="width:${g.pct}%;background:${g.col}"></div></div><div class="hv">${g.v}</div></div>`});
+</script>
+</body>
+</html>

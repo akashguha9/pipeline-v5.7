@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MVP Pipeline Architecture — Complete Operational System · Score 9.44</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  --bg:#080b10; --bg2:#0e1318; --bg3:#141a22; --bg4:#1a2230;
+  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.13);
+  --text:#dde4ee; --text2:#8494a8; --text3:#4a5568;
+  --gold:#d4a843; --gold2:#f0c060;
+  --teal:#1fd8b8; --blue:#4a9eff; --purple:#9b7ff0;
+  --red:#e05555; --amber:#e8a030; --green:#38c060; --pink:#e060a0;
+  --mono:'JetBrains Mono',monospace; --sans:'Space Grotesk',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:13px;line-height:1.65}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:200;background:rgba(8,11,16,0.95);backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--border);padding:0 24px;height:46px;
+    display:flex;align-items:center;gap:2px;overflow-x:auto}
+nav a{color:var(--text3);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;
+      text-transform:uppercase;padding:5px 9px;border-radius:4px;white-space:nowrap;transition:all .15s}
+nav a:hover{color:var(--gold);background:rgba(212,168,67,.09)}
+.nav-score{margin-left:auto;font-family:var(--mono);font-size:14px;font-weight:700;
+           color:var(--gold);background:rgba(212,168,67,.1);border:1px solid rgba(212,168,67,.3);
+           padding:3px 12px;border-radius:20px;white-space:nowrap}
+
+/* ── PAGE ── */
+.page{max-width:1280px;margin:0 auto;padding:0 24px 100px}
+
+/* ── HERO ── */
+.hero{padding:56px 0 40px;border-bottom:1px solid var(--border)}
+.hero-row{display:flex;gap:48px;align-items:flex-start;flex-wrap:wrap;margin-bottom:32px}
+.hero-left{}
+.hero-score{font-family:var(--mono);font-size:96px;font-weight:700;color:var(--gold);
+            line-height:.95;letter-spacing:-.04em;margin-bottom:6px}
+.hero-prev{font-family:var(--mono);font-size:20px;color:var(--text3);text-decoration:line-through;margin-bottom:12px}
+.hero-right{flex:1;min-width:320px;padding-top:8px}
+.hero-title{font-size:24px;font-weight:600;letter-spacing:-.02em;margin-bottom:8px}
+.hero-subtitle{font-size:14px;color:var(--text2);line-height:1.9}
+.hero-subtitle strong{color:var(--gold2);font-weight:500}
+.flow-strip{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:20px;
+            padding:12px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px}
+.flow-item{font-family:var(--mono);font-size:11px;font-weight:500;color:var(--teal)}
+.flow-arrow{color:var(--text3);font-size:12px}
+.hero-stats{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.stat-v{font-family:var(--mono);font-size:19px;font-weight:600;display:block;margin-bottom:2px}
+.stat-l{font-size:10px;color:var(--text3);letter-spacing:.05em;text-transform:uppercase}
+
+/* ── SECTION ── */
+section{padding-top:52px}
+.sec{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.sec-n{font-family:var(--mono);font-size:11px;color:var(--text3);min-width:30px}
+.sec-t{font-size:18px;font-weight:600;letter-spacing:-.01em}
+.sec-sub{font-size:12px;color:var(--text2);margin-left:4px;font-weight:400}
+.sec-line{flex:1;height:1px;background:var(--border)}
+
+/* ── PIPELINE FLOW ── */
+.pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.pipe-cell{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;
+           position:relative;overflow:hidden;cursor:default}
+.pipe-cell::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--c,#888)}
+.pipe-num{font-family:var(--mono);font-size:10px;color:var(--text3);margin-bottom:3px}
+.pipe-name{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--c,#aaa);margin-bottom:4px}
+.pipe-eq{font-family:var(--mono);font-size:10px;color:var(--text3);line-height:1.5}
+
+/* ── MASTER EQUATION BOX ── */
+.master-eq{background:var(--bg3);border:1px solid rgba(212,168,67,.25);border-radius:12px;
+           padding:24px 28px;margin-bottom:20px}
+.master-eq-title{font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:.1em;
+                 text-transform:uppercase;margin-bottom:16px;font-weight:700}
+.master-formula{font-family:var(--mono);font-size:13px;color:var(--gold2);line-height:2.4;
+                overflow-x:auto;margin-bottom:16px}
+.master-components{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.mc{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;text-align:center}
+.mc-sym{font-family:var(--mono);font-size:20px;font-weight:700;margin-bottom:3px}
+.mc-name{font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px}
+.mc-src{font-size:10px;color:var(--text3);line-height:1.3}
+
+/* ── ROLE CARDS ── */
+.roles-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:16px}
+.role-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;
+           border-top:3px solid var(--c,#888)}
+.role-sym{font-size:28px;margin-bottom:6px}
+.role-id{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--c,#aaa);margin-bottom:3px}
+.role-name{font-size:13px;font-weight:600;margin-bottom:6px}
+.role-eq{font-family:var(--mono);font-size:10px;color:var(--text3);line-height:1.5;margin-bottom:6px}
+.role-regime{font-size:10px;color:var(--text2);font-style:italic}
+
+.role-arbitration{background:var(--bg3);border:1px solid var(--border);border-radius:8px;
+                  padding:14px 18px;font-family:var(--mono);font-size:12px;color:var(--teal);line-height:2}
+
+/* ── LAYER CARDS ── */
+.layers{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.layer{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px}
+.layer-tag{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+           padding:2px 8px;border-radius:10px;display:inline-block;margin-bottom:8px}
+.layer-id{font-family:var(--mono);font-size:13px;font-weight:700;margin-bottom:4px}
+.layer-name{font-size:16px;font-weight:600;margin-bottom:10px}
+.layer-eq{font-family:var(--mono);font-size:11px;background:rgba(0,0,0,.4);border:1px solid var(--border);
+          border-radius:6px;padding:10px 12px;margin-bottom:10px;line-height:1.9;overflow-x:auto}
+.layer-body{font-size:12px;color:var(--text2);line-height:1.65;margin-bottom:8px}
+.layer-rule{font-size:11px;font-weight:600;padding:6px 10px;border-radius:5px;line-height:1.4}
+.layer-map{font-size:11px;color:var(--text3);font-style:italic;margin-top:5px}
+
+/* ── SIGNAL QUALITY TABLE ── */
+.sq-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px}
+.sq{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center}
+.sq-w{font-family:var(--mono);font-size:20px;font-weight:700;margin-bottom:3px}
+.sq-n{font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px}
+.sq-d{font-size:10px;color:var(--text3);line-height:1.3}
+
+/* ── REGIME TABLE ── */
+.regime-table{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:12px}
+.rt-header{display:grid;grid-template-columns:140px 1fr 80px 80px 80px 80px;
+           background:var(--bg3);padding:8px 14px;font-size:10px;font-weight:700;
+           letter-spacing:.06em;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border)}
+.rt-row{display:grid;grid-template-columns:140px 1fr 80px 80px 80px 80px;
+        padding:10px 14px;font-size:12px;border-bottom:1px solid rgba(255,255,255,.04)}
+.rt-row:last-child{border-bottom:none}
+.rt-regime{font-family:var(--mono);font-weight:600}
+.rt-cell{color:var(--text2);font-size:11px;display:flex;align-items:center}
+
+/* ── DECISION SCORING ── */
+.ds-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.ds-block{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px}
+.ds-label{font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px}
+.ds-items{display:flex;flex-direction:column;gap:4px}
+.ds-item{font-size:11px;color:var(--text2);padding:4px 0;border-bottom:1px dotted rgba(255,255,255,.06)}
+.ds-item:last-child{border-bottom:none}
+.ds-eq-final{font-family:var(--mono);font-size:12px;color:var(--gold2);background:var(--bg3);
+             border:1px solid rgba(212,168,67,.2);border-radius:8px;padding:14px 18px;line-height:2}
+
+/* ── CIE ── */
+.cie-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px}
+.cie-comp{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+.cie-sym{font-family:var(--mono);font-size:18px;font-weight:700;margin-bottom:4px}
+.cie-name{font-size:11px;font-weight:700;color:var(--text);margin-bottom:3px}
+.cie-def{font-size:10px;color:var(--text3);line-height:1.4}
+.cie-note{background:var(--bg3);border:1px solid var(--border);border-radius:6px;
+          padding:10px 14px;font-size:12px;color:var(--text2);line-height:1.6;margin-top:8px}
+
+/* ── EVOLUTION ── */
+.evo-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.evo-col{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px}
+.evo-title{font-size:12px;font-weight:700;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.evo-item{font-size:11px;color:var(--text2);padding:5px 0;border-bottom:1px dotted rgba(255,255,255,.05)}
+.evo-item:last-child{border-bottom:none}
+.evo-eq{font-family:var(--mono);font-size:11px;color:var(--teal);margin-top:6px;line-height:1.7}
+
+/* ── IMPLEMENTATION ORDER ── */
+.impl-phases{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.impl-phase{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px}
+.impl-phase-label{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.impl-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px dotted rgba(255,255,255,.05);font-size:11px}
+.impl-item:last-child{border-bottom:none}
+.impl-num{font-family:var(--mono);font-size:10px;min-width:18px;color:var(--text3)}
+.impl-name{font-weight:600}
+.impl-note{color:var(--text3);font-size:10px;margin-top:1px}
+
+/* ── SCORECARD ── */
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+.card{background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--c,#888);
+      border-radius:8px;padding:12px 14px}
+.card-h{display:flex;justify-content:space-between;margin-bottom:3px}
+.card-code{font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.09em;color:var(--text3)}
+.card-wt{font-size:10px;color:var(--text3);background:rgba(255,255,255,.06);padding:1px 5px;border-radius:3px}
+.card-score{font-family:var(--mono);font-size:28px;font-weight:700;line-height:1;margin-bottom:3px}
+.card-delta{font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:4px}
+.card-bar{height:2px;background:rgba(255,255,255,.06);border-radius:2px;position:relative;margin-bottom:6px}
+.card-fill{height:100%;border-radius:2px;position:absolute;left:0;top:0}
+.card-ceil{height:100%;border-radius:2px;position:absolute;left:0;top:0;opacity:.12}
+.card-gap{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;margin-bottom:3px}
+.card-note{font-size:10px;color:var(--text3);line-height:1.35}
+
+/* ── DATA STRUCTURES ── */
+.ds-structs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.ds-struct{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px}
+.ds-struct-name{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--teal);margin-bottom:8px}
+.ds-field{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dotted rgba(255,255,255,.05);font-size:11px}
+.ds-field:last-child{border-bottom:none}
+.ds-fname{color:var(--text)}
+.ds-ftype{font-family:var(--mono);font-size:10px;color:var(--text3)}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--border);padding:40px 0;text-align:center;color:var(--text3);font-size:12px;line-height:2.2}
+footer .big{font-family:var(--mono);font-size:48px;font-weight:700;color:var(--gold);display:block;line-height:1;margin-bottom:12px}
+
+@media(max-width:900px){
+  .pipeline,.roles-grid,.layers,.hero-stats,.cie-grid{grid-template-columns:1fr 1fr}
+  .ds-structs,.evo-cols,.impl-phases{grid-template-columns:1fr}
+  .master-components{grid-template-columns:repeat(4,1fr)}
+  .rt-header,.rt-row{grid-template-columns:100px 1fr 60px 60px 60px 60px;font-size:10px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#overview">Overview</a>
+  <a href="#masterEq">Master Eq</a>
+  <a href="#roles">Roles</a>
+  <a href="#pipeline">Pipeline</a>
+  <a href="#signals">Signals</a>
+  <a href="#intelligence">Intelligence</a>
+  <a href="#regime">Regime</a>
+  <a href="#agents">Agents</a>
+  <a href="#evolution">Evolution</a>
+  <a href="#decision">Decision</a>
+  <a href="#validation">Validation</a>
+  <a href="#data">Data</a>
+  <a href="#implementation">Build</a>
+  <span class="nav-score">9.44 / 10</span>
+</nav>
+
+<div class="page">
+
+<!-- ═══════════════════════════════════════ HERO ═══════════════════════════════════════ -->
+<section id="overview" class="hero">
+  <div class="hero-row">
+    <div class="hero-left">
+      <div class="hero-prev">9.43</div>
+      <div class="hero-score">9.44</div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-title">MVP Pipeline — Complete Operational Architecture</div>
+      <div class="hero-subtitle">
+        Multi-layer adaptive intelligence engine · V5.7+ · April 8, 2026 · 800+ sessions<br>
+        7 genuine additions from spec · 26 components already confirmed built<br>
+        <strong>S35→9.59 · S4→9.66 · S3A→8.98 · S8→9.79 · Total V2: +2.56</strong><br>
+        Score ceiling: ~9.76 · Gap: 0.32 · Bottleneck: CAL (60%+ of gap)
+      </div>
+      <div class="flow-strip">
+        <span class="flow-item">RawWorld</span><span class="flow-arrow">→</span>
+        <span class="flow-item">SignalIntake</span><span class="flow-arrow">→</span>
+        <span class="flow-item">DistortionShell</span><span class="flow-arrow">→</span>
+        <span class="flow-item">RefinementShell</span><span class="flow-arrow">→</span>
+        <span class="flow-item">RoleArchitecture</span><span class="flow-arrow">→</span>
+        <span class="flow-item">CreativeIntelligence</span><span class="flow-arrow">→</span>
+        <span class="flow-item">CulturalCognition</span><span class="flow-arrow">→</span>
+        <span class="flow-item">SurvivorshipCorrection</span><span class="flow-arrow">→</span>
+        <span class="flow-item">PowerFoodChain</span><span class="flow-arrow">→</span>
+        <span class="flow-item">RegimeEngine</span><span class="flow-arrow">→</span>
+        <span class="flow-item">AgentSelection</span><span class="flow-arrow">→</span>
+        <span class="flow-item">EvolutionEngine</span><span class="flow-arrow">→</span>
+        <span class="flow-item">Simulation</span><span class="flow-arrow">→</span>
+        <span class="flow-item">DecisionSystem</span><span class="flow-arrow">→</span>
+        <span class="flow-item">Execution</span><span class="flow-arrow">→</span>
+        <span class="flow-item">RealityValidation</span><span class="flow-arrow">→</span>
+        <span class="flow-item">AdaptiveMemory</span>
+      </div>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-v" style="color:var(--gold)">9.44</span><span class="stat-l">Score</span></div>
+    <div class="stat"><span class="stat-v" style="color:var(--red)">5.10</span><span class="stat-l">CAL</span></div>
+    <div class="stat"><span class="stat-v" style="color:var(--teal)">T=2</span><span class="stat-l">Closed trades</span></div>
+    <div class="stat"><span class="stat-v" style="color:var(--green)">0.32</span><span class="stat-l">Gap to ceiling</span></div>
+    <div class="stat"><span class="stat-v" style="color:var(--purple)">+2.56</span><span class="stat-l">Total V2</span></div>
+    <div class="stat"><span class="stat-v" style="color:var(--amber)">17</span><span class="stat-l">Pipeline layers</span></div>
+    <div class="stat"><span class="stat-v" style="color:var(--blue)">Jul 1</span><span class="stat-l">Real money</span></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ MASTER EQUATION ═══════════════════════════════════════ -->
+<section id="masterEq">
+  <div class="sec"><span class="sec-n">01</span><span class="sec-t">Master Equation</span><span class="sec-sub">— the complete system expression</span><div class="sec-line"></div></div>
+  <div class="master-eq">
+    <div class="master-eq-title">MVP_t — unified control signal</div>
+    <div class="master-formula">MVP_t = [ (O × Gk × Df × Mf × St) × (EV × IA × TQ × EX) × (CIE × CC) × (Q × (1 + DG)) × EvFactor × Robustness ]
+        / [ 1 + Risk + InternalStrain + Noise + SurvivorshipBias ]
+
+w_t = c · (MVP_t / σ_t²) · g(CAL_t, PQ_t, ρ_t)
+
+Key: if ANY role factor → 0 (broken Goalkeeper, collapsed Owner), MVP_t → 0
+     Denominator explosion (Risk+InternalStrain+Noise >> 1) = ARCHITECTURE_PAUSE
+     g() caps size when CAL=5.10 (g≈0.30), PQ&lt;4/5 (g=0), ρ high (S9B correlation)</div>
+    <div class="master-components" id="mcGrid"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ ROLE ARCHITECTURE ═══════════════════════════════════════ -->
+<section id="roles">
+  <div class="sec"><span class="sec-n">02</span><span class="sec-t">Role Architecture</span><span class="sec-sub">— five internal system roles with regime-dependent arbitration</span><div class="sec-line"></div></div>
+  <div class="roles-grid" id="rolesGrid"></div>
+  <div class="role-arbitration">
+ActiveRole_t = argmax_r E[U(r) | context_t, regime_t, belief_t]
+
+REGIME_ROLE_MAP:
+  KALI_YUGA / SHOCK:        Gk=1.0 (survival), Df=0.8, Mf=0.4, St=0.0, O=0.9
+  PRE_NARRATIVE:            Mf=0.9 (routing), St=0.7 (preparing), Gk=0.6, Df=0.5, O=0.7
+  NARRATIVE_TAKEOFF:        St=1.0 (executes), Mf=0.8 (tempo), Gk=0.7, Df=0.6, O=0.8
+  ECHO / DEAD_ZONE:         Gk=0.9 (exits), Df=0.7 (holds), Mf=0.4, St=0.0, O=1.0
+  DISINFLATIONARY_RISK_ON:  St=0.9, Mf=0.8, Gk=0.6, Df=0.5, O=0.8
+  CREDIT_CRUNCH:            Gk=1.0, O=1.0, Df=0.9, Mf=0.3, St=0.0
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ PIPELINE LAYERS ═══════════════════════════════════════ -->
+<section id="pipeline">
+  <div class="sec"><span class="sec-n">03</span><span class="sec-t">Pipeline Layers</span><span class="sec-sub">— 17 layers, complete data flow</span><div class="sec-line"></div></div>
+  <div class="pipeline" id="pipelineGrid"></div>
+</section>
+
+<!-- ═══════════════════════════════════════ SIGNAL QUALITY ═══════════════════════════════════════ -->
+<section id="signals">
+  <div class="sec"><span class="sec-n">04</span><span class="sec-t">Signal Quality Decomposition</span><span class="sec-sub">— distortion shell + refinement shell</span><div class="sec-line"></div></div>
+  <div class="layers">
+
+    <div class="layer">
+      <span class="layer-tag" style="background:rgba(74,158,255,.12);color:var(--blue)">Distortion Shell</span>
+      <div class="layer-id" style="color:var(--blue)">DISTORTION_GAP_ENGINE</div>
+      <div class="layer-name">Signal Corruption Model</div>
+      <div class="layer-eq">S_obs = S_true + ε_media + ε_bias + ε_delay + ε_incentive
+DG_t = S_true − S_obs   [distortion gap = information advantage]
+SourceWeight_s = Reliability_s × (1 / (1 + AgeDecay_s))
+DistortionType ∈ {MEDIA_SPIN, INCENTIVE_SIGNAL, DELAY_ARTEFACT, SELECTION_BIAS}
+ConfidenceBand = ±2σ around reconstructed S_true</div>
+      <div class="layer-body">High DG_t = large gap between observable signal and structural reality. This IS the information asymmetry advantage. Q × (1 + DG_t) in the master equation means distortion advantage directly amplifies signal quality — the operator who correctly reads through the distortion earns a multiplicative bonus. VISIBILITY_BIAS_CORRECTION and NON_REACTION_CHECK are the pipeline's live implementations.</div>
+      <div class="layer-rule" style="background:rgba(74,158,255,.08);color:var(--blue)">When DG_t > 3: temporal_arbitrage multiplier elevates. When DG_t &lt; 0: market is MORE informed than the model → HOUSE_EDGE_DETECTOR activates → pass.</div>
+    </div>
+
+    <div class="layer">
+      <span class="layer-tag" style="background:rgba(31,216,184,.12);color:var(--teal)">Refinement Shell</span>
+      <div class="layer-id" style="color:var(--teal)">SIGNAL_QUALITY_ENGINE</div>
+      <div class="layer-name">5-Layer Signal Grading</div>
+      <div class="layer-eq">Q_t = w₁·Foam + w₂·Crowd + w₃·Informed + w₄·Structural + w₅·Latent
+Foam:       surface narrative, zero structural weight (w₁=0.05)
+Crowd:      consensus retail signal (w₂=0.15)
+Informed:   institutional movement (w₃=0.30)
+Structural: physical/economic constraint (w₄=0.35)
+Latent:     LATENT_ENTRY signal, pre-narrative drift (w₅=0.15)
+Signal_Temp = dominant_layer × layer_weight</div>
+      <div class="layer-body">The LAYER_ASSIGNMENT (Tier A/B/C) maps directly: Tier A = Structural+Latent dominant, Tier B = Informed, Tier C = Crowd+Foam. Signal temperature tells you not just quality but what TYPE of quality — a Structural signal at 7.2 has completely different confidence properties than a Crowd signal at 7.2.</div>
+      <div class="layer-rule" style="background:rgba(31,216,184,.08);color:var(--teal)">leave_score must be disaggregated by layer weight before FIRE_MODE. A 7.2 driven entirely by Foam is a DRAFT_ERROR. A 6.8 with Structural dominant + Latent pressure = eligible for LATENT_ENTRY.</div>
+    </div>
+  </div>
+
+  <div style="margin-top:12px">
+    <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Q_t layer decomposition — weights and definitions:</div>
+    <div class="sq-grid" id="sqGrid"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ CREATIVE INTELLIGENCE ═══════════════════════════════════════ -->
+<section id="intelligence">
+  <div class="sec"><span class="sec-n">05</span><span class="sec-t">Creative Intelligence Engine</span><span class="sec-sub">— multiplicative operator intelligence model</span><div class="sec-line"></div></div>
+  <div class="cie-grid" id="cieGrid"></div>
+  <div class="cie-note">
+    <strong>CIE = V × N × D × Rh × M − ComplexityCost</strong> · Multiplicative structure: a weak D (decision logic, assumption audit) collapses the entire CIE regardless of visual or narrative brilliance. ComplexityCost penalises over-engineered analysis that produces slower, noisier decisions. High CIE + Low D = ZODIAC_OBSESSION_TRAP → TREKCHO_CUT required. Low CIE overall → external ADVERSARIAL_DIALOGUE (BEAR_AGENT) mandatory before any SNIPER entry. CIE feeds ActionScore interpretation layer: <span style="font-family:var(--mono);color:var(--teal)">ActionScore += CIE × CC</span>.
+  </div>
+
+  <div style="margin-top:16px">
+    <div class="sec" style="margin-bottom:12px"><span class="sec-n">05b</span><span class="sec-t">Cultural Cognition Engine</span><span class="sec-sub">— narrative persistence and memetic decay</span><div class="sec-line"></div></div>
+    <div class="layers">
+      <div class="layer">
+        <div class="layer-id" style="color:var(--purple)">CULTURAL_COGNITION_ENGINE</div>
+        <div class="layer-name">Narrative Persistence Model</div>
+        <div class="layer-eq">CC = Frame + Meaning + Resonance + SymbolicWeight
+CC_{t+1} = ρ·CC_t − κ·Age
+ρ = narrative_persistence_coefficient (how "sticky" is the frame?)
+κ = decay_rate (how quickly does it lose symbolic weight?)
+Narrative_Persistence = CC_t > threshold for sustained price impact</div>
+        <div class="layer-body">Cultural Cognition governs how long a narrative continues to move capital after its structural basis. A CC with high ρ (sticky frame) persists even after the structural signal weakens — creating the temporal gap between structural truth and market price that the pipeline exploits. Low CC × high structural signal = PROMETHEUS_CONDITION (early entry justified). High CC × weakening structural = OVERRIPE state (exit approaching).</div>
+      </div>
+      <div class="layer">
+        <div class="layer-id" style="color:var(--pink)">SURVIVORSHIP_CORRECTION</div>
+        <div class="layer-name">True Mastery Estimation</div>
+        <div class="layer-eq">TrueSkill ≈ Observed − (Luck + Environment + SelectionBias)
+Mastery = (Skill × Robustness × Replicability) / (1 + ContextDependence)
+FailureDensity = failures_around_strategy / total_attempts
+Robustness = P(success | perturbed_conditions)
+ContextDependence: how much does performance require specific regime?</div>
+        <div class="layer-body">Before promoting any strategy to standard protocol: compute Mastery score. A strategy with positive E[CLV] but high ContextDependence is a regime-coincidence, not genuine edge. Low FailureDensity + high Mastery = generalizable. SPRT_VALIDATION should test Mastery × Replicability, not just sequential E[CLV]. SurvivorshipBias term in master equation denominator is 1/Mastery-adjusted for context-dependence.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ POWER FOOD CHAIN ═══════════════════════════════════════ -->
+<section>
+  <div class="sec"><span class="sec-n">06</span><span class="sec-t">Power / Food Chain</span><span class="sec-sub">— actor dominance scoring and hierarchy</span><div class="sec-line"></div></div>
+  <div class="layers">
+    <div class="layer">
+      <div class="layer-id" style="color:var(--amber)">POWER_FOOD_CHAIN</div>
+      <div class="layer-name">Actor Dominance Scoring</div>
+      <div class="layer-eq">FD_i = a₁·Capital + a₂·Information + a₃·Execution + a₄·Narrative
+FD_adj_i = FD_i × Robustness_i
+APEX:         FD_adj > 8.0  (Starlizard, Renaissance, sovereign fund tier)
+DOMINANT:     FD_adj 5–8    (institutional fund, major government, central bank)
+OPPORTUNISTIC: FD_adj 2–5   (informed retail, smaller fund, regional actor)
+VULNERABLE:   FD_adj &lt; 2   (narrative-only, uninformed, reactive capital)</div>
+      <div class="layer-body">The food chain determines whose capital flow validates a thesis vs whose capital flow is the crowded sidecar. When an APEX_ACTOR moves: TACIT_COORDINATION weight × 2.0. When OPPORTUNISTIC moves alone: noise probability elevated → reduce signal confidence. POWER_FOOD_CHAIN integrates with INCENTIVE_COMPATIBILITY: an APEX actor with IC_i=0.3 (bluffing) is the most dangerous setup — maximum structural power + deceptive public signal.</div>
+      <div class="layer-rule" style="background:rgba(232,160,48,.08);color:var(--amber)">Classify every key actor by FD_adj before thesis entry. APEX + IC_i=1.0 → highest TACIT_COORDINATION weight. DOMINANT + IC_i&lt;0.4 → PRINCIPAL_AGENT_FLAG active.</div>
+    </div>
+    <div class="layer">
+      <div class="layer-id" style="color:var(--amber)">ACTOR_INCENTIVE_INTEGRATION</div>
+      <div class="layer-name">Combined Actor Assessment</div>
+      <div class="layer-eq">U_i(a) = B_i − C_i + φ_i·S_i + ψ_i·R_i   [incentive decomposition]
+IC_i = 1 − |a_public − a*| / Z        [compatibility score]
+P(θ|m) = P(m|θ)P(θ) / Σ P(m|θ')P(θ') [type belief update]
+ActorSignalWeight = FD_adj_i × IC_i × CostlinessOfSignal
+CheapTalkDiscount: if signal_cost ≈ 0 → ActorSignalWeight × 0.3</div>
+      <div class="layer-body">Combines food chain position with incentive compatibility. A powerful actor sending cheap talk (IC=0, costless signal) gets near-zero signal weight regardless of their FD_adj. A weaker actor making a costly, credible commitment (IC=1.0, high cost to signal) gets elevated weight. This is the Spence signaling model applied: costliness is the credibility mechanism.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ REGIME ENGINE ═══════════════════════════════════════ -->
+<section id="regime">
+  <div class="sec"><span class="sec-n">07</span><span class="sec-t">Regime Engine</span><span class="sec-sub">— state classification with strategy, risk, speed, and agent mapping</span><div class="sec-line"></div></div>
+  <div class="regime-table">
+    <div class="rt-header">
+      <span>Regime</span><span>Characteristics</span>
+      <span>Strategy</span><span>Risk tol.</span><span>Speed</span><span>Role</span>
+    </div>
+    <div id="regimeRows"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ AGENT SELECTION ═══════════════════════════════════════ -->
+<section id="agents">
+  <div class="sec"><span class="sec-n">08</span><span class="sec-t">Agent Selection System</span><span class="sec-sub">— strategy modes with switching, ensemble, fallback</span><div class="sec-line"></div></div>
+  <div class="layers">
+    <div class="layer">
+      <div class="layer-id" style="color:var(--green)">AGENT_SELECTION_ENGINE</div>
+      <div class="layer-name">Strategy Mode Arbitration</div>
+      <div class="layer-eq">Score_a = RewardFitness + SignalAlignment + TimingFit + ExecutionStrength − Risk − Friction
+A* = argmax_a Score_a
+SwitchingCost = c_switch (prevents churning)
+Switch only when: Score_{new} − Score_{current} > c_switch
+ENSEMBLE: run multiple agents with S9B correlation-adjusted sizing
+FALLBACK: fixed preset when CIE &lt; 0.4 AND KALI_YUGA AND H(b_t) > 0.8</div>
+      <div class="layer-body">Agent selection is a superset of FIRE_MODE. SNIPER/M16/UZI are single-agent modes. ENSEMBLE deploys multiple simultaneously with portfolio interaction. FALLBACK is a minimal preset (no new entries, existing positions monitored, Gk role dominant) that activates when the primary agents are demonstrably unreliable. The switching cost prevents the system from thrashing between modes on small signal variations.</div>
+      <div class="layer-rule" style="background:rgba(56,192,96,.08);color:var(--green)">At each session: compute Score_a for all modes. Switch only if delta > c_switch. FALLBACK activates automatically when 3 conditions simultaneously hold.</div>
+    </div>
+    <div class="layer">
+      <div class="layer-id" style="color:var(--green)">AGENT_MODE_DEFINITIONS</div>
+      <div class="layer-name">Mode Specifications</div>
+      <div class="layer-eq">SNIPER:   H(b_t) LOW, single dominant setup, LP_conditions ≥ 4/6
+M16:      multiple corroborating signals, NARRATIVE phase, medium certainty
+UZI:      high frequency, low conviction, mean-reversion regime only
+ENSEMBLE: portfolio correlation check (S9B) mandatory before activation
+MONITOR:  observation only — DRIFT mode, no execution permission
+FALLBACK: fixed rules, Gk only, no new entries, existing positions triage</div>
+      <div class="layer-body">MONITOR (DRIFT mode) and FALLBACK are new formal agents not previously named. MONITOR is the standard non-execution state during thesis development. FALLBACK is the automatic safe mode. Importantly: the pipeline should spend 60-70% of time in MONITOR or M16 (reconnaissance and preparation), not hunting for SNIPER entries. SNIPER is for the rare LEICESTER_PRIME condition — not for every week.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ EVOLUTION ENGINE ═══════════════════════════════════════ -->
+<section id="evolution">
+  <div class="sec"><span class="sec-n">09</span><span class="sec-t">Evolution Engine</span><span class="sec-sub">— strategy mutation, selection, and policy update system</span><div class="sec-line"></div></div>
+  <div class="evo-cols">
+    <div class="evo-col">
+      <div class="evo-title" style="color:var(--teal)">Strategy Mutation</div>
+      <div class="evo-item">s' = s + μ (mutation operator)</div>
+      <div class="evo-item">μ_noise: random perturbation (NOISE_INJECTION σ=0.10)</div>
+      <div class="evo-item">μ_recomb: cross two high-performing strategies</div>
+      <div class="evo-item">μ_stress: forced change when under adversarial pressure</div>
+      <div class="evo-item">μ_tool: new capability enables new strategy class</div>
+      <div class="evo-eq">SPSA approximation: ∇s ≈ (CLV(s+Δ)−CLV(s−Δ))/2Δ</div>
+    </div>
+    <div class="evo-col">
+      <div class="evo-title" style="color:var(--purple)">Policy Update System</div>
+      <div class="evo-item">Temporary overlay: Policy_active = Policy_core + Instruction_temp</div>
+      <div class="evo-item">Permanent edit: targeted change to Policy_core (SPRT-validated)</div>
+      <div class="evo-item">MW update: weight vector shift after each closed trade</div>
+      <div class="evo-item">SPSA batch update: simultaneous all-param shift at June 1</div>
+      <div class="evo-eq">Policy_{t+1} = Policy_t + η·∇_π[CLV(π_t, outcomes_t)]</div>
+    </div>
+    <div class="evo-col">
+      <div class="evo-title" style="color:var(--amber)">Selection Criterion</div>
+      <div class="evo-item">BestStrategy = argmax(Fitness × Robustness)</div>
+      <div class="evo-item">Fitness = E[CLV] + Adaptability − Fragility_penalty</div>
+      <div class="evo-item">Robustness = Mastery × Replicability (survivorship-corrected)</div>
+      <div class="evo-item">SPRT gate: MILK_TEST before promotion to Policy_core</div>
+      <div class="evo-eq">EvFactor = Fitness_t / Fitness_baseline (master eq input)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ DECISION SYSTEM ═══════════════════════════════════════ -->
+<section id="decision">
+  <div class="sec"><span class="sec-n">10</span><span class="sec-t">Decision System</span><span class="sec-sub">— layered scoring to ActionScore</span><div class="sec-line"></div></div>
+  <div class="ds-flow" id="dsFlow"></div>
+  <div class="ds-eq-final" id="dsEqFinal"></div>
+</section>
+
+<!-- ═══════════════════════════════════════ VALIDATION ═══════════════════════════════════════ -->
+<section id="validation">
+  <div class="sec"><span class="sec-n">11</span><span class="sec-t">Reality Validation (MILK TEST)</span><span class="sec-sub">— strategy promotion gate</span><div class="sec-line"></div></div>
+  <div class="layers">
+    <div class="layer">
+      <div class="layer-id" style="color:var(--red)">MILK_TEST_REALITY_VALIDATION</div>
+      <div class="layer-name">Composite Reality Score</div>
+      <div class="layer-eq">RealityScore = Edge × Discipline × Robustness × ExecutionQuality
+Edge:            leave_score / 10 (theoretical edge)
+Discipline:      PROCESS_QUALITY_SCORE / 5 (protocol adherence rate)
+Robustness:      Mastery × Replicability (survivorship-corrected)
+ExecutionQuality: actual_CLV / expected_CLV (execution matched plan?)
+Comparison: expected_edge vs simulated_edge vs real_outcome</div>
+      <div class="layer-body">This is the gate every strategy must pass before promotion to standard protocol. It extends SPRT from a binary test to a composite score. RealityScore > 0.6 across T ≥ 10 in-sample + RealityScore > 0.5 across T ≥ 5 out-of-sample = PROMOTE. Score < 0.3 for 3 consecutive uses OR Robustness drop (regime changed) = DEMOTE. Every active strategy in the pipeline should have a live RealityScore visible in the Moltbook.</div>
+      <div class="layer-rule" style="background:rgba(224,85,85,.08);color:var(--red)">Before any protocol change promotion: compute MILK_TEST score. No gut-feel promotions. The SPRT tells you significance. The MILK_TEST tells you quality.</div>
+    </div>
+    <div class="layer">
+      <div class="layer-id" style="color:var(--red)">SIMULATION_LAB (S6)</div>
+      <div class="layer-name">3-Layer Pressure Testing</div>
+      <div class="layer-eq">A. Replay:         R_t = α·CLV_t + β·PnL_t − λ·Risk_t
+B. Counterfactual: J(π) = E_{ω'∈Ω}[Σ γᵗ R_t(π,ω')]
+   ω': catalyst 48h late · price before headline · actor softens
+C. Adversarial:    max_π min_{ω∈Ω_adv} E[R(π,ω)]
+   Inject: fake narratives · spoofed sentiment · delayed confirms
+   BOSS_FIGHT: σ_t' = σ_t(1 + κ·EventIntensity_t)</div>
+      <div class="layer-body">Strategy must survive 7/10 adversarial scenarios before QUARTER_UNIT deployment. Historical replay enforces temporal validation. Counterfactual explores the decision quality across perturbed worlds. Adversarial is the robustness test: what's the worst-case hostile environment and does the strategy survive? The pipeline that looks elegant under normal conditions but fails under adversarial pressure is fragile, not robust.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ DATA STRUCTURES ═══════════════════════════════════════ -->
+<section id="data">
+  <div class="sec"><span class="sec-n">12</span><span class="sec-t">Data Structures</span><span class="sec-sub">— per layer</span><div class="sec-line"></div></div>
+  <div class="ds-structs" id="dsStructs"></div>
+</section>
+
+<!-- ═══════════════════════════════════════ SCORECARD ═══════════════════════════════════════ -->
+<section>
+  <div class="sec"><span class="sec-n">13</span><span class="sec-t">Module Scorecards</span><div class="sec-line"></div></div>
+  <div class="cards" id="cards"></div>
+</section>
+
+<!-- ═══════════════════════════════════════ IMPLEMENTATION ORDER ═══════════════════════════════════════ -->
+<section id="implementation">
+  <div class="sec"><span class="sec-n">14</span><span class="sec-t">Implementation Order</span><span class="sec-sub">— phased build sequence</span><div class="sec-line"></div></div>
+  <div class="impl-phases" id="implPhases"></div>
+</section>
+
+<footer>
+  <span class="big">9.44</span>
+  MVP Pipeline Architecture · Complete Operational System · V5.7+ · April 8, 2026<br>
+  Score 9.44 / 10 · Gap 0.32 · Total V2 gain +2.56 · CAL 5.10 (bottleneck) · T=2 · Real money July 1, 2026<br>
+  7 new components from spec · 26 already confirmed built · Architecture complete<br><br>
+  <span style="color:var(--gold);font-style:italic">"Sense → Refine → Interpret → Position → Evolve → Decide → Execute → Learn.<br>
+  The architecture is not the bottleneck. Calibration and execution are. T=2. Close the trades. Log the CLV."</span>
+</footer>
+</div>
+
+<script>
+// MASTER EQUATION COMPONENTS
+const mc=[
+  {s:"O",n:"Owner",c:"var(--gold)",src:"Governance · Capital Discipline · Incentives"},
+  {s:"Gk",n:"Goalkeeper",c:"var(--red)",src:"Tail Risk · Panic Resistance · Survival"},
+  {s:"Df",n:"Defender",c:"var(--blue)",src:"Stability · Anticipation · Risk Suppression"},
+  {s:"Mf",n:"Midfielder",c:"var(--teal)",src:"Routing · Tempo · Control"},
+  {s:"St",n:"Striker",c:"var(--green)",src:"Setup × Timing × Execution"},
+  {s:"EV",n:"Expected Value",c:"var(--purple)",src:"leave_score × temporal_arbitrage"},
+  {s:"IA",n:"Info Advantage",c:"var(--amber)",src:"INFORMATION_ASYMMETRY_SCORE"},
+  {s:"CIE",n:"Creative Intel",c:"var(--pink)",src:"V×N×D×Rh×M − Cost"},
+  {s:"CC",n:"Cultural Cog",c:"var(--purple)",src:"Frame+Meaning+Resonance decay"},
+  {s:"Q",n:"Signal Quality",c:"var(--teal)",src:"5-layer weighted Q_t"},
+  {s:"DG",n:"Distortion Gap",c:"var(--blue)",src:"S_true − S_obs advantage"},
+  {s:"Ev",n:"Evolution Factor",c:"var(--green)",src:"Fitness_t / Fitness_baseline"},
+];
+const mcg=document.getElementById('mcGrid');
+mc.forEach(m=>{mcg.innerHTML+=`<div class="mc"><div class="mc-sym" style="color:${m.c}">${m.s}</div><div class="mc-name">${m.n}</div><div class="mc-src">${m.src}</div></div>`});
+
+// ROLES
+const roles=[
+  {sym:"🥅",id:"Gk",name:"Goalkeeper",c:"var(--red)",
+   eq:"max TailRiskControl + PanicResistance + Survival",
+   regime:"Dominant in KALI_YUGA, SHOCK, CREDIT_CRUNCH, ECHO states"},
+  {sym:"🛡",id:"Df",name:"Defender",c:"var(--blue)",
+   eq:"max Stability + Anticipation + RiskSuppression",
+   regime:"Elevated when narrative_entropy high, actor deception detected"},
+  {sym:"⚙️",id:"Mf",name:"Midfielder",c:"var(--teal)",
+   eq:"max Routing + Tempo + Control",
+   regime:"Primary in PRE_NARRATIVE phase (signal → decision routing)"},
+  {sym:"⚡",id:"St",name:"Striker",c:"var(--green)",
+   eq:"max Setup × Timing × Execution",
+   regime:"Only active when Gk stable AND regime = NARRATIVE_TAKEOFF"},
+  {sym:"👁",id:"O",name:"Owner",c:"var(--gold)",
+   eq:"max Governance + Incentives + CapitalDiscipline",
+   regime:"Always active — governance layer never deactivates"},
+];
+const rg=document.getElementById('rolesGrid');
+roles.forEach(r=>{rg.innerHTML+=`<div class="role-card" style="--c:${r.c}"><div class="role-sym">${r.sym}</div><div class="role-id">${r.id}</div><div class="role-name">${r.name}</div><div class="role-eq">${r.eq}</div><div class="role-regime">${r.regime}</div></div>`});
+
+// PIPELINE LAYERS
+const layers=[
+  {n:"01 RawWorld",code:"W_t",c:"#4a5568",eq:"W_t = (Events, Actors, Prices, Narratives, Constraints)"},
+  {n:"02 SignalIntake",code:"S0",c:"#4a9eff",eq:"S_t = f(raw_data, patterns, archetypes, live_inputs)"},
+  {n:"03 DistortionShell",code:"DG",c:"#e8a030",eq:"DG_t = S_true − S_obs · confidence bands"},
+  {n:"04 RefinementShell",code:"Q_t",c:"#1fd8b8",eq:"Q_t = Σ wᵢ · layer_quality_i"},
+  {n:"05 RoleArchitecture",code:"ROLE",c:"#d4a843",eq:"ActiveRole = argmax E[U(r) | context, regime]"},
+  {n:"06 CreativeIntel",code:"CIE",c:"#e060a0",eq:"CIE = V×N×D×Rh×M − ComplexityCost"},
+  {n:"07 CulturalCognition",code:"CC",c:"#9b7ff0",eq:"CC_{t+1} = ρ·CC_t − κ·Age"},
+  {n:"08 SurvivorshipCorr",code:"SURV",c:"#38c060",eq:"Mastery = (Skill×Rob×Rep)/(1+ContextDep)"},
+  {n:"09 PowerFoodChain",code:"FD",c:"#e8a030",eq:"FD_adj = (a₁C+a₂I+a₃E+a₄N) × Robustness"},
+  {n:"10 RegimeEngine",code:"S7/S7B",c:"#38c060",eq:"R_t = argmax_k P(R_t=k | FCI_t, x_t)"},
+  {n:"11 AgentSelection",code:"A*",c:"#38c060",eq:"A* = argmax Score_a subject to SwitchingCost"},
+  {n:"12 EvolutionEngine",code:"EVO",c:"#9b7ff0",eq:"Policy_{t+1} = Policy_t + η·∇_π[CLV]"},
+  {n:"13 Simulation",code:"S6",c:"#9b7ff0",eq:"max_π min_{ω∈Ω_adv} E[R(π,ω)]"},
+  {n:"14 DecisionSystem",code:"S35",c:"#1fd8b8",eq:"ActionScore = Perception + Interpret + ExecReady − Penalty"},
+  {n:"15 Execution",code:"S4/S9",c:"#e05555",eq:"w_t = c·(MVP_t/σ_t²)·g(CAL,PQ,ρ)"},
+  {n:"16 RealityValidation",code:"MILK",c:"#e05555",eq:"RealityScore = Edge×Discipline×Rob×ExecQuality"},
+  {n:"17 AdaptiveMemory",code:"MOLT",c:"#d4a843",eq:"π_{t+1} = π_t + η·∇_π[CLV(π_t,outcomes_t)]"},
+];
+const pg=document.getElementById('pipelineGrid');
+layers.forEach(l=>{pg.innerHTML+=`<div class="pipe-cell" style="--c:${l.c}"><div class="pipe-num">${l.n.split(' ')[0]}</div><div class="pipe-name" style="--c:${l.c}">${l.n.slice(3)}</div><div class="pipe-eq">${l.code}</div><div class="pipe-eq">${l.eq}</div></div>`});
+
+// SIGNAL QUALITY DECOMPOSITION
+const sq=[
+  {w:"w₁=0.05",n:"FOAM",c:"var(--text3)",d:"Surface narrative · zero structural weight"},
+  {w:"w₂=0.15",n:"CROWD",c:"var(--text2)",d:"Consensus retail signal"},
+  {w:"w₃=0.30",n:"INFORMED",c:"var(--blue)",d:"Institutional movement signal"},
+  {w:"w₄=0.35",n:"STRUCTURAL",c:"var(--teal)",d:"Physical/economic constraint"},
+  {w:"w₅=0.15",n:"LATENT",c:"var(--gold)",d:"Pre-narrative drift · LATENT_ENTRY"},
+];
+const sqg=document.getElementById('sqGrid');
+sq.forEach(s=>{sqg.innerHTML+=`<div class="sq"><div class="sq-w" style="color:${s.c}">${s.w}</div><div class="sq-n">${s.n}</div><div class="sq-d">${s.d}</div></div>`});
+
+// CIE
+const cie=[
+  {s:"V",n:"Visual",c:"var(--blue)",d:"Structure + Contrast + Focus · spatial pattern recognition"},
+  {s:"N",n:"Narrative",c:"var(--purple)",d:"Compression + Symbol + Recall · encoding the thesis"},
+  {s:"D",n:"Decision",c:"var(--red)",d:"Logic + AssumptionAudit + ContradictionHandling"},
+  {s:"Rh",n:"Rhythm",c:"var(--teal)",d:"Timing + CycleFit + SentimentAlignment"},
+  {s:"M",n:"Machine",c:"var(--green)",d:"Reliability + Precision + Flexibility · systematic execution"},
+];
+const cg=document.getElementById('cieGrid');
+cie.forEach(c=>{cg.innerHTML+=`<div class="cie-comp"><div class="cie-sym" style="color:${c.c}">${c.s}</div><div class="cie-name">${c.n}</div><div class="cie-def">${c.d}</div></div>`});
+
+// REGIMES
+const regimes=[
+  {r:"TREND",ch:"Directional momentum, confirmed structural driver",strat:"SNIPER/M16",risk:"Medium",speed:"Normal",role:"St+Mf"},
+  {r:"MEAN_REVERSION",ch:"Overextension, mean-revert signal, range",strat:"UZI",risk:"Low",speed:"Fast",role:"Mf+Gk"},
+  {r:"SHOCK",ch:"Unexpected catalyst, VIX spike, tail event",strat:"FALLBACK",risk:"Near-zero",speed:"Slow",role:"Gk+O"},
+  {r:"MANIPULATED",ch:"KALI_YUGA, narrative/price disconnect, DEMIURGE",strat:"MONITOR",risk:"Minimum",speed:"Pause",role:"Gk+Df"},
+  {r:"DEAD_ZONE",ch:"No signal, low volatility, no catalyst pending",strat:"MONITOR",risk:"Zero",speed:"Wait",role:"O+Gk"},
+  {r:"INFLATIONARY",ch:"FCI elevated, rate pressure, credit stress rising",strat:"M16 Gravity",risk:"Low",speed:"Deliberate",role:"Df+Gk"},
+  {r:"LIQUIDITY_FLOOD",ch:"FCI loose, easy credit, risk-on appetite",strat:"SNIPER",risk:"Medium",speed:"Aggressive",role:"St+Mf"},
+  {r:"CREDIT_CRUNCH",ch:"Spread blowout, funding stress, flight to quality",strat:"FALLBACK",risk:"Minimum",speed:"Exit",role:"Gk+O"},
+];
+const regimeColors={"TREND":"#4a9eff","MEAN_REVERSION":"#1fd8b8","SHOCK":"#e05555","MANIPULATED":"#e05555",
+                    "DEAD_ZONE":"#4a5568","INFLATIONARY":"#e8a030","LIQUIDITY_FLOOD":"#38c060","CREDIT_CRUNCH":"#e05555"};
+const rr=document.getElementById('regimeRows');
+regimes.forEach(r=>{
+  const c=regimeColors[r.r]||'#888';
+  rr.innerHTML+=`<div class="rt-row"><span class="rt-regime" style="color:${c}">${r.r}</span><span class="rt-cell">${r.ch}</span><span class="rt-cell" style="font-family:var(--mono);font-size:10px;color:${c}">${r.strat}</span><span class="rt-cell">${r.risk}</span><span class="rt-cell">${r.speed}</span><span class="rt-cell" style="font-family:var(--mono);font-size:11px;color:${c}">${r.role}</span></div>`;
+});
+
+// DECISION SCORING
+const dsblocks=[
+  {label:"Perception",color:"var(--blue)",items:["Signal quality Q_t · weighted layers","Distortion advantage DG_t","Belief state entropy H(b_t)","Phase multiplier (PRE×3, NAR×1.5, TERM×0.3)","Information decay rate dIA/dt"]},
+  {label:"Interpretation",color:"var(--purple)",items:["CIE × CC (creative × cultural)","Power food chain FD_adj","Incentive compatibility IC_i","Macro regime fit (S7B β_i)","Narrative momentum N_t","Actor type belief P(θ|m)"]},
+  {label:"Exec Readiness",color:"var(--green)",items:["Timing quality TQ (proximity score)","Agent fitness Score_a","Belief confidence (1−H(b_t))","Kelly capacity f* available","PROCESS_QUALITY_SCORE ≥4/5","VOI urgency ΔEV_wait sign"]},
+  {label:"Penalty",color:"var(--red)",items:["COLLAPSE_PROBABILITY","Portfolio correlation ρ_adj","Internal strain (1−O_quality)","KALI_YUGA noise multiplier","SurvivorshipBias term","Queue pressure ρ=λ/μ"]},
+];
+const df=document.getElementById('dsFlow');
+dsblocks.forEach(b=>{
+  df.innerHTML+=`<div class="ds-block"><div class="ds-label" style="color:${b.color}">${b.label}</div><div class="ds-items">${b.items.map(i=>`<div class="ds-item">${i}</div>`).join('')}</div></div>`;
+});
+document.getElementById('dsEqFinal').innerHTML=`ActionScore = Perception + Interpretation + ExecutionReadiness − Penalty
+
+w_t = c · (MVP_t / σ_t²) · g(CAL_t, PQ_t, ρ_t)
+
+MVP_t feeds directly to position size · If MVP_t &lt; threshold: FIRE_MODE = NONE · PROCESS_QUALITY 5/5 mandatory gate`;
+
+// DATA STRUCTURES
+const structs=[
+  {name:"ThesisObject",fields:[["id","UUID"],["thesis_vector","[s,r,b,q,e,c,d,v] ℝ⁸"],["belief_state","P(s)∈ΔS"],["leave_score","ℝ[0,10]"],["phase","ENUM"],["actor_ic_map","Dict[actor_id→IC_i]"],["food_chain","Dict[actor_id→FD_adj]"],["maturation","ENUM"],["narrative_momentum","N_t ℝ"],["collapse_probability","σ(αE+βV+…) ℝ"],["kelly_fraction","f* ℝ"],["reality_score","MILK_TEST ℝ"],["improving","ENUM ↑/→/↓"],["clv_target","ℝ"],["simulation_score","ℝ[0,1]"]]},
+  {name:"OperatorStateObject",fields:[["arousal_state","ENUM"],["role_weights","Dict[role→ℝ]"],["cie_score","V×N×D×Rh×M−Cost"],["process_quality","INT[0/5]"],["moltbook_deficit","Σtrauma−Σforgive"],["queue_pressure","ρ=λ/μ"],["cooldown_remaining","seconds"],["session_phase","DRIFT/LOCK"]]},
+  {name:"PortfolioStateObject",fields:[["positions","List[ThesisObject]"],["correlation_matrix","Σ∈ℝⁿˣⁿ"],["effective_N","1/Σw_i²"],["total_exposure","Σ|w_i|"],["regime_current","R_t ENUM"],["fci_score","FCI_t ℝ"],["kali_yuga_active","BOOL"],["gwent_period_cap","remaining ℝ"]]},
+  {name:"MoltbookEntry",fields:[["trade_id","UUID"],["clv_actual","ℝ"],["clv_expected","ℝ"],["reality_score","ℝ"],["attribution_vec","[β₁..β₅]"],["shapley_vec","[φ₁..φₙ]"],["loss_category","A/B/C"],["shadow_active","ENUM"],["improving_label","↑/→/↓"],["mastery_delta","ΔMastery"]]},
+  {name:"RegimeObject",fields:[["regime_id","R_t ENUM"],["fci","FCI_t ℝ"],["macro_vec","x_t=[g,π,r,ℓ,c]"],["regime_probability","P(R_t=k) ℝ"],["optimal_agent","A* ENUM"],["role_weights","Dict[role→ℝ]"],["signal_sensitivity","β_i ℝⁿ"],["persistence","ρ_regime ℝ"]]},
+  {name:"SignalObject",fields:[["signal_id","UUID"],["raw_score","ℝ"],["distortion_gap","DG_t ℝ"],["quality_layers","[Q_foam..Q_latent]"],["signal_temp","dominant_layer"],["source_weight","ℝ"],["belief_update","b_t→b_{t+1}"],["voi_estimate","VOI(X) ℝ"],["timestamp","UTC"],["temporal_valid","BOOL"]]},
+];
+const dsg=document.getElementById('dsStructs');
+structs.forEach(s=>{
+  const fields=s.fields.map(f=>`<div class="ds-field"><span class="ds-fname">${f[0]}</span><span class="ds-ftype">${f[1]}</span></div>`).join('');
+  dsg.innerHTML+=`<div class="ds-struct"><div class="ds-struct-name">${s.name}</div>${fields}</div>`;
+});
+
+// SCORECARDS
+const mods=[
+  {c:"S0",n:"Signal Ingestion",s:9.12,p:9.12,ceil:9.8,wt:12,gap:"TOOLING",col:"#4a9eff",note:"S0B Queue + DistortionShell + FoodChain actor intake"},
+  {c:"S1",n:"Signal Layer",s:9.11,p:9.11,ceil:9.8,wt:10,gap:"CEILING",col:"#1fd8b8",note:"S1B Belief State + S1C VOI + signal temperature grading"},
+  {c:"S2",n:"Narrative Engine",s:9.80,p:9.80,ceil:9.8,wt:10,gap:"CEILING",col:"#4ade80",note:"At ceiling. CC decay model + SCHELLING + DEMIURGE"},
+  {c:"S3A",n:"Actor Layer",s:8.98,p:8.96,ceil:9.2,wt:10,gap:"STRUCTURAL",col:"#8b8fa8",note:"+0.02 — FOOD_CHAIN FD_adj + AGENT_SELECTION formal arbitration"},
+  {c:"S3B",n:"Capital Flow",s:8.88,p:8.88,ceil:9.8,wt:8,gap:"TOOLING",col:"#4a9eff",note:"No change."},
+  {c:"S35",n:"Decision Quality",s:9.59,p:9.57,ceil:9.8,wt:10,gap:"CEILING",col:"#4ade80",note:"+0.02 — ROLE_ARCHITECTURE arbitration + MILK_TEST + Master Equation"},
+  {c:"S4",n:"Execution Engine",s:9.66,p:9.64,ceil:9.9,wt:10,gap:"EMPIRICAL",col:"#9b7ff0",note:"+0.02 — MASTER_EQUATION w_t + CIE multiplicative + agent ensemble"},
+  {c:"ATOM",n:"ATOM Object",s:8.90,p:8.90,ceil:9.8,wt:10,gap:"DESIGN DEBT",col:"#f59e0b",note:"Retire CORE_35 before next trade."},
+  {c:"S5",n:"Calibration",s:8.03,p:8.02,ceil:9.5,wt:6,gap:"EMPIRICAL",col:"#9b7ff0",note:"+0.01 — SURVIVORSHIP_CORRECTION Mastery + MILK_TEST reality score"},
+  {c:"S7",n:"Regime Detection",s:9.32,p:9.31,ceil:9.8,wt:8,gap:"EMPIRICAL",col:"#9b7ff0",note:"+0.01 — REGIME_ROLE_MAP + 8-regime classification table"},
+  {c:"S8",n:"Operator State",s:9.79,p:9.78,ceil:9.9,wt:8,gap:"CEILING",col:"#4ade80",note:"+0.01 — CIE operator intelligence layer · 5-component multiplicative"},
+  {c:"S9",n:"Sizing & Execution",s:8.19,p:8.18,ceil:9.7,wt:7,gap:"TOOLING",col:"#4a9eff",note:"+0.01 — ENSEMBLE agent + FALLBACK mode + switching cost"},
+  {c:"CAL",n:"Calibration Engine",s:5.10,p:5.10,ceil:10.0,wt:10,gap:"DATA VOID",col:"#e05555",note:"Unchanged. Architecture complete. T=2. Execute."},
+];
+const gapCol={"TOOLING":"#4a9eff","EMPIRICAL":"#9b7ff0","STRUCTURAL":"#8b8fa8","CEILING":"#4ade80","DESIGN DEBT":"#f59e0b","DATA VOID":"#e05555"};
+const cg2=document.getElementById('cards');
+mods.forEach(m=>{
+  const pct=(m.s/10*100).toFixed(0);const cpct=(m.ceil/10*100).toFixed(0);
+  const d=(m.s-m.p).toFixed(2);const moved=parseFloat(d)>0;
+  const gc=gapCol[m.gap]||'#888';
+  cg2.innerHTML+=`<div class="card" style="--c:${m.col}"><div class="card-h"><span class="card-code">${m.c}</span><span class="card-wt">wt:${m.wt}%</span></div><div class="card-score" style="color:${m.col}">${m.s.toFixed(2)}</div><div class="card-delta" style="color:${moved?'#38c060':'#4a5568'}">${moved?'+'+d:'—'}</div><div class="card-bar"><div class="card-ceil" style="width:${cpct}%;background:${m.col}"></div><div class="card-fill" style="width:${pct}%;background:${m.col}"></div></div><div class="card-gap" style="color:${gc}">${m.gap}</div><div class="card-note">${m.note}</div></div>`;
+});
+
+// IMPLEMENTATION
+const phases=[
+  {label:"Now (paper trading)",col:"var(--red)",items:[
+    {n:"1",name:"Retire ATOM CORE",note:"95→35 fields before next trade"},
+    {n:"2",name:"CLV every trade",note:"Screenshot at exact entry moment"},
+    {n:"3",name:"Moltbook 5-channel",note:"All 5 per closed trade"},
+    {n:"4",name:"ROLE_ARCHITECTURE",note:"Classify active role per session"},
+    {n:"5",name:"AGENT_SELECTION",note:"Name the mode before executing"},
+  ]},
+  {label:"Apr 25 — T=10",col:"var(--amber)",items:[
+    {n:"1",name:"MW first signal",note:"ε=0.56, first direction"},
+    {n:"2",name:"SURVIVORSHIP audit",note:"Compute Mastery for each closed trade"},
+    {n:"3",name:"FOOD_CHAIN map",note:"FD_adj for 5 key actors per thesis"},
+    {n:"4",name:"MILK_TEST live",note:"RealityScore tracking begins"},
+    {n:"5",name:"S1B belief state",note:"Probability distribution per thesis"},
+  ]},
+  {label:"June 1 — calibration paste",col:"var(--teal)",items:[
+    {n:"1",name:"SPSA simultaneous",note:"All params at once, T=35"},
+    {n:"2",name:"Attribution S10",note:"Shapley vector → weight update"},
+    {n:"3",name:"S9B portfolio",note:"Correlation matrix from 35 trades"},
+    {n:"4",name:"Simulation Lab S6",note:"First adversarial pass"},
+    {n:"5",name:"CIE baseline",note:"Score operator components formally"},
+  ]},
+  {label:"July 1 — real money",col:"var(--green)",items:[
+    {n:"1",name:"IBKR live",note:"SNIPER only, QUARTER_UNIT max"},
+    {n:"2",name:"All 7 APIs",note:"8 Gambits in n8n automation"},
+    {n:"3",name:"Macro transmission",note:"FCI + β_i sensitivity live"},
+    {n:"4",name:"Master Equation",note:"MVP_t driving sizing in real-time"},
+    {n:"5",name:"Full evolution loop",note:"Policy updates after every trade"},
+  ]},
+];
+const ip=document.getElementById('implPhases');
+phases.forEach(p=>{
+  const items=p.items.map(i=>`<div class="impl-item"><span class="impl-num">${i.n}</span><div><div class="impl-name">${i.name}</div><div class="impl-note">${i.note}</div></div></div>`).join('');
+  ip.innerHTML+=`<div class="impl-phase" style="border-top:2px solid ${p.col}"><div class="impl-phase-label" style="color:${p.col}">${p.label}</div>${items}</div>`;
+});
+</script>
+</body>
+</html>

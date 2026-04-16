@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
+body{font-size:12px;padding:16px;background:#fff;color:#111}
+.hero{border:1px solid #e5e7eb;border-radius:10px;padding:14px 16px;margin-bottom:12px;background:#f9fafb}
+.sec{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#888;margin:14px 0 7px;padding-bottom:4px;border-bottom:1px solid #e5e7eb}
+
+/* processing order */
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:12px}
+.step{border:1px solid #e5e7eb;border-radius:6px;padding:7px 8px}
+.sn{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px}
+.st{font-size:9px;font-weight:600;margin-bottom:2px;line-height:1.2}
+.sd{font-size:8px;color:#555;line-height:1.3}
+.new-badge{display:inline-block;font-size:8px;font-weight:700;background:#185FA5;color:#fff;padding:1px 4px;border-radius:2px;margin-bottom:2px}
+
+/* new engines */
+.engines{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+.eng{border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px}
+.eng-t{font-size:11px;font-weight:700;margin-bottom:3px}
+.eng-tag{font-size:9px;font-weight:600;padding:2px 6px;border-radius:3px;display:inline-block;margin-bottom:5px}
+.eng-d{font-size:9px;color:#444;line-height:1.5}
+.eng-out{font-size:9px;padding:5px 8px;border-radius:5px;margin-top:5px;line-height:1.5}
+
+/* leicester prime */
+.lp{border:1px solid #E2C97E;border-left:4px solid #E2C97E;background:#FFFDF0;border-radius:8px;padding:11px 13px;margin-bottom:12px}
+
+/* flow dynamics */
+.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:12px}
+.fc{border:1px solid #e5e7eb;border-radius:6px;padding:7px 9px}
+.fc-t{font-size:10px;font-weight:600;margin-bottom:2px}
+.fc-d{font-size:9px;color:#555;line-height:1.4}
+
+/* scorecard */
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}
+.card{border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;border-left:4px solid #888}
+.ch{padding:8px 10px 6px}
+.ct{display:flex;justify-content:space-between;margin-bottom:3px}
+.ccode{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#888}
+.cwt{font-size:9px;color:#888;background:#f3f4f6;padding:1px 4px;border-radius:3px}
+.crow{display:flex;align-items:flex-end;gap:5px;margin-bottom:4px}
+.cs{font-size:24px;font-weight:500;line-height:1}
+.cbar{height:4px;background:#f3f4f6;border-radius:2px;position:relative;overflow:hidden;margin-bottom:4px}
+.cbl{height:100%;border-radius:2px;position:absolute;left:0;top:0}
+.cn{font-size:9px;color:#555;line-height:1.3}
+.bottom{border:1px solid #e5e7eb;border-left:3px solid #1F3864;border-radius:10px;padding:11px 14px;font-size:11px;color:#444;line-height:1.75}
+</style></head><body>
+
+<div class="hero">
+  <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:10px">
+    <div>
+      <div style="display:flex;align-items:baseline;gap:8px">
+        <div style="font-size:40px;font-weight:400;color:#888;text-decoration:line-through;line-height:1">9.07</div>
+        <div style="font-size:16px;color:#888">→</div>
+        <div style="font-size:56px;font-weight:500;line-height:1;color:#27500A">9.09</div>
+      </div>
+    </div>
+    <div style="flex:1;padding-top:4px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px">Pipeline V5.2 — Pre-Signal / Tokenisation / Diffusion Patch</div>
+      <div style="font-size:11px;color:#555;line-height:1.75">
+        <strong>7 genuine new engines</strong> · Score +0.02 · 9 modules moved · Total V2: <strong style="color:#27500A">+2.21</strong><br>
+        S0 +0.03 · S2 +0.02 · S3A +0.03 · S3B +0.03 · S35 +0.02 · S4 +0.02 · S7 +0.01 · S8 +0.01 · S9 +0.02<br>
+        <strong style="color:#1F3864">The pipeline now has Step -1. It looks before the signal arrives.</strong>
+      </div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:5px">
+    <div style="border:1px solid #e5e7eb;border-radius:6px;padding:7px;text-align:center;background:#fff"><div style="font-size:18px;font-weight:600;color:#27500A">9.09</div><div style="font-size:8px;color:#555">New Score</div></div>
+    <div style="border:1px solid #e5e7eb;border-radius:6px;padding:7px;text-align:center;background:#fff"><div style="font-size:18px;font-weight:600;color:#185FA5">7</div><div style="font-size:8px;color:#555">New Engines</div></div>
+    <div style="border:1px solid #e5e7eb;border-radius:6px;padding:7px;text-align:center;background:#fff"><div style="font-size:18px;font-weight:600;color:#27500A">~9.76</div><div style="font-size:8px;color:#555">Ceiling</div></div>
+    <div style="border:1px solid #e5e7eb;border-radius:6px;padding:7px;text-align:center;background:#fff"><div style="font-size:18px;font-weight:600;color:#E2C97E">PRIME</div><div style="font-size:8px;color:#555">Leicester Prime<br>new category</div></div>
+    <div style="border:1px solid #e5e7eb;border-radius:6px;padding:7px;text-align:center;background:#fff"><div style="font-size:18px;font-weight:600;color:#A32D2D">+2.21</div><div style="font-size:8px;color:#555">Total V2</div></div>
+  </div>
+</div>
+
+<div class="sec">Updated 12-step processing order (V5.2)</div>
+<div class="steps">
+  <div class="step" style="background:#f0f4ff;border-color:#185FA5">
+    <div class="new-badge">NEW −1</div>
+    <div class="st">PRE_SIGNAL_TENSION</div>
+    <div class="sd">5 structural dimensions before any signal. structural_mismatch · friction · trust_gradient · silent_positioning · implementation_proximity</div>
+  </div>
+  <div class="step" style="background:#f0f4ff;border-color:#185FA5">
+    <div class="new-badge">NEW −0.5</div>
+    <div class="st">OBSERVABLE_STATE</div>
+    <div class="sd">OBSERVABLE_CONFIRMED / STRUCTURALLY_INFERRED / NARRATIVE_PROJECTED / MYSTICAL_NOISE</div>
+  </div>
+  <div class="step"><div class="sn" style="color:#27500A">Step 0</div><div class="st">Information Decay</div><div class="sd">Signal freshness check. FAST/MEDIUM/SLOW half-life</div></div>
+  <div class="step"><div class="sn" style="color:#27500A">Step 1</div><div class="st">Temporal Inertia</div><div class="sd">TRUE/FAKE/EXHAUSTED/REVERSAL</div></div>
+  <div class="step"><div class="sn" style="color:#27500A">Step 2</div><div class="st">Ingestion Gate</div><div class="sd">Red Light / Green Light. z_sentiment threshold</div></div>
+  <div class="step"><div class="sn" style="color:#27500A">Step 3</div><div class="st">Layer Assignment</div><div class="sd">Whisper Layer 1-5. layer_distance. distortion_prior</div></div>
+  <div class="step"><div class="sn" style="color:#27500A">Step 4</div><div class="st">FEMI/DEMI</div><div class="sd">Coordination burst. Account suspicion. LLM bias check</div></div>
+  <div class="step"><div class="sn" style="color:#27500A">Step 5</div><div class="st">Distillation</div><div class="sd">LOW/MID/HIGH/RESIDUE fractions + grade</div></div>
+  <div class="step"><div class="sn" style="color:#27500A">Step 6</div><div class="st">Capital Flow</div><div class="sd">On-chain + institutional + Kalshi OI validation</div></div>
+  <div class="step" style="background:#f0f4ff;border-color:#185FA5">
+    <div class="new-badge">NEW 6.5</div>
+    <div class="st">Flow Dynamics</div>
+    <div class="sd">Diffusion · Drift · Viscosity · Turbulence · Channel Migration · Pressure Release</div>
+  </div>
+  <div class="step"><div class="sn" style="color:#27500A">Step 7</div><div class="st">Time Stack</div><div class="sd">past×present×future alignment. alignment_score</div></div>
+  <div class="step"><div class="sn" style="color:#27500A">Steps 8-10</div><div class="st">Survival → Position → Fire Mode</div><div class="sd">Funnel → Cristiano → NONE/SNIPER/M16/UZI</div></div>
+</div>
+
+<div class="sec">7 genuine new engines</div>
+<div class="engines">
+  <div class="eng" style="border-top:3px solid #1F3864">
+    <div class="eng-t">PRE_SIGNAL_TENSION_CHECK</div>
+    <div class="eng-tag" style="background:#DEEAF1;color:#1F3864">S0+S2 · Step -1 · Largest addition</div>
+    <div class="eng-d">Runs before any signal arrives. 5 structural dimensions: structural_mismatch (policy not yet priced, rails outdated for demand), infrastructure_friction (reconciliation bottlenecks, fragmented standards), trust_gradient (CB/commercial/private/narrative_only), silent_positioning (pilot programs, policy papers, standards work — non-loud preparation), implementation_proximity (FAR/FORMING/BUILDING/RELEASE_IMMINENT).</div>
+    <div class="eng-out" style="background:#DEEAF1;color:#1F3864">Output: pre_signal_score [0-10] + field_state. NEVER enter on pre-signal alone. Upgrades attention allocation. Converts only when PRE_SIGNAL + MID_TEMP + capital flow align.</div>
+  </div>
+  <div class="eng" style="border-top:3px solid #185FA5">
+    <div class="eng-t">OBSERVABLE_STATE_CLASSIFIER</div>
+    <div class="eng-tag" style="background:#DEEAF1;color:#185FA5">S35+S2 · Step -0.5</div>
+    <div class="eng-d">4-class formal taxonomy: OBSERVABLE_CONFIRMED (visible data + capital flow + corroboration), STRUCTURALLY_INFERRED (mechanism forming, partial confirmation), NARRATIVE_PROJECTED (coherent story, insufficient evidence), MYSTICAL_NOISE (vibes, intuition, no testable mechanism — discard). Only OBSERVABLE_CONFIRMED triggers normal evaluation. STRUCTURALLY_INFERRED enters shadow book. Prevents the biggest failure mode: acting on NARRATIVE_PROJECTED that feels like OBSERVABLE_CONFIRMED.</div>
+    <div class="eng-out" style="background:#DEEAF1;color:#185FA5">Gate: MYSTICAL_NOISE → immediate discard. NARRATIVE_PROJECTED → shadow book watchlist only.</div>
+  </div>
+  <div class="eng" style="border-top:3px solid #3B6D11">
+    <div class="eng-t">FLOW_DYNAMICS_ENGINE</div>
+    <div class="eng-tag" style="background:#E2EFDA;color:#3B6D11">S3B+S7 · Step 6.5</div>
+    <div class="eng-d">6-component fluid decomposition: DIFFUSION (random spreading, noise-heavy), DRIFT (directional from policy/liquidity/trust/regulatory gradient — drift_strength [0-10]), VISCOSITY (what slows: legal barriers, infra inertia, KYC friction), TURBULENCE (chaotic eddies: social spikes, manipulation), CHANNEL_MIGRATION (how value moves across containers), PRESSURE_RELEASE (NONE/BEGINNING/ACTIVE/EXHAUSTING).</div>
+    <div class="eng-out" style="background:#E2EFDA;color:#3B6D11">High viscosity + strong structural mismatch = IGNORED setup candidate. Pressure release after long viscosity = dangerous_position if other gates align.</div>
+  </div>
+  <div class="eng" style="border-top:3px solid #854F0B">
+    <div class="eng-t">TOKEN_SYSTEM_MAP</div>
+    <div class="eng-tag" style="background:#FFF2E2;color:#854F0B">S3A+S9 · Fintech/CBDC domain</div>
+    <div class="eng-d">10-dimension monetary architecture map for tokenisation/CBDC/stablecoin theses: unit_of_account, trust_anchor, settlement_asset, finality_layer, interoperability_state, programmability_depth, two_tier_integrity, fragmentation_risk, run_risk, governance_density. Prevents misprice of infrastructure narratives by demanding trust_anchor + finality + programmability to coexist before classifying as PREMIUM. Unified ledger strongest when all three present.</div>
+    <div class="eng-out" style="background:#FFF2E2;color:#854F0B">Tokenisation without central bank anchor often stays siloed. Stablecoins strong on programmability, weak on singleness/run_risk/governance.</div>
+  </div>
+  <div class="eng" style="border-top:3px solid #888780">
+    <div class="eng-t">STABLECOIN_FILTER</div>
+    <div class="eng-tag" style="background:#f3f4f6;color:#888780">S3A+S2 · Dual signal discipline</div>
+    <div class="eng-d">9-dimension filter forcing dual reading: issuer_type, reserve_quality, redemption_strength, remuneration_status, run_risk, concentration_risk, monetary_sovereignty_risk, settlement_role, verdict. Verdict: USEFUL_APPENDAGE / STRUCTURAL_RISK / BOTH. Large stablecoin adoption = both innovation signal AND fragility signal simultaneously. Never rate stablecoin growth as pure bullishness.</div>
+    <div class="eng-out" style="background:#f3f4f6;color:#555">Stablecoin sandwich logic: useful as settlement path-through, creates sovereignty/trust/regulatory questions.</div>
+  </div>
+  <div class="eng" style="border-top:3px solid #27500A">
+    <div class="eng-t">MEASUREMENT_HUMILITY_RULE</div>
+    <div class="eng-tag" style="background:#E2EFDA;color:#27500A">S8+S35 · Epistemic discipline</div>
+    <div class="eng-d">5-step inspection when data and outcome diverge: (1) inspect proxy quality, (2) inspect missing layer, (3) inspect timing mismatch, (4) inspect structure, (5) never jump to mystical/fantasy explanation. Prevents both premature model abandonment AND premature model defense. The NDE/Lancet meta-lesson: visible metrics can miss underlying state, but unexplained ≠ magical. Measurement may be incomplete, proxy inadequate, or mechanism upstream of current instrumentation.</div>
+    <div class="eng-out" style="background:#E2EFDA;color:#27500A">Humility before causality. Discipline before narrative.</div>
+  </div>
+</div>
+
+<div class="sec">LEICESTER_PRIME — the composite trigger (Section J)</div>
+<div class="lp">
+  <div style="font-size:12px;font-weight:700;color:#854F0B;margin-bottom:8px">◈ LEICESTER_PRIME — Most Asymmetric Category in the System</div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px">
+    <div style="border:1px solid #E2C97E;border-radius:6px;padding:7px;text-align:center">
+      <div style="font-size:9px;font-weight:600;color:#854F0B;margin-bottom:2px">Condition 1</div>
+      <div style="font-size:11px;font-weight:600">visibility = IGNORED</div>
+      <div style="font-size:9px;color:#555">Structurally valid, crowd dismissed</div>
+    </div>
+    <div style="border:1px solid #E2C97E;border-radius:6px;padding:7px;text-align:center">
+      <div style="font-size:9px;font-weight:600;color:#854F0B;margin-bottom:2px">Condition 2</div>
+      <div style="font-size:11px;font-weight:600">PRE_SIGNAL ≥ BUILDING</div>
+      <div style="font-size:9px;color:#555">Structural tension accumulating</div>
+    </div>
+    <div style="border:1px solid #E2C97E;border-radius:6px;padding:7px;text-align:center">
+      <div style="font-size:9px;font-weight:600;color:#854F0B;margin-bottom:2px">Condition 3</div>
+      <div style="font-size:11px;font-weight:600">drift_strength ≥ 7</div>
+      <div style="font-size:9px;color:#555">Strong directional gradient</div>
+    </div>
+    <div style="border:1px solid #E2C97E;border-radius:6px;padding:7px;text-align:center">
+      <div style="font-size:9px;font-weight:600;color:#854F0B;margin-bottom:2px">Condition 4</div>
+      <div style="font-size:11px;font-weight:600">CAPITAL_FLOW = CONFIRMS</div>
+      <div style="font-size:9px;color:#555">Money moving in narrative direction</div>
+    </div>
+  </div>
+  <div style="font-size:10px;color:#444;line-height:1.7">
+    All 4 must fire simultaneously. <strong>LEICESTER_TYPE</strong> (previous session) = asymmetric edge archetype. <strong>LEICESTER_PRIME</strong> = the specific 4-condition convergence. The crowd has dismissed it (IGNORED). Structural tension is building upstream (PRE_SIGNAL). The directional gradient is strong (drift ≥7). Capital is confirming (flow). This is what the entire pipeline architecture was built to find. <br>
+    <strong style="color:#A32D2D">Rules: SNIPER only · patience mandatory · exact invalidation required · never size up without loop_completion_score >0.8</strong>
+  </div>
+</div>
+
+<div class="sec">FLOW_DYNAMICS — 6-component fluid decomposition</div>
+<div class="flow">
+  <div class="fc"><div class="fc-t">Diffusion</div><div class="fc-d">Random spreading. Noise-heavy. Non-directional. High diffusion + low drift = noise field. Don't act.</div></div>
+  <div class="fc"><div class="fc-t">Drift [0-10]</div><div class="fc-d">Directional from gradient (policy/liquidity/trust/regulatory). High drift + medium diffusion + low visibility = early edge.</div></div>
+  <div class="fc"><div class="fc-t">Viscosity</div><div class="fc-d">What SLOWS migration: legal barriers, infra inertia, KYC, capital controls, legacy institutions. High viscosity + strong mismatch = IGNORED candidate.</div></div>
+  <div class="fc"><div class="fc-t">Turbulence</div><div class="fc-d">Chaotic eddies: social spikes, manipulation, political shocks. High turbulence + high visibility = late danger. Do not enter.</div></div>
+  <div class="fc"><div class="fc-t">Channel Migration</div><div class="fc-d">How value moves across containers: cash → deposits → stablecoins → tokenised → CBDC. Which channel is gaining?</div></div>
+  <div class="fc"><div class="fc-t">Pressure Release</div><div class="fc-d">NONE/BEGINNING/ACTIVE/EXHAUSTING. Pressure release after long viscosity = dangerous_position setup if all other gates align.</div></div>
+</div>
+
+<div class="sec">13 module scorecards — V5.2 state</div>
+<div class="grid" id="cards"></div>
+
+<div class="bottom">
+<strong>Score: 9.07 → 9.09. +0.02. 7 genuine new engines. 9 modules moved. Total V2: +2.21.</strong><br><br>
+This is the first structured patch in the pipeline's history — not a philosophical spec but a technical upgrade with defined inputs, outputs, and processing rules. It adds a Step -1 layer that runs before any signal arrives. Previously the pipeline started at ingestion (signal received, begin processing). Now it starts at pre-signal tension assessment: is structural tension forming before capital moves and before language forms? The 5-dimension PRE_SIGNAL_TENSION_CHECK evaluates structural_mismatch, infrastructure_friction, trust_gradient, silent_positioning, and implementation_proximity before any market signal is considered. Never enter on pre-signal alone — it upgrades attention allocation and patience. It converts to a tradeable signal only when pre-signal builds to BUILDING/RELEASE_IMMINENT and then MID_TEMP signal + capital flow align on top.<br><br>
+<strong style="color:#185FA5">OBSERVABLE_STATE_CLASSIFIER</strong> addresses the most dangerous failure mode in the pipeline: treating NARRATIVE_PROJECTED signals as OBSERVABLE_CONFIRMED. The 4-state taxonomy (Observable/Structural/Narrative/Mystical) forces explicit state declaration before evaluation proceeds. MYSTICAL_NOISE is discarded immediately. NARRATIVE_PROJECTED enters the shadow book as a watchlist item only. This is the MEASUREMENT_HUMILITY_RULE's companion gate — both stem from the same epistemic discipline: absence of visible signal ≠ absence of structure, but unexplained ≠ magical.<br><br>
+<strong style="color:#3B6D11">FLOW_DYNAMICS_ENGINE</strong> adds the VISCOSITY dimension that was missing. The pipeline had diffusion speed (narrative_contagion_rate) and movement type (war_style_classifier). What it lacked was a formal measure of what is SLOWING migration — legal barriers, infrastructure inertia, KYC friction, capital controls. High viscosity combined with strong structural mismatch = the IGNORED setup candidate. When pressure finally releases after high-viscosity accumulation, that is the dangerous_position trigger if all other gates align simultaneously. This is why LEICESTER_PRIME requires all 4 conditions — ignored + pre_signal building + drift strong + capital confirming — because the long viscosity period that produces IGNORED visibility is exactly what makes the eventual release asymmetric.
+</div>
+
+<script>
+const mods=[
+  {code:'S0',wt:12,v2:6.5,prev:8.71,cur:8.74,ceil:9.8,gap:'TOOLING',note:'+0.03 — PRE_SIGNAL_TENSION_CHECK adds Step -1 upstream layer.'},
+  {code:'S1',wt:10,v2:7.0,prev:9.01,cur:9.01,ceil:9.8,gap:'CEILING',note:'No change.'},
+  {code:'S2',wt:10,v2:6.8,prev:9.22,cur:9.24,ceil:9.8,gap:'CEILING',note:'+0.02 — LEICESTER_PRIME + OBSERVABLE_STATE + STABLECOIN_FILTER.'},
+  {code:'S3A',wt:10,v2:6.5,prev:8.56,cur:8.59,ceil:9.2,gap:'STRUCTURAL',note:'+0.03 — TOKEN_SYSTEM_MAP + STABLECOIN_FILTER domain module.'},
+  {code:'S3B',wt:8,v2:7.2,prev:8.62,cur:8.65,ceil:9.8,gap:'TOOLING',note:'+0.03 — FLOW_DYNAMICS_ENGINE: drift/viscosity/pressure_release.'},
+  {code:'S35',wt:10,v2:6.8,prev:9.11,cur:9.13,ceil:9.8,gap:'CEILING',note:'+0.02 — OBSERVABLE_STATE_CLASSIFIER + MEASUREMENT_HUMILITY.'},
+  {code:'S4',wt:10,v2:6.5,prev:9.15,cur:9.17,ceil:9.9,gap:'EMPIRICAL',note:'+0.02 — LEICESTER_PRIME composite trigger formalises edge archetype.'},
+  {code:'ATOM',wt:10,v2:6.0,prev:8.90,cur:8.90,ceil:9.8,gap:'DESIGN DEBT',note:'No change. Retire before next trade.'},
+  {code:'S5',wt:6,v2:6.5,prev:7.84,cur:7.84,ceil:9.5,gap:'EMPIRICAL',note:'No change.'},
+  {code:'S7',wt:8,v2:6.8,prev:8.80,cur:8.81,ceil:9.8,gap:'EMPIRICAL',note:'+0.01 — FLOW_DYNAMICS turbulence/channel migration detection.'},
+  {code:'S8',wt:8,v2:6.5,prev:9.45,cur:9.46,ceil:9.9,gap:'CEILING',note:'+0.01 — MEASUREMENT_HUMILITY_RULE 5-step inspection sequence.'},
+  {code:'S9',wt:7,v2:6.8,prev:7.98,cur:8.00,ceil:9.7,gap:'TOOLING',note:'+0.02 — TOKEN_SYSTEM_MAP requires EDGAR + on-chain data layer.'},
+  {code:'CAL',wt:10,v2:3.0,prev:4.58,cur:4.58,ceil:10.0,gap:'DATA VOID',note:'Unchanged. 62% of gap. LEICESTER_PRIME calibration requires T≥10.'},
+];
+const gapC={'TOOLING':'#185FA5','EMPIRICAL':'#3B6D11','STRUCTURAL':'#888780','CEILING':'#27500A','DESIGN DEBT':'#854F0B','DATA VOID':'#A32D2D'};
+const sc=v=>v>=9.2?'#27500A':v>=9.0?'#3B6D11':v>=8.85?'#0F6E56':v>=7.5?'#185FA5':v>=5.0?'#854F0B':'#A32D2D';
+const g=document.getElementById('cards');
+mods.forEach(m=>{
+  const d2=(m.cur-m.v2).toFixed(1);
+  const dp=(m.cur-m.prev).toFixed(2);
+  const pN=(m.cur/10*100).toFixed(0);const pC=(m.ceil/10*100).toFixed(0);
+  const col=sc(m.cur);const cc=sc(m.ceil);const gc=gapC[m.gap]||'#888780';
+  const moved=parseFloat(dp)>0;
+  const card=document.createElement('div');card.className='card';card.style.borderLeftColor=col;
+  if(moved)card.style.outline='2px solid #185FA5';
+  card.innerHTML=`<div class="ch">
+<div class="ct"><span class="ccode">${m.code}</span><span class="cwt">wt:${m.wt}%</span></div>
+<div class="crow"><div class="cs" style="color:${col}">${m.cur.toFixed(2)}</div>
+<div style="display:flex;flex-direction:column;gap:1px;padding-bottom:2px">
+<span style="font-size:9px;color:#888">v2:${m.v2}(+${d2})</span>
+<span style="font-size:10px;font-weight:700;color:${moved?'#185FA5':'#ccc'}">${moved?'+'+dp:'—'}</span>
+</div></div>
+<div class="cbar">
+<div class="cbl" style="width:${pC}%;background:${cc};opacity:.15"></div>
+<div class="cbl" style="width:${pN}%;background:${col};opacity:.7"></div></div>
+<div style="font-size:8px;font-weight:600;color:${gc};margin-bottom:2px">${m.gap}</div>
+<div class="cn">${m.note}</div></div>`;
+  g.appendChild(card);
+});
+</script>
+</body></html>

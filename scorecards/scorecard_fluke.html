@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pipeline V5.7+ — Scorecard · Fluke/Source Session</title>
+<style>
+:root{
+  --bg:#09090c;--bg2:#111118;--bg3:#181820;
+  --bd:#1c1c28;--bd2:#28283a;
+  --tx:#e2e2f0;--tx2:#8a8aa8;--tx3:#4a4a68;
+  --ac:#5577ff;--gr:#22c55e;--rd:#ef4444;
+  --or:#f97316;--yl:#eab308;--pu:#a855f7;
+  --te:#14b8a6;--pk:#ec4899
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:'SF Mono',ui-monospace,monospace;padding:28px 22px 60px;font-size:12.5px;min-height:100vh}
+
+/* HEADER */
+.hdr{margin-bottom:24px}
+.hdr-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:4px}
+.hdr-title{font-size:.95rem;font-weight:700;letter-spacing:.02em;color:var(--tx)}
+.hdr-date{font-size:.65rem;color:var(--tx3)}
+.hdr-sub{font-size:.65rem;color:var(--tx3);line-height:1.6}
+
+/* STAT ROW */
+.stats{display:grid;grid-template-columns:repeat(8,1fr);gap:8px;margin-bottom:20px}
+@media(max-width:700px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:10px 8px;text-align:center}
+.stat-v{font-size:1.55rem;font-weight:700;line-height:1;font-family:monospace}
+.stat-l{font-size:.56rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+/* SESSION BOX */
+.sess{border:1px solid #1e2a5a;background:#050818;border-radius:7px;padding:13px 15px;margin-bottom:20px;font-size:.7rem;color:#7090d0;line-height:1.9}
+.sess strong{color:#88aaff}
+
+/* NEW MECHS */
+.new-box{background:#040c22;border:1px solid #1a3060;border-radius:7px;padding:14px 16px;margin-bottom:20px}
+.new-title{font-size:.62rem;font-weight:700;color:var(--ac);letter-spacing:.09em;text-transform:uppercase;margin-bottom:12px}
+.mech{background:var(--bg3);border:1px solid var(--bd2);border-radius:5px;padding:10px 12px;margin-bottom:8px;border-left:3px solid var(--ac)}
+.mech:last-child{margin-bottom:0}
+.mech-n{font-size:.73rem;font-weight:700;color:var(--tx);margin-bottom:5px}
+.mech-d{font-size:.68rem;color:var(--tx2);line-height:1.65}
+.mtag{display:inline-block;font-size:.58rem;font-weight:700;padding:2px 6px;border-radius:3px;margin-top:5px;margin-right:4px}
+.mt-gr{background:#031a0c;color:#22c55e}
+.mt-bl{background:#040e28;color:#5577ff}
+.mt-pk{background:#1a0518;color:#ec4899}
+.mt-pu{background:#120820;color:#a855f7}
+
+/* MODULE GRID */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:9px;margin-bottom:22px}
+.mod{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;padding:13px 14px;position:relative}
+.mod::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:7px 0 0 7px}
+.mod.ceiling::after{background:var(--gr)}
+.mod.tooling::after{background:var(--ac)}
+.mod.structural::after{background:var(--or)}
+.mod.empirical::after{background:var(--pu)}
+.mod.debt::after{background:var(--rd)}
+.mod.improved{border-color:#1e3060}
+.mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
+.mname{font-size:.62rem;font-weight:700;color:var(--tx3);letter-spacing:.09em;text-transform:uppercase}
+.mtag2{font-size:.56rem;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.04em}
+.t-ceil{background:#031a0c;color:#22c55e}
+.t-tool{background:#040e28;color:#5577ff}
+.t-stru{background:#200c00;color:#f97316}
+.t-emp{background:#120820;color:#a855f7}
+.t-debt{background:#200505;color:#ef4444}
+.srow{display:flex;align-items:baseline;gap:7px;margin-bottom:5px}
+.sval{font-size:2rem;font-weight:700;line-height:1;font-family:monospace}
+.sdelta{font-size:.7rem;font-weight:700;padding:2px 6px;border-radius:3px}
+.dp{background:#031a0c;color:#22c55e}
+.dz{background:#14141e;color:#4a4a68}
+.bar{height:2px;background:var(--bd2);border-radius:1px;margin-bottom:6px;overflow:hidden;position:relative}
+.bf{height:100%;border-radius:1px;position:absolute;left:0;top:0}
+.mnote{font-size:.64rem;color:var(--tx3);line-height:1.55}
+.mhint{font-size:.61rem;color:#5577ff;margin-top:4px;font-style:italic}
+
+/* CRITICAL */
+.crit{background:#0e0404;border:1px solid #7f1d1d;border-radius:7px;padding:13px 15px;margin-bottom:20px}
+.crit-t{font-size:.62rem;font-weight:700;color:var(--rd);letter-spacing:.08em;text-transform:uppercase;margin-bottom:9px}
+.ci{display:flex;gap:8px;margin-bottom:7px;font-size:.68rem;color:#fca5a5;line-height:1.55}
+.cd{width:5px;height:5px;border-radius:50%;background:var(--rd);margin-top:4px;flex-shrink:0}
+.ci:last-child{margin-bottom:0}
+
+/* PROJ */
+.proj{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;padding:13px 15px;margin-bottom:20px}
+.proj-t{font-size:.62rem;font-weight:700;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px}
+.prow{display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:.68rem}
+.pdate{color:var(--tx3);min-width:70px;font-family:monospace;font-size:.65rem}
+.pev{color:var(--tx2);flex:1}
+.pscore{color:var(--gr);font-weight:700;min-width:34px;text-align:right;font-family:monospace}
+.pbar{width:80px;height:2px;background:var(--bd2);border-radius:1px;overflow:hidden;position:relative}
+.pbf{height:100%;background:var(--gr);border-radius:1px}
+
+/* CVX RETROSPECTIVE */
+.retro{background:#0a0805;border:1px solid #3a2a08;border-radius:7px;padding:13px 15px;margin-bottom:20px}
+.retro-t{font-size:.62rem;font-weight:700;color:var(--yl);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.retro-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:500px){.retro-grid{grid-template-columns:1fr}}
+.ritem{background:#0d0a04;border:1px solid #2a2008;border-radius:4px;padding:9px 11px}
+.ri-t{font-size:.62rem;font-weight:700;color:var(--yl);margin-bottom:4px}
+.ri-b{font-size:.65rem;color:#c4a840;line-height:1.55}
+
+footer{font-size:.58rem;color:var(--tx3);text-align:center;line-height:2.2;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="hdr-title">PIPELINE V5.7+ — SCORECARD</div>
+    <div class="hdr-date">Apr 16, 2026</div>
+  </div>
+  <div class="hdr-sub">Fluke / Source Calibration Session · +0.0018 movement · S0→9.52 · S1→9.56 · Gap 0.19</div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-v" style="color:var(--ac)">9.57</div>
+    <div class="stat-l">Score</div>
+  </div>
+  <div class="stat">
+    <div class="stat-v" style="color:var(--or)">0.19</div>
+    <div class="stat-l">Gap</div>
+  </div>
+  <div class="stat">
+    <div class="stat-v">9.76</div>
+    <div class="stat-l">Ceiling</div>
+  </div>
+  <div class="stat">
+    <div class="stat-v" style="color:var(--rd)">T=6</div>
+    <div class="stat-l">Trades</div>
+  </div>
+  <div class="stat">
+    <div class="stat-v" style="color:var(--ac)">+2.69</div>
+    <div class="stat-l">Total V2</div>
+  </div>
+  <div class="stat">
+    <div class="stat-v" style="color:var(--gr)">+2</div>
+    <div class="stat-l">New mechs</div>
+  </div>
+  <div class="stat">
+    <div class="stat-v">34</div>
+    <div class="stat-l">Already built</div>
+  </div>
+  <div class="stat">
+    <div class="stat-v" style="color:var(--yl)">97%</div>
+    <div class="stat-l">Overlap rate</div>
+  </div>
+</div>
+
+<!-- SESSION -->
+<div class="sess">
+  <strong>Session:</strong> Fluke Reclassification / Source Bubble / Exposure Calibration spec.<br>
+  <strong>Density:</strong> 34/36 already built (97%). Second-highest overlap rate in archive.<br>
+  <strong>Movement:</strong> S0 +0.01 (SOURCE_BUBBLE_SCORE in signal intake) · S1 +0.01 (NARRATIVE_LAG_REGISTER in belief state)<br>
+  <strong>Core pattern:</strong> The spec adds individual-level precision where the pipeline only had category-level — per-source credibility within a layer, per-thesis timing data within the narrative decay framework.
+</div>
+
+<!-- NEW MECHS -->
+<div class="new-box">
+  <div class="new-title">2 New Mechanisms This Session</div>
+  
+  <div class="mech">
+    <div class="mech-n">SOURCE_BUBBLE_SCORE (SBS)</div>
+    <div class="mech-d">Individual-source credibility within a layer. SOURCE_ISP_HIERARCHY assigns category distortion priors (Layer 2=0.15 for all RSS). SBS differentiates individual sources within the same layer. Reuters vs an echo-chamber outlet both get Layer 2 treatment today — SBS separates them. Components: insularity (40%), inverse falsification rate (30%), echo density (20%), inverse competitive breadth (10%). Adjusted distortion_prior = layer_baseline + SBS × 0.20. CVX/XOM retrospective: all war-escalation sources showed high echo_density, zero sources covering the PoNR_implementation gap. SBS ≈ 0.70 → distortion_prior lifted from 0.15 → 0.29 → lower COMPOSITE_EDGE → closer to LEAVE. Maintained in source_profiles.json, updated after each closed trade via Moltbook.</div>
+    <span class="mtag mt-bl">S0 +0.01</span>
+    <span class="mtag mt-gr">S9 Phase 2 build</span>
+    <span class="mtag mt-pk">NBA: tipster echo-density scoring</span>
+  </div>
+  
+  <div class="mech" style="border-left-color:var(--pu)">
+    <div class="mech-n">NARRATIVE_LAG_REGISTER (NLR)</div>
+    <div class="mech-d">Formal database of how long each signal class takes to travel Layer 1 (Polymarket) → Layer 3 (mainstream). NARRATIVE_HALF_LIFE_ENGINE measures N(t) amplitude decay after peak. NLR measures arrival timing lag before peak. Per closed trade: log t_first_signal (Polymarket moved), t_narrative_mainstream (RSS picked up), t_entry (actual). After T=35: lag_by_signal_class {SN1, SN2, ARO} and lag_by_thesis_type {war_escalation, rate_change, EM_political}. CVX retrospective: war escalation first in Polymarket ~Day 0, RSS mainstream ~Day 3-5. Entry: ~Day 80-90. LATE_ENTRY_WARNING fires when t_entry > lag_class × 1.5. Operationalizes "front-run narrative correction" with empirical timing data, not just qualitative labels.</div>
+    <span class="mtag mt-pu">S1 +0.01</span>
+    <span class="mtag mt-gr">T=35 empirical calibration</span>
+    <span class="mtag mt-pk">NBA: signal-to-public-knowledge lag per bet type</span>
+  </div>
+</div>
+
+<!-- MODULE GRID -->
+<div class="mgrid">
+
+  <div class="mod tooling improved">
+    <div class="mhdr"><span class="mname">S0</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--ac)">9.52</span><span class="sdelta dp">+0.01</span></div>
+    <div class="bar"><div class="bf" style="width:95.2%;background:var(--ac)"></div></div>
+    <div class="mnote">Signal intake. SOURCE_BUBBLE_SCORE ← this session. STILLNESS_SIGNAL_EXTRACTOR · NARRATIVE_PREMIUM_DECOMPOSER · VISOR_EFFECT_AUDIT · PHASE_AWARE_INPUT_GATING. S9 auto May 13.</div>
+    <div class="mhint">↑ SBS adds individual-source precision</div>
+  </div>
+
+  <div class="mod ceiling improved">
+    <div class="mhdr"><span class="mname">S1</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.56</span><span class="sdelta dp">+0.01</span></div>
+    <div class="bar"><div class="bf" style="width:95.6%;background:var(--gr)"></div></div>
+    <div class="mnote">Belief state. NARRATIVE_LAG_REGISTER ← this session. SPECTRAL_SIGNAL_CLASSIFIER · LEGITIMACY_DECAY_TRACKER · COORDINATION_VIABILITY_SCORE · PSYCHO_MANTIS_PROTOCOL.</div>
+    <div class="mhint">↑ NLR adds empirical timing database</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S2</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">Narrative engine. At ceiling. TEMPORAL_GRAMMAR · NARRATIVE_HALF_LIFE · HAUNTOLOGICAL_PERSISTENCE. NLR complements but doesn't alter this module.</div>
+  </div>
+
+  <div class="mod structural">
+    <div class="mhdr"><span class="mname">S3A</span><span class="mtag2 t-stru">structural</span></div>
+    <div class="srow"><span class="sval" style="color:var(--or)">9.14</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:91.4%;background:var(--or)"></div></div>
+    <div class="mnote">Capital flow. Structural ceiling at 9.14. Requires live institutional flow data (S9 Phase 2). HYDROTHERMAL_VENT · GLS_t · CARNOT_CEILING.</div>
+  </div>
+
+  <div class="mod tooling">
+    <div class="mhdr"><span class="mname">S3B</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--ac)">8.96</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:89.6%;background:var(--ac)"></div></div>
+    <div class="mnote">Flow dynamics. INTEGRATION_COST_THRESHOLD active. Awaiting S9 May 13.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S35</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">Decision gate. At ceiling. GRADUATED_EXIT · OPERATOR_LOCK · COUNT_D_PROTOCOL · CVS threshold · THREE_POISONS gate.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S4</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">Execution. At ceiling. FIRE_MODE {NONE/SNIPER/M16/UZI} · CHIGURH hard stop · LALO timing · GHOST_STANCE prerequisites.</div>
+  </div>
+
+  <div class="mod debt">
+    <div class="mhdr"><span class="mname">ATOM</span><span class="mtag2 t-debt">⚠ DEBT</span></div>
+    <div class="srow"><span class="sval" style="color:var(--rd)">8.90</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:89%;background:var(--rd)"></div></div>
+    <div class="mnote">95 fields → 35 CORE required. BLOCKING next trade. caddy_packet needs 7-field compression. MICHELANGELO_SUBTRACTION_AUDIT pilot run.</div>
+  </div>
+
+  <div class="mod empirical">
+    <div class="mhdr"><span class="mname">S5</span><span class="mtag2 t-emp">empirical</span></div>
+    <div class="srow"><span class="sval" style="color:var(--pu)">8.49</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:84.9%;background:var(--pu)"></div></div>
+    <div class="mnote">Operator. THREE_POISONS_BIAS_ENGINE + REALM_CLASSIFIER (last 2 sessions +0.02). SELF_MODEL_CALIBRATION · GHOST_STANCE_EMERGENCE · SOVEREIGN_IDENTITY_ANCHOR.</div>
+  </div>
+
+  <div class="mod empirical">
+    <div class="mhdr"><span class="mname">S7</span><span class="mtag2 t-emp">empirical</span></div>
+    <div class="srow"><span class="sval" style="color:var(--pu)">9.65</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:96.5%;background:var(--pu)"></div></div>
+    <div class="mnote">Regime. LEGITIMACY_DECAY_TRACKER · SAECULAR_REGIME_LAYER · NARRATIVE_DOMINANCE_SCORE · HPS. Near ceiling.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S8</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.83</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98.3%;background:var(--gr)"></div></div>
+    <div class="mnote">Risk. TAIL_RISK_COUNTERFACTUAL · POSITION_ENTANGLEMENT_SCORE · DECOHERENCE_TIMESCALE_GATE · INTEGRATION_COST_THRESHOLD.</div>
+  </div>
+
+  <div class="mod tooling">
+    <div class="mhdr"><span class="mname">S9</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--ac)">8.37</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:83.7%;background:var(--ac)"></div></div>
+    <div class="mnote">Build May 13. ADAPTIVE_STRATEGY_POPULATION · GENERATIVE_CONSTRAINT_ENGINE · IMMEDIATE_DIAGNOSTIC_DISPLAY. feedparser + PRAW + Grok + APScheduler.</div>
+  </div>
+
+  <div class="mod debt">
+    <div class="mhdr"><span class="mname">CAL</span><span class="mtag2 t-debt">data void</span></div>
+    <div class="srow"><span class="sval" style="color:var(--yl)">5.41</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:54.1%;background:var(--yl)"></div></div>
+    <div class="mnote">T=6 (4.2 clean FCS-adj). April 25 → T=10 deadline. ε=1.0. LPC + TRC + FCS precision added last session. First direction signal at T=10, ε→0.56.</div>
+  </div>
+
+</div>
+
+<!-- CVX RETROSPECTIVE -->
+<div class="retro">
+  <div class="retro-t">CVX/XOM Retrospective — New Mechanisms Applied</div>
+  <div class="retro-grid">
+    <div class="ritem">
+      <div class="ri-t">SOURCE_BUBBLE_SCORE</div>
+      <div class="ri-b">War-escalation sources: all Western geopolitical outlets, all confirming same thesis, zero covering PoNR_implementation gap. Echo density ≈ HIGH. Competitive breadth ≈ LOW. SBS ≈ 0.70 → distortion_prior lifts from Layer 2 baseline (0.15) to ~0.29 → COMPOSITE_EDGE drops below 0.55 threshold → LEAVE signal.</div>
+    </div>
+    <div class="ritem">
+      <div class="ri-t">NARRATIVE_LAG_REGISTER</div>
+      <div class="ri-b">War escalation first in Polymarket: ~Jan 2026 (Day 0). RSS mainstream pickup: ~Day 3–5. CVX entry: ~Day 80–90. NLR would fire LATE_ENTRY_WARNING: entry at Day 80 vs typical war-thesis lag of 5 days. 75 days outside edge window. Even if thesis had merit, the arbitrage was extracted by Day 7.</div>
+    </div>
+    <div class="ritem">
+      <div class="ri-t">Combined effect</div>
+      <div class="ri-b">SBS → elevated distortion_prior (→ lower COMPOSITE_EDGE). NLR → LATE_ENTRY_WARNING flag. LEGITIMACY_DECAY L(t) → 0.03. TEMPORAL_GRAMMAR → PRESENT_PERFECT. Four independent mechanisms all pointing LEAVE. In April: only TEMPORAL_GRAMMAR was running as a hard check. The others existed but weren't consulted as gates.</div>
+    </div>
+    <div class="ritem">
+      <div class="ri-t">Implementation priority</div>
+      <div class="ri-b">NLR: start logging NOW — T=6 provides the first 6 data points. Can estimate rough lag distribution by T=10. SBS: build source_profiles.json in S9 Phase 1 (May 13). Both require no new external data — only systematic logging of what already occurs in each session.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CRITICAL PATH -->
+<div class="crit">
+  <div class="crit-t">⚠ Critical Path — Unchanged</div>
+  <div class="ci"><div class="cd"></div>ATOM retirement (95→35) — BLOCKING before next trade. Pilot run of MICHELANGELO_SUBTRACTION_AUDIT.</div>
+  <div class="ci"><div class="cd"></div>T=6→10 by April 25. TLT+TIP exits = T=7,8. UNG/FCG = T=9,10. First MW direction signal at ε→0.56.</div>
+  <div class="ci"><div class="cd"></div>S9 build — May 13. Source_profiles.json (SBS) + NLR logging infrastructure in Phase 1.</div>
+  <div class="ci" style="color:#fde68a"><div class="cd" style="background:var(--yl)"></div>Apply SELF_MODEL P1/P2/P3 at every new entry. Run TRC on T=6 trades. Seed NLR with T=6 timing data.</div>
+</div>
+
+<!-- PROJECTION -->
+<div class="proj">
+  <div class="proj-t">Score Projection</div>
+  <div class="prow"><span class="pdate">Apr 25</span><span class="pev">T=10 · first MW direction signal (ε→0.56)</span><span class="pscore">9.58</span><div class="pbar"><div class="pbf" style="width:5%"></div></div></div>
+  <div class="prow"><span class="pdate">May 31</span><span class="pev">S9 Phase 1 · ATOM retired · SBS + NLR logging live</span><span class="pscore">9.62</span><div class="pbar"><div class="pbf" style="width:27%"></div></div></div>
+  <div class="prow"><span class="pdate">Jun 30</span><span class="pev">Phase 2 · FinBERT + Polymarket API + first automated signal</span><span class="pscore">9.65</span><div class="pbar"><div class="pbf" style="width:47%"></div></div></div>
+  <div class="prow"><span class="pdate">Jul 31</span><span class="pev">IBKR paper · live MW loop · NLR first class estimates</span><span class="pscore">9.70</span><div class="pbar"><div class="pbf" style="width:68%"></div></div></div>
+  <div class="prow"><span class="pdate">Aug 2026</span><span class="pev">Real capital · T≥35 · E_operator>0.80 · MW calibrated</span><span class="pscore">9.74</span><div class="pbar"><div class="pbf" style="width:89%"></div></div></div>
+  <div class="prow"><span class="pdate">Ceiling</span><span class="pev">9.76 — residual empirical reserve</span><span class="pscore">9.76</span><div class="pbar"><div class="pbf" style="width:100%"></div></div></div>
+</div>
+
+<footer>
+GEOPOLITICAL SIGNAL PIPELINE V5.7+ · April 16, 2026<br>
+Score 9.57 · Gap 0.19 · T=6 · ε=1.0 · Ceiling 9.76 · Total V2 +2.69<br>
+"Capital moves before language. Structure forms before capital. Price reconciles last."
+</footer>
+
+</body>
+</html>

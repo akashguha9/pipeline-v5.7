@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pipeline V5.7+</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bone:    #f0ebe0;
+  --bone2:   #e6e0d4;
+  --ash:     #c8c2b4;
+  --concrete:#2e2c28;
+  --tar:     #181614;
+  --tar2:    #0e0d0b;
+  --acid:    #d4e620;
+  --heat:    #ff4d1a;
+  --signal:  #00e5ff;
+  --mute:    #6b6760;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--tar2);
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px 60px;
+  font-family: 'DM Mono', monospace;
+}
+
+.card {
+  width: 900px;
+  background: var(--tar);
+  position: relative;
+  border: 1px solid #2a2824;
+}
+
+/* ── NOISE TEXTURE OVERLAY ── */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: overlay;
+  opacity: 0.6;
+}
+
+* { position: relative; z-index: 1; }
+
+/* ── ACID STRIPE ── */
+.acid-stripe {
+  height: 5px;
+  background: var(--acid);
+}
+
+/* ── MASTHEAD ── */
+.masthead {
+  padding: 28px 32px 22px;
+  border-bottom: 1px solid #2a2824;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: end;
+}
+
+.pipeline-display {
+  line-height: 1;
+}
+
+.pipeline-v {
+  font-family: 'DM Mono', monospace;
+  font-size: .7rem;
+  font-weight: 300;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--acid);
+  margin-bottom: 4px;
+}
+
+.pipeline-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 7rem;
+  line-height: .88;
+  color: var(--bone);
+  letter-spacing: -.01em;
+}
+
+.pipeline-name em {
+  font-style: normal;
+  color: var(--acid);
+}
+
+.pipeline-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: .55rem;
+  font-weight: 300;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin-top: 10px;
+}
+
+.masthead-right {
+  text-align: right;
+  padding-bottom: 8px;
+}
+
+.mh-date {
+  font-family: 'DM Mono', monospace;
+  font-size: .55rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin-bottom: 8px;
+}
+
+.mh-axiom {
+  font-family: 'DM Mono', monospace;
+  font-size: .6rem;
+  font-style: italic;
+  font-weight: 300;
+  color: var(--ash);
+  max-width: 240px;
+  text-align: right;
+  line-height: 1.7;
+}
+
+/* ── HERO NUMBERS ── */
+.hero-numbers {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  border-bottom: 1px solid #2a2824;
+}
+
+.hero-num {
+  padding: 18px 0 16px;
+  text-align: center;
+  border-right: 1px solid #2a2824;
+}
+.hero-num:last-child { border-right: none; }
+
+.hero-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.8rem;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.hero-lbl {
+  font-family: 'DM Mono', monospace;
+  font-size: .47rem;
+  font-weight: 300;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+/* ── SECTION HEADERS ── */
+.sec-header {
+  padding: 16px 32px 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.sec-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: .06em;
+  color: var(--bone2);
+  white-space: nowrap;
+}
+
+.sec-line {
+  flex: 1;
+  height: 1px;
+  background: #2a2824;
+}
+
+.sec-count {
+  font-family: 'DM Mono', monospace;
+  font-size: .5rem;
+  letter-spacing: .1em;
+  color: var(--mute);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── MODULE GRID ── */
+.mod-wrap {
+  padding: 0 32px;
+  margin-bottom: 0;
+}
+
+.mod-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border: 1px solid #2a2824;
+}
+
+.mod {
+  padding: 11px 10px 10px;
+  border-right: 1px solid #2a2824;
+  border-bottom: 1px solid #2a2824;
+  position: relative;
+}
+.mod:nth-child(7n) { border-right: none; }
+.mod:nth-child(n+8) { border-top: none; }
+.mod:nth-last-child(-n+6) { border-bottom: none; }
+
+.mod.ceiling { background: rgba(212, 230, 32, 0.03); }
+.mod.debt    { background: rgba(255, 77, 26, 0.05); }
+.mod.pulse   { background: rgba(0, 229, 255, 0.03); }
+
+.mod-delta {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  font-family: 'DM Mono', monospace;
+  font-size: .44rem;
+  font-weight: 500;
+  padding: 1px 4px;
+}
+
+.mod-name {
+  font-family: 'DM Mono', monospace;
+  font-size: .5rem;
+  font-weight: 300;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mute);
+  margin-bottom: 4px;
+}
+
+.mod-score {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2rem;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.mod-bar-bg {
+  height: 2px;
+  background: #2a2824;
+  margin-bottom: 6px;
+  position: relative;
+  overflow: hidden;
+}
+.mod-bar-fill {
+  position: absolute;
+  left: 0; top: 0;
+  height: 100%;
+}
+
+.mod-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: .44rem;
+  font-weight: 500;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  display: inline-block;
+  margin-bottom: 5px;
+  padding: 2px 5px;
+}
+
+.mod-note {
+  font-family: 'DM Mono', monospace;
+  font-size: .5rem;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--mute);
+}
+
+/* ── MECHANISMS ── */
+.mech-wrap {
+  padding: 0 32px;
+}
+
+.mech-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid #2a2824;
+  border-top: none;
+}
+
+.mech-item {
+  padding: 11px 12px;
+  border-right: 1px solid #2a2824;
+  border-bottom: 1px solid #2a2824;
+}
+.mech-item:nth-child(3n) { border-right: none; }
+.mech-item:nth-last-child(-n+3) { border-bottom: none; }
+
+.mech-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: .95rem;
+  letter-spacing: .04em;
+  color: var(--bone);
+  margin-bottom: 4px;
+  line-height: 1.1;
+}
+
+.mech-mod {
+  font-family: 'DM Mono', monospace;
+  font-size: .44rem;
+  font-weight: 500;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  display: inline-block;
+  padding: 1px 5px;
+  background: var(--acid);
+  color: var(--tar);
+  margin-bottom: 5px;
+}
+
+.mech-desc {
+  font-family: 'DM Mono', monospace;
+  font-size: .52rem;
+  font-weight: 300;
+  color: var(--mute);
+  line-height: 1.55;
+}
+
+/* ── CRITICAL PATH ── */
+.crit-wrap {
+  padding: 0 32px;
+}
+
+.crit-inner {
+  border: 1px solid var(--heat);
+  border-top: none;
+  padding: 16px 18px;
+  background: rgba(255, 77, 26, 0.04);
+}
+
+.crit-hdr {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: .06em;
+  color: var(--heat);
+  margin-bottom: 12px;
+}
+
+.crit-items {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 32px;
+}
+
+.crit-item {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.crit-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--heat);
+  border-radius: 50%;
+  margin-top: 5px;
+  flex-shrink: 0;
+}
+
+.crit-text {
+  font-family: 'DM Mono', monospace;
+  font-size: .56rem;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--ash);
+}
+
+.crit-text strong {
+  font-weight: 500;
+  color: var(--bone);
+}
+
+/* ── PROJECTION ── */
+.proj-wrap {
+  padding: 0 32px 28px;
+}
+
+.proj-inner {
+  border: 1px solid #2a2824;
+  border-top: none;
+}
+
+.proj-row {
+  display: grid;
+  grid-template-columns: 76px 1fr 52px 68px;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 14px;
+  border-bottom: 1px solid #2a2824;
+}
+.proj-row:last-child { border-bottom: none; }
+
+.proj-date {
+  font-family: 'DM Mono', monospace;
+  font-size: .52rem;
+  font-weight: 300;
+  color: var(--mute);
+  letter-spacing: .06em;
+}
+
+.proj-event {
+  font-family: 'DM Mono', monospace;
+  font-size: .55rem;
+  font-weight: 300;
+  color: var(--ash);
+  line-height: 1.45;
+}
+
+.proj-score {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  color: var(--acid);
+  text-align: right;
+}
+
+.proj-bar-bg {
+  height: 3px;
+  background: #2a2824;
+  border-radius: 1px;
+  overflow: hidden;
+}
+.proj-bar-fill {
+  height: 100%;
+  background: var(--acid);
+}
+
+/* ── FOOTER ── */
+.footer {
+  border-top: 1px solid #2a2824;
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.foot-left {
+  font-family: 'DM Mono', monospace;
+  font-size: .5rem;
+  font-weight: 300;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--mute);
+  line-height: 1.9;
+}
+
+.foot-right {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  color: var(--concrete);
+  letter-spacing: .04em;
+  text-align: right;
+  line-height: 1.1;
+}
+
+/* ── UTILS ── */
+.c-acid  { color: var(--acid); }
+.c-heat  { color: var(--heat); }
+.c-signal{ color: var(--signal); }
+.c-bone  { color: var(--bone); }
+.c-mute  { color: var(--mute); }
+.c-green { color: #3ecf6a; }
+
+.bg-acid { background: rgba(212,230,32,.12); color: var(--acid); }
+.bg-heat { background: rgba(255,77,26,.12); color: var(--heat); }
+.bg-signal{background: rgba(0,229,255,.12); color: var(--signal); }
+.bg-green{ background: rgba(62,207,106,.12); color: #3ecf6a; }
+.bg-mute { background: #2a2824; color: var(--mute); }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="acid-stripe"></div>
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="pipeline-display">
+      <div class="pipeline-v">Geopolitical Signal Pipeline</div>
+      <div class="pipeline-name">V5.<em>7+</em></div>
+      <div class="pipeline-sub">Session Block Scorecard · April 16, 2026 · 1900+ Sessions</div>
+    </div>
+    <div class="masthead-right">
+      <div class="mh-date">April 16, 2026</div>
+      <div class="mh-axiom">"Attention precedes capital.<br>Capital follows narrative.<br>Narrative forms before price."</div>
+    </div>
+  </div>
+
+  <!-- HERO NUMBERS -->
+  <div class="hero-numbers">
+    <div class="hero-num">
+      <div class="hero-val c-acid">9.57</div>
+      <div class="hero-lbl">Score</div>
+    </div>
+    <div class="hero-num">
+      <div class="hero-val c-heat">0.19</div>
+      <div class="hero-lbl">Gap to ceiling</div>
+    </div>
+    <div class="hero-num">
+      <div class="hero-val c-bone">9.76</div>
+      <div class="hero-lbl">Ceiling</div>
+    </div>
+    <div class="hero-num">
+      <div class="hero-val c-heat">T=6</div>
+      <div class="hero-lbl">Closed trades</div>
+    </div>
+    <div class="hero-num">
+      <div class="hero-val c-signal">+18</div>
+      <div class="hero-lbl">New mechanisms</div>
+    </div>
+    <div class="hero-num">
+      <div class="hero-val c-acid">+2.69</div>
+      <div class="hero-lbl">V2 total gain</div>
+    </div>
+  </div>
+
+  <!-- MODULES -->
+  <div class="sec-header" style="margin-top:16px">
+    <div class="sec-label">Module Scores</div>
+    <div class="sec-line"></div>
+    <div class="sec-count">13 Components</div>
+  </div>
+
+  <div class="mod-wrap">
+    <div class="mod-grid">
+
+      <!-- S0 -->
+      <div class="mod pulse">
+        <div class="mod-delta bg-signal">+0.05</div>
+        <div class="mod-name">S0</div>
+        <div class="mod-score c-signal">9.56</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:95.6%;background:var(--signal)"></div></div>
+        <div class="mod-tag bg-signal">tooling</div>
+        <div class="mod-note">PBSC·TVG·ETL<br>SBS·TSL·NLR·SPF</div>
+      </div>
+
+      <!-- S1 -->
+      <div class="mod ceiling">
+        <div class="mod-delta bg-acid">+0.04</div>
+        <div class="mod-name">S1</div>
+        <div class="mod-score c-acid">9.59</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:95.9%;background:var(--acid)"></div></div>
+        <div class="mod-tag bg-acid">ceiling</div>
+        <div class="mod-note">SSSC·OAD<br>TSL·NLR·CVS</div>
+      </div>
+
+      <!-- S2 -->
+      <div class="mod ceiling">
+        <div class="mod-delta bg-mute">—</div>
+        <div class="mod-name">S2</div>
+        <div class="mod-score c-acid">9.80</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:98%;background:var(--acid)"></div></div>
+        <div class="mod-tag bg-acid">ceiling</div>
+        <div class="mod-note">TEMPORAL_GRAMMAR<br>NARRATIVE_HALF_LIFE</div>
+      </div>
+
+      <!-- S3A -->
+      <div class="mod">
+        <div class="mod-delta bg-mute">—</div>
+        <div class="mod-name">S3A</div>
+        <div class="mod-score c-heat">9.14</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:91.4%;background:var(--heat)"></div></div>
+        <div class="mod-tag bg-heat">structural</div>
+        <div class="mod-note">Capital flow.<br>Structural ceil.</div>
+      </div>
+
+      <!-- S3B -->
+      <div class="mod pulse">
+        <div class="mod-delta bg-signal">+0.01</div>
+        <div class="mod-name">S3B</div>
+        <div class="mod-score c-signal">8.96</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:89.6%;background:var(--signal)"></div></div>
+        <div class="mod-tag bg-signal">tooling</div>
+        <div class="mod-note">Flow dynamics.<br>ICT active.</div>
+      </div>
+
+      <!-- S35 -->
+      <div class="mod ceiling">
+        <div class="mod-delta bg-mute">—</div>
+        <div class="mod-name">S35</div>
+        <div class="mod-score c-acid">9.80</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:98%;background:var(--acid)"></div></div>
+        <div class="mod-tag bg-acid">ceiling</div>
+        <div class="mod-note">GRADUATED_EXIT<br>COUNT_D·CVS</div>
+      </div>
+
+      <!-- S4 -->
+      <div class="mod ceiling">
+        <div class="mod-delta bg-mute">—</div>
+        <div class="mod-name">S4</div>
+        <div class="mod-score c-acid">9.80</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:98%;background:var(--acid)"></div></div>
+        <div class="mod-tag bg-acid">ceiling</div>
+        <div class="mod-note">FIRE_MODE<br>CHIGURH·LALO</div>
+      </div>
+
+      <!-- ATOM -->
+      <div class="mod debt">
+        <div class="mod-delta bg-heat">⚠</div>
+        <div class="mod-name">ATOM</div>
+        <div class="mod-score c-heat">8.90</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:89%;background:var(--heat)"></div></div>
+        <div class="mod-tag bg-heat">⚠ DEBT</div>
+        <div class="mod-note">95→35 fields.<br>BLOCKING.</div>
+      </div>
+
+      <!-- S5 -->
+      <div class="mod pulse">
+        <div class="mod-delta bg-signal">+0.03</div>
+        <div class="mod-name">S5</div>
+        <div class="mod-score c-signal">8.51</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:85.1%;background:var(--signal)"></div></div>
+        <div class="mod-tag bg-signal">empirical</div>
+        <div class="mod-note">BRP·BIS·3POISONS<br>REALM_CLASSIFIER</div>
+      </div>
+
+      <!-- S7 -->
+      <div class="mod">
+        <div class="mod-delta bg-mute">—</div>
+        <div class="mod-name">S7</div>
+        <div class="mod-score" style="color:#a78bfa">9.65</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:96.5%;background:#a78bfa"></div></div>
+        <div class="mod-tag" style="background:rgba(167,139,250,.15);color:#a78bfa">empirical</div>
+        <div class="mod-note">LEGITIMACY_DECAY<br>SAECULAR·HPS</div>
+      </div>
+
+      <!-- S8 -->
+      <div class="mod ceiling">
+        <div class="mod-delta bg-acid">+0.01</div>
+        <div class="mod-name">S8</div>
+        <div class="mod-score c-acid">9.83</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:98.3%;background:var(--acid)"></div></div>
+        <div class="mod-tag bg-acid">ceiling</div>
+        <div class="mod-note">TRC·PES<br>DECOHERENCE·ICT</div>
+      </div>
+
+      <!-- S9 -->
+      <div class="mod">
+        <div class="mod-delta bg-mute">—</div>
+        <div class="mod-name">S9</div>
+        <div class="mod-score c-signal">8.37</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:83.7%;background:var(--signal)"></div></div>
+        <div class="mod-tag bg-signal">tooling</div>
+        <div class="mod-note">Build May 13.<br>24 components.</div>
+      </div>
+
+      <!-- CAL -->
+      <div class="mod debt">
+        <div class="mod-delta" style="background:rgba(212,230,32,.15);color:var(--acid)">+0.06</div>
+        <div class="mod-name">CAL</div>
+        <div class="mod-score c-acid">5.41</div>
+        <div class="mod-bar-bg"><div class="mod-bar-fill" style="width:54.1%;background:var(--acid)"></div></div>
+        <div class="mod-tag" style="background:rgba(212,230,32,.1);color:var(--acid)">data void</div>
+        <div class="mod-note">T=6→10 Apr 25.<br>ε=1.0→0.56.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- NEW MECHANISMS -->
+  <div class="sec-header" style="margin-top:18px">
+    <div class="sec-label">New Mechanisms</div>
+    <div class="sec-line"></div>
+    <div class="sec-count">18 This Block</div>
+  </div>
+
+  <div class="mech-wrap">
+    <div class="mech-grid">
+
+      <div class="mech-item">
+        <div class="mech-name">THREE_POISONS_BIAS_ENGINE</div>
+        <span class="mech-mod">S5</span>
+        <div class="mech-desc">desire_t / aversion_t / ignorance_t tracked separately. C'_t = C_t × (1−β₁d−β₂a−β₃i)</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">REALM_CLASSIFIER</div>
+        <span class="mech-mod">S5</span>
+        <div class="mech-desc">6-state: Hell/Ghost/Animal/Human/Asura/Deva. Only Human realm → FIRE_MODE.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">FEEDBACK_CONTAMINATION_SCORE</div>
+        <span class="mech-mod">CAL</span>
+        <div class="mech-desc">CHAOS_ENTRY = near-zero MW weight. Effective T=4.2, not 6.</div>
+      </div>
+
+      <div class="mech-item">
+        <div class="mech-name">OPEN_LOOP_MONITOR</div>
+        <span class="mech-mod">CAL</span>
+        <div class="mech-desc">Z=0.5 partial closure. Position dead, thesis paused. Re-entry trigger + expiry.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">INTEGRATION_COST_THRESHOLD</div>
+        <span class="mech-mod">S3B</span>
+        <div class="mech-desc">NET_EDGE = COMPOSITE_EDGE − ICT. Proceed only if NET_EDGE > 0.45.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">LUCKY_PASS_CLASSIFIER</div>
+        <span class="mech-mod">CAL</span>
+        <div class="mech-desc">thesis_confirmed boolean. luck_score [0,1]. Survival ≠ valid process.</div>
+      </div>
+
+      <div class="mech-item">
+        <div class="mech-name">TAIL_RISK_COUNTERFACTUAL</div>
+        <span class="mech-mod">S8</span>
+        <div class="mech-desc">4 scenarios per trade. CVX proximity=0.882. USO=0.950. Near-miss counts as data.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">SOURCE_BUBBLE_SCORE</div>
+        <span class="mech-mod">S0</span>
+        <div class="mech-desc">Individual-source credibility. insularity + echo density + falsification rate.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">NARRATIVE_LAG_REGISTER</div>
+        <span class="mech-mod">S1</span>
+        <div class="mech-desc">Empirical L1→L3 timing. CVX Day 80 vs edge window Day 0-5. LATE_ENTRY_WARNING.</div>
+      </div>
+
+      <div class="mech-item">
+        <div class="mech-name">ENTRY_TAX_LAYER</div>
+        <span class="mech-mod">S0</span>
+        <div class="mech-desc">Access friction predicts edge window duration. money + network + geo + language.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">TASTE_SIGNAL_LAYER</div>
+        <span class="mech-mod">S1</span>
+        <div class="mech-desc">Selector quality scoring. SELECTOR_CONFIRMED → CE boost +0.08.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">BEHAVIORAL_INTEGRITY_SCORER</div>
+        <span class="mech-mod">S5</span>
+        <div class="mech-desc">Longitudinal conduct consistency. BIS < 0.6 = CONDUCT_DEGRADATION.</div>
+      </div>
+
+      <div class="mech-item">
+        <div class="mech-name">OUTSIDER_ADVANTAGE_DETECTOR</div>
+        <span class="mech-mod">S1</span>
+        <div class="mech-desc">OAD = C_internal × (1−D_consensus) − P_conformity × 0.3. Counter-consensus edge.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">SANGAM_SIGNAL_STATE_CLASSIFIER</div>
+        <span class="mech-mod">S1</span>
+        <div class="mech-desc">CONFLUENCE / PARALLEL / BOUNDARY_TENSION / SUBSURFACE. Signal topology not scalar.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">TYNDALL_VISIBILITY_GATE</div>
+        <span class="mech-mod">S0</span>
+        <div class="mech-desc">M_total < 0.3 → SHADOW_BOOK. Medium density before signal strength. CVX Day 80: M=0.12.</div>
+      </div>
+
+      <div class="mech-item">
+        <div class="mech-name">PRE_BURST_SIGNAL_CLASSIFIER</div>
+        <span class="mech-mod">S0</span>
+        <div class="mech-desc">SLOW_CRAWLER / FAST_CRAWLER / PRE_BURST_COIL / STAND_UP_RUN. Elite entry = before the run.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">BURST_RECOVERY_PROTOCOL</div>
+        <span class="mech-mod">S5</span>
+        <div class="mech-desc">Session cooldown. CHAOS_LOSS +14d. STOP_LOSS +21d. April 4 cluster: 5 of 6 blocked.</div>
+      </div>
+      <div class="mech-item">
+        <div class="mech-name">SOURCE_PURITY_FACTOR</div>
+        <span class="mech-mod">S0</span>
+        <div class="mech-desc">T_i = (1−SPF) × SCS × SAS. Strategic distortion + competence + accuracy independently.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- CRITICAL PATH -->
+  <div class="sec-header" style="margin-top:18px">
+    <div class="sec-label">Critical Path</div>
+    <div class="sec-line"></div>
+    <div class="sec-count">Blocking + Next</div>
+  </div>
+
+  <div class="crit-wrap">
+    <div class="crit-inner">
+      <div class="crit-hdr">⚠ Blocking + Milestones</div>
+      <div class="crit-items">
+        <div class="crit-item">
+          <div class="crit-dot"></div>
+          <div class="crit-text"><strong>ATOM retirement (95→35)</strong> — BLOCKING before next trade. MICHELANGELO_SUBTRACTION_AUDIT.</div>
+        </div>
+        <div class="crit-item">
+          <div class="crit-dot"></div>
+          <div class="crit-text"><strong>T=6→10 by April 25</strong> — TLT+TIP=T=7,8. UNG/FCG=T=9,10. ε→0.56.</div>
+        </div>
+        <div class="crit-item">
+          <div class="crit-dot"></div>
+          <div class="crit-text"><strong>S9 build — May 13</strong> — feedparser + PRAW + Grok API + APScheduler.</div>
+        </div>
+        <div class="crit-item">
+          <div class="crit-dot"></div>
+          <div class="crit-text"><strong>Gap closes only through T-count + tooling.</strong> Architecture at saturation. Data is the constraint.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROJECTION -->
+  <div class="sec-header" style="margin-top:0">
+    <div class="sec-label">Score Projection</div>
+    <div class="sec-line"></div>
+    <div class="sec-count">→ Real Capital</div>
+  </div>
+
+  <div class="proj-wrap">
+    <div class="proj-inner">
+      <div class="proj-row">
+        <div class="proj-date">Apr 25</div>
+        <div class="proj-event">T=10 closes · first MW direction signal (ε→0.56)</div>
+        <div class="proj-score">9.58</div>
+        <div class="proj-bar-bg"><div class="proj-bar-fill" style="width:5%"></div></div>
+      </div>
+      <div class="proj-row">
+        <div class="proj-date">May 31</div>
+        <div class="proj-event">S9 Phase 1 · ATOM retired · full source intelligence stack live</div>
+        <div class="proj-score">9.62</div>
+        <div class="proj-bar-bg"><div class="proj-bar-fill" style="width:26%"></div></div>
+      </div>
+      <div class="proj-row">
+        <div class="proj-date">Jun 30</div>
+        <div class="proj-event">Phase 2 · FinBERT + Polymarket API + first automated signal</div>
+        <div class="proj-score">9.65</div>
+        <div class="proj-bar-bg"><div class="proj-bar-fill" style="width:47%"></div></div>
+      </div>
+      <div class="proj-row">
+        <div class="proj-date">Jul 31</div>
+        <div class="proj-event">IBKR paper trading · live MW calibration loop active</div>
+        <div class="proj-score">9.70</div>
+        <div class="proj-bar-bg"><div class="proj-bar-fill" style="width:68%"></div></div>
+      </div>
+      <div class="proj-row">
+        <div class="proj-date">Aug 2026</div>
+        <div class="proj-event">Real capital · T≥35 · E_operator>0.80 · MW calibrated</div>
+        <div class="proj-score">9.74</div>
+        <div class="proj-bar-bg"><div class="proj-bar-fill" style="width:89%"></div></div>
+      </div>
+      <div class="proj-row">
+        <div class="proj-date">Ceiling</div>
+        <div class="proj-event">9.76 — residual empirical reserve (cannot be spec'd away)</div>
+        <div class="proj-score">9.76</div>
+        <div class="proj-bar-bg"><div class="proj-bar-fill" style="width:100%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="foot-left">
+      GEOPOLITICAL SIGNAL PIPELINE V5.7+<br>
+      Score 9.57 · Gap 0.19 · T=6 · ε=1.0 · Ceiling 9.76<br>
+      1900+ sessions · 18 new mechanisms this block
+    </div>
+    <div class="foot-right" style="color:#2a2824">
+      CAPITAL MOVES<br>
+      BEFORE LANGUAGE
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

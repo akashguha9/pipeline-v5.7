@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
+body{font-size:12px;padding:16px;background:#fff;color:#111}
+.hero{background:linear-gradient(135deg,#0f1117 0%,#0d1520 50%,#0f1117 100%);border-radius:10px;padding:16px;margin-bottom:14px;color:#e2e8f0;border:1px solid #1a2a3a}
+
+/* timeline */
+.timeline{position:relative;margin-bottom:16px;padding-left:16px;border-left:2px solid #e5e7eb}
+.tl-item{position:relative;margin-bottom:4px;padding:10px 12px 10px 20px;border:1px solid #e5e7eb;border-radius:8px;background:#fff}
+.tl-dot{position:absolute;left:-22px;top:50%;transform:translateY(-50%);width:12px;height:12px;border-radius:50%;border:2px solid #fff}
+.tl-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;flex-wrap:wrap;gap:4px}
+.tl-title{font-size:11px;font-weight:700}
+.tl-meta{display:flex;gap:6px;flex-wrap:wrap}
+.tl-badge{font-size:9px;font-weight:600;padding:2px 6px;border-radius:12px}
+.tl-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:5px}
+.tl-stat{border:1px solid #f3f4f6;border-radius:5px;padding:4px 6px}
+.tl-stat-l{font-size:8px;color:#888}
+.tl-stat-v{font-size:13px;font-weight:600}
+.tl-events{display:grid;grid-template-columns:1fr 1fr;gap:2px}
+.tl-ev{font-size:8px;color:#555;padding:2px 0;border-bottom:1px dotted #f3f4f6;line-height:1.35}
+
+/* score chart */
+.chart{border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:14px}
+
+/* critical path */
+.crit{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:14px}
+.cr{border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px}
+.cr-t{font-size:11px;font-weight:700;margin-bottom:5px;padding-bottom:4px;border-bottom:1px solid #f3f4f6}
+.cr-item{font-size:9px;color:#444;padding:3px 0;border-bottom:1px dotted #f9fafb;line-height:1.4}
+
+/* scenarios */
+.scen{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:14px}
+.sc{border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px}
+.sc-t{font-size:10px;font-weight:700;margin-bottom:5px}
+.sc-row{display:flex;justify-content:space-between;font-size:9px;padding:2px 0;border-bottom:1px dotted #f9fafb}
+.sc-k{color:#888}
+.sc-v{font-weight:600}
+
+/* calendar */
+.cal{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:14px}
+.cal-item{border:1px solid #e5e7eb;border-radius:7px;padding:8px 10px}
+.cal-m{font-size:10px;font-weight:700;margin-bottom:4px;padding-bottom:3px;border-bottom:1px solid #f3f4f6}
+.cal-ev{font-size:8px;color:#444;padding:2px 0;line-height:1.3}
+
+.sec{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:#888;margin:14px 0 7px;padding-bottom:4px;border-bottom:1px solid #e5e7eb}
+.bottom{border:1px solid #e5e7eb;border-left:3px solid #A32D2D;border-radius:10px;padding:12px 14px;font-size:11px;color:#444;line-height:1.75}
+</style></head><body>
+
+<div class="hero">
+  <div style="display:flex;gap:16px;align-items:flex-start;margin-bottom:12px">
+    <div>
+      <div style="font-size:11px;color:#888;margin-bottom:2px">CURRENT · Apr 8, 2026</div>
+      <div style="font-size:56px;font-weight:500;color:#E2C97E;line-height:1">9.32</div>
+      <div style="font-size:10px;color:#aaa;margin-top:4px">Architecture complete · V5.7+ · 700+ sessions</div>
+    </div>
+    <div style="flex:1;padding-top:6px">
+      <div style="font-size:13px;font-weight:600;color:#E2C97E;margin-bottom:8px">Geopolitical Signal Pipeline — Full Projection Dashboard · Revised Timeline</div>
+      <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px">
+        <div style="background:rgba(255,255,255,.08);border-radius:6px;padding:6px;text-align:center">
+          <div style="font-size:16px;font-weight:600;color:#E2C97E">9.36</div>
+          <div style="font-size:8px;color:#888">Apr 30<br>T=12</div>
+        </div>
+        <div style="background:rgba(255,255,255,.08);border-radius:6px;padding:6px;text-align:center">
+          <div style="font-size:16px;font-weight:600;color:#A0C4FF">9.47</div>
+          <div style="font-size:8px;color:#888">Jun 1<br>Paste+API</div>
+        </div>
+        <div style="background:rgba(255,255,255,.08);border-radius:6px;padding:6px;text-align:center">
+          <div style="font-size:16px;font-weight:600;color:#A0C4FF">9.53</div>
+          <div style="font-size:8px;color:#888">Jun 30<br>APIs live</div>
+        </div>
+        <div style="background:rgba(255,255,255,.08);border-radius:6px;padding:6px;text-align:center;border:1px solid #A32D2D">
+          <div style="font-size:16px;font-weight:600;color:#ff9966">9.53</div>
+          <div style="font-size:8px;color:#888">Jul 1<br>REAL $</div>
+        </div>
+        <div style="background:rgba(255,255,255,.08);border-radius:6px;padding:6px;text-align:center">
+          <div style="font-size:16px;font-weight:600;color:#27500A">9.55</div>
+          <div style="font-size:8px;color:#888">Jul 31<br>30 days $</div>
+        </div>
+        <div style="background:rgba(255,255,255,.08);border-radius:6px;padding:6px;text-align:center">
+          <div style="font-size:16px;font-weight:600;color:#27500A">9.58</div>
+          <div style="font-size:8px;color:#888">Dec 2026<br>Ceiling</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="background:rgba(163,45,45,.2);border:1px solid #A32D2D;border-radius:6px;padding:7px 10px;font-size:10px;color:#ffaaaa">
+    ⚠ REVISED TIMELINE: Real money begins July 1 (not August). APIs integrate in June. June 1 = calibration paste + API build start simultaneously. The architecture ceiling (~9.76) is 100% a CAL problem. T=2. Eight more trades. Log CLV. Follow protocol.
+  </div>
+</div>
+
+<div class="sec">Full milestone timeline</div>
+<div class="timeline">
+
+  <div class="tl-item" style="border-left:4px solid #888780">
+    <div class="tl-dot" style="background:#888780"></div>
+    <div class="tl-header">
+      <div class="tl-title">NOW — April 8, 2026</div>
+      <div class="tl-meta">
+        <span class="tl-badge" style="background:#f3f4f6;color:#555">CURRENT</span>
+        <span class="tl-badge" style="background:#FCE4D6;color:#A32D2D">T=2 · ε=1.0</span>
+        <span class="tl-badge" style="background:#FCE4D6;color:#A32D2D">DESIGN DEBT: ATOM unretired</span>
+      </div>
+    </div>
+    <div class="tl-grid">
+      <div class="tl-stat"><div class="tl-stat-l">Score</div><div class="tl-stat-v" style="color:#27500A">9.32</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">CAL</div><div class="tl-stat-v" style="color:#A32D2D">5.10</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">Ceiling</div><div class="tl-stat-v" style="color:#888">~9.76</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">V2 total</div><div class="tl-stat-v">+2.44</div></div>
+    </div>
+    <div class="tl-events">
+      <div class="tl-ev">Architecture confirmed complete across all traditions</div>
+      <div class="tl-ev">6 CHAOS_ENTRY violations April 4 — protocol reset required</div>
+      <div class="tl-ev">CLV methodology active but not yet logging</div>
+      <div class="tl-ev">ATOM retirement pending — execute before next trade</div>
+    </div>
+  </div>
+
+  <div class="tl-item" style="border-left:4px solid #185FA5">
+    <div class="tl-dot" style="background:#185FA5"></div>
+    <div class="tl-header">
+      <div class="tl-title">End of April — April 30, 2026</div>
+      <div class="tl-meta">
+        <span class="tl-badge" style="background:#DEEAF1;color:#185FA5">T=12</span>
+        <span class="tl-badge" style="background:#DEEAF1;color:#185FA5">ε=0.55</span>
+        <span class="tl-badge" style="background:#E2EFDA;color:#27500A">MW FIRST DIRECTION SIGNAL</span>
+      </div>
+    </div>
+    <div class="tl-grid">
+      <div class="tl-stat"><div class="tl-stat-l">Score</div><div class="tl-stat-v" style="color:#27500A">9.36</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">CAL</div><div class="tl-stat-v" style="color:#185FA5">6.18</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">CAL gain</div><div class="tl-stat-v">+1.08</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">ε vs now</div><div class="tl-stat-v">1.0→0.55</div></div>
+    </div>
+    <div class="tl-events">
+      <div class="tl-ev">T=10 crossed → ε=0.56 → MW first reliable direction signal</div>
+      <div class="tl-ev">ATOM retirement complete: 35 CORE fields vs 95-field backend</div>
+      <div class="tl-ev">CLV baseline: ~10 entry prices logged vs Polymarket close</div>
+      <div class="tl-ev">First PROCESS_QUALITY trend: is L3 discipline improving?</div>
+      <div class="tl-ev">Phase distribution: PRE_NARRATIVE vs NARRATIVE vs TERMINAL</div>
+      <div class="tl-ev">BARDO_RECOGNITION: first data on dissolution-moment detection</div>
+    </div>
+  </div>
+
+  <div class="tl-item" style="border-left:4px solid #854F0B">
+    <div class="tl-dot" style="background:#854F0B"></div>
+    <div class="tl-header">
+      <div class="tl-title">June 1, 2026 — Calibration Paste + API Integration Begins</div>
+      <div class="tl-meta">
+        <span class="tl-badge" style="background:#FFF2E2;color:#854F0B">T=35</span>
+        <span class="tl-badge" style="background:#FFF2E2;color:#854F0B">ε=0.32</span>
+        <span class="tl-badge" style="background:#E2EFDA;color:#27500A">CLV-WEIGHTED MW RECALIBRATION</span>
+        <span class="tl-badge" style="background:#E2EFDA;color:#27500A">API BUILD STARTS</span>
+      </div>
+    </div>
+    <div class="tl-grid">
+      <div class="tl-stat"><div class="tl-stat-l">Score</div><div class="tl-stat-v" style="color:#27500A">9.47</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">CAL</div><div class="tl-stat-v" style="color:#854F0B">7.84</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">CAL gain</div><div class="tl-stat-v">+2.74</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">Trades logged</div><div class="tl-stat-v">35</div></div>
+    </div>
+    <div class="tl-events">
+      <div class="tl-ev">Paste full April+May trade log: CLV + outcome + metadata</div>
+      <div class="tl-ev">CLV-weighted MW recalibration: 70% CLV, 30% outcome</div>
+      <div class="tl-ev">MIT Tier-1 courses extracted: 6.041, 14.271, 14.13, 15.879, 15.401</div>
+      <div class="tl-ev">API build: Kalshi, Polymarket, GDELT, EDGAR, PRAW, RSS, Etherscan</div>
+      <div class="tl-ev">Stack B: Grok API + Reddit (PRAW) + RSS — free tier confirmed</div>
+      <div class="tl-ev">HMM_REGIME_INFERENCER: first emission matrix from T=35 data</div>
+      <div class="tl-ev">BOOKMAKER_MARGIN_MODEL live on Polymarket bid-ask spread data</div>
+      <div class="tl-ev">Character armour pattern identification: what keeps recurring?</div>
+    </div>
+  </div>
+
+  <div class="tl-item" style="border-left:4px solid #27500A">
+    <div class="tl-dot" style="background:#27500A"></div>
+    <div class="tl-header">
+      <div class="tl-title">End of June — June 30, 2026 — All APIs Live</div>
+      <div class="tl-meta">
+        <span class="tl-badge" style="background:#E2EFDA;color:#27500A">T=55</span>
+        <span class="tl-badge" style="background:#E2EFDA;color:#27500A">ε=0.26</span>
+        <span class="tl-badge" style="background:#E2EFDA;color:#27500A">LIVE DATA PAPER TRADING</span>
+      </div>
+    </div>
+    <div class="tl-grid">
+      <div class="tl-stat"><div class="tl-stat-l">Score</div><div class="tl-stat-v" style="color:#27500A">9.53</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">CAL</div><div class="tl-stat-v" style="color:#27500A">8.68</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">CAL gain</div><div class="tl-stat-v">+3.58</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">APIs live</div><div class="tl-stat-v">7 / 7</div></div>
+    </div>
+    <div class="tl-events">
+      <div class="tl-ev">All 7 APIs connected and producing live data</div>
+      <div class="tl-ev">LATENT_ENTRY_CONDITION: first live test on real prediction markets</div>
+      <div class="tl-ev">NON_REACTION_SIGNAL_DETECTOR: 5+ cases logged and analyzed</div>
+      <div class="tl-ev">LIQUIDITY_FRICTION_SCORE: baseline established from 30+ days bid-ask</div>
+      <div class="tl-ev">NARRATIVE_OPPORTUNITY_SCORE: live watchlist generating daily</div>
+      <div class="tl-ev">HMM V1 emission matrix: 3 geopolitical regime types identified</div>
+      <div class="tl-ev">CLV_WEIGHTED_MW_UPDATE: running automatically on every close</div>
+      <div class="tl-ev">EMPTY_CUP + PRANAYAMA protocol: 60 days of daily practice built</div>
+    </div>
+  </div>
+
+  <div class="tl-item" style="border-left:4px solid #A32D2D;background:#FFF8F8">
+    <div class="tl-dot" style="background:#A32D2D"></div>
+    <div class="tl-header">
+      <div class="tl-title">⚡ July 1, 2026 — REAL MONEY BEGINS (REVISED DATE)</div>
+      <div class="tl-meta">
+        <span class="tl-badge" style="background:#FCE4D6;color:#A32D2D">T=55</span>
+        <span class="tl-badge" style="background:#FCE4D6;color:#A32D2D">ε=0.26</span>
+        <span class="tl-badge" style="background:#A32D2D;color:#fff">IBKR LIVE</span>
+        <span class="tl-badge" style="background:#A32D2D;color:#fff">SNIPER ONLY</span>
+        <span class="tl-badge" style="background:#A32D2D;color:#fff">QUARTER_UNIT MAX</span>
+      </div>
+    </div>
+    <div class="tl-grid">
+      <div class="tl-stat"><div class="tl-stat-l">Score</div><div class="tl-stat-v" style="color:#27500A">9.53</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">CAL</div><div class="tl-stat-v" style="color:#27500A">8.68</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">f* sizing</div><div class="tl-stat-v">f*/4 max</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">Hard stop</div><div class="tl-stat-v">-10%</div></div>
+    </div>
+    <div class="tl-events">
+      <div class="tl-ev">IBKR account live — SPOT LONGS ONLY, no leverage, no shorts</div>
+      <div class="tl-ev">SNIPER mode exclusively for first 30 days real money</div>
+      <div class="tl-ev">QUARTER_UNIT maximum: f*/4 fractional Kelly regardless of leave_score</div>
+      <div class="tl-ev">PROCESS_QUALITY ≥ 4/5 mandatory before ANY real money entry</div>
+      <div class="tl-ev">TONGLEN pre-entry: fully accept maximum loss before executing</div>
+      <div class="tl-ev">EMPTY_CUP_PROTOCOL mandatory — no exceptions for "obvious" trades</div>
+      <div class="tl-ev">Hard stop -10%: non-negotiable, set at entry, never moved against</div>
+      <div class="tl-ev">CLV logging: screenshot at EXACT entry moment, every trade</div>
+    </div>
+  </div>
+
+  <div class="tl-item" style="border-left:4px solid #3B6D11">
+    <div class="tl-dot" style="background:#3B6D11"></div>
+    <div class="tl-header">
+      <div class="tl-title">End of July — July 31, 2026 — 30 Days Real Money</div>
+      <div class="tl-meta">
+        <span class="tl-badge" style="background:#E2EFDA;color:#27500A">T=70</span>
+        <span class="tl-badge" style="background:#E2EFDA;color:#27500A">ε=0.23</span>
+        <span class="tl-badge" style="background:#E2EFDA;color:#27500A">SIZING REVIEW</span>
+      </div>
+    </div>
+    <div class="tl-grid">
+      <div class="tl-stat"><div class="tl-stat-l">Score</div><div class="tl-stat-v" style="color:#27500A">9.55</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">CAL</div><div class="tl-stat-v" style="color:#27500A">9.09</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">CAL gain</div><div class="tl-stat-v">+3.99</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">Sizing</div><div class="tl-stat-v">HALF if Q4/5</div></div>
+    </div>
+    <div class="tl-events">
+      <div class="tl-ev">First real P&L curve: CLV vs outcome distribution visible</div>
+      <div class="tl-ev">SYSTEM_WIN / PROCESS_WIN ratio measured — is process producing edge?</div>
+      <div class="tl-ev">Character armour: 30 real trades = patterns undeniable</div>
+      <div class="tl-ev">Sizing upgrade: HALF_UNIT if PROCESS_QUALITY ≥ 4/5 for 20+ trades</div>
+      <div class="tl-ev">HMM_REGIME_INFERENCER V2: updated with live-data regime classifications</div>
+      <div class="tl-ev">M16 entries: consider expanding from SNIPER only</div>
+      <div class="tl-ev">Kelly calibration: real liquidity constraints now known</div>
+      <div class="tl-ev">Neuroplasticity compound: 90 days of daily practice measurable</div>
+    </div>
+  </div>
+
+  <div class="tl-item" style="border-left:4px solid #E2C97E">
+    <div class="tl-dot" style="background:#E2C97E"></div>
+    <div class="tl-header">
+      <div class="tl-title">December 2026 — Architecture Ceiling Approaches</div>
+      <div class="tl-meta">
+        <span class="tl-badge" style="background:#FFF2E2;color:#854F0B">T=120</span>
+        <span class="tl-badge" style="background:#FFF2E2;color:#854F0B">ε=0.18</span>
+        <span class="tl-badge" style="background:#E2EFDA;color:#27500A">MATURE MW</span>
+      </div>
+    </div>
+    <div class="tl-grid">
+      <div class="tl-stat"><div class="tl-stat-l">Score</div><div class="tl-stat-v" style="color:#27500A">9.58</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">CAL</div><div class="tl-stat-v" style="color:#27500A">9.50</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">Gap to ceil</div><div class="tl-stat-v">~0.18</div></div>
+      <div class="tl-stat"><div class="tl-stat-l">Kelly</div><div class="tl-stat-v">Full review</div></div>
+    </div>
+    <div class="tl-events">
+      <div class="tl-ev">Full MIT Tier-1 corpus: +0.12-0.15 total from all 5 courses</div>
+      <div class="tl-ev">HMM V3: reliable regime detection across 12+ months of events</div>
+      <div class="tl-ev">Architecture ceiling ~9.76 = 100% CAL constraint at this point</div>
+      <div class="tl-ev">Full Kelly sizing consideration: f*/2 review if track record proven</div>
+      <div class="tl-ev">ATOM_CORE: 150+ field backend architecture, 35-field live wheel</div>
+      <div class="tl-ev">L3 discipline: 9 months of compound protocol adherence visible</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="sec">Monthly execution calendar</div>
+<div class="cal">
+  <div class="cal-item" style="border-top:3px solid #185FA5">
+    <div class="cal-m" style="color:#185FA5">April 2026 — Paper Trading</div>
+    <div class="cal-ev">☐ ATOM retirement: 35-field CORE before next trade</div>
+    <div class="cal-ev">☐ 8 more trades → T=10 by Apr 25</div>
+    <div class="cal-ev">☐ CLV screenshot at every entry (mandatory)</div>
+    <div class="cal-ev">☐ PROCESS_QUALITY 5-check at every entry</div>
+    <div class="cal-ev">☐ EMPTY_CUP protocol every session</div>
+    <div class="cal-ev">☐ Log: phase / arousal / DK_zone at entry</div>
+    <div class="cal-ev">☐ No CHAOS_ENTRY repeat (April 4 was the lesson)</div>
+  </div>
+  <div class="cal-item" style="border-top:3px solid #27500A">
+    <div class="cal-m" style="color:#27500A">May 2026 — Full Month Paper Trading</div>
+    <div class="cal-ev">☐ ~20-25 more trades (target 5/week)</div>
+    <div class="cal-ev">☐ MIT Tier-1 course extraction (1 per week)</div>
+    <div class="cal-ev">☐ Process: 6.041 → 14.271 → 14.13 → 15.879 → 15.401</div>
+    <div class="cal-ev">☐ NON_REACTION_SIGNAL: log 5+ cases</div>
+    <div class="cal-ev">☐ Phase classification: every entry tagged PRE/NAR/TERM</div>
+    <div class="cal-ev">☐ TONGLEN before every entry (accept stop first)</div>
+    <div class="cal-ev">☐ Prepare full trade log for June 1 paste</div>
+  </div>
+  <div class="cal-item" style="border-top:3px solid #854F0B">
+    <div class="cal-m" style="color:#854F0B">June 2026 — Paste + API Build</div>
+    <div class="cal-ev">☐ Jun 1: Paste full April+May log (this chat)</div>
+    <div class="cal-ev">☐ Jun 1: CLV-weighted MW recalibration session</div>
+    <div class="cal-ev">☐ Jun 1-7: Kalshi + Polymarket API integration</div>
+    <div class="cal-ev">☐ Jun 7-14: GDELT + EDGAR + PRAW + RSS</div>
+    <div class="cal-ev">☐ Jun 14-21: Etherscan + signal processing pipeline</div>
+    <div class="cal-ev">☐ Jun 21-30: Live data paper trading + debugging</div>
+    <div class="cal-ev">☐ Jun 30: All APIs live + NARRATIVE_OPPORTUNITY_SCORE active</div>
+  </div>
+  <div class="cal-item" style="border-top:3px solid #A32D2D;background:#FFF8F8">
+    <div class="cal-m" style="color:#A32D2D">July 2026 — REAL MONEY (Month 1)</div>
+    <div class="cal-ev">☑ IBKR live: SPOT LONGS ONLY</div>
+    <div class="cal-ev">☑ SNIPER only for first 30 days</div>
+    <div class="cal-ev">☑ QUARTER_UNIT max: f*/4 Kelly</div>
+    <div class="cal-ev">☑ Hard stop -10% set at entry, never moved</div>
+    <div class="cal-ev">☑ PROCESS_QUALITY ≥ 4/5 mandatory gate</div>
+    <div class="cal-ev">☑ CLV logged every trade without exception</div>
+    <div class="cal-ev">☑ Jul 31: sizing review if track record clean</div>
+  </div>
+  <div class="cal-item" style="border-top:3px solid #3B6D11">
+    <div class="cal-m" style="color:#3B6D11">August 2026 — Real Money Month 2</div>
+    <div class="cal-ev">Expand to M16 entries if PROCESS_QUALITY sustained</div>
+    <div class="cal-ev">HALF_UNIT if 20+ real trades at ≥ 4/5 quality</div>
+    <div class="cal-ev">Kelly calibration: real liquidity constraints known</div>
+    <div class="cal-ev">HMM V2 emission matrix update</div>
+    <div class="cal-ev">Character armour patterns: 60 real trades visible</div>
+    <div class="cal-ev">Full Kelly sizing review end of month</div>
+  </div>
+  <div class="cal-item" style="border-top:3px solid #E2C97E">
+    <div class="cal-m" style="color:#854F0B">Dec 2026 — Architecture Ceiling</div>
+    <div class="cal-ev">Score 9.55-9.58 — approaching ~9.76 ceiling</div>
+    <div class="cal-ev">CAL: 9.5+ — mature MW calibration at T=120</div>
+    <div class="cal-ev">6 months real money track record visible</div>
+    <div class="cal-ev">Full Kelly sizing consideration at f*/2</div>
+    <div class="cal-ev">Architecture review: what is the final 0.18 gap?</div>
+    <div class="cal-ev">Next horizon: real data API closed-loop feedback</div>
+  </div>
+</div>
+
+<div class="sec">Three scenarios</div>
+<div class="scen">
+  <div class="sc" style="border-top:3px solid #27500A">
+    <div class="sc-t" style="color:#27500A">🟢 BULL CASE — Strong Discipline</div>
+    <div class="sc-row"><span class="sc-k">Trades by Jun 1</span><span class="sc-v">45</span></div>
+    <div class="sc-row"><span class="sc-k">Process Quality avg</span><span class="sc-v">4.5 / 5</span></div>
+    <div class="sc-row"><span class="sc-k">CLV logged</span><span class="sc-v">95% trades</span></div>
+    <div class="sc-row"><span class="sc-k">CHAOS_ENTRY repeats</span><span class="sc-v">0</span></div>
+    <div class="sc-row"><span class="sc-k">Jun 1 score</span><span class="sc-v" style="color:#27500A">9.48</span></div>
+    <div class="sc-row"><span class="sc-k">Jul 1 score</span><span class="sc-v" style="color:#27500A">9.51</span></div>
+    <div class="sc-row"><span class="sc-k">Dec 2026 score</span><span class="sc-v" style="color:#27500A">9.58</span></div>
+    <div style="font-size:8px;color:#555;margin-top:5px;line-height:1.4">Requires: daily protocol adherence, 5+ trades/week, MIT extraction completed, CLV logged every trade.</div>
+  </div>
+  <div class="sc" style="border-top:3px solid #185FA5">
+    <div class="sc-t" style="color:#185FA5">🔵 BASE CASE — Realistic</div>
+    <div class="sc-row"><span class="sc-k">Trades by Jun 1</span><span class="sc-v">35</span></div>
+    <div class="sc-row"><span class="sc-k">Process Quality avg</span><span class="sc-v">4.0 / 5</span></div>
+    <div class="sc-row"><span class="sc-k">CLV logged</span><span class="sc-v">70% trades</span></div>
+    <div class="sc-row"><span class="sc-k">CHAOS_ENTRY repeats</span><span class="sc-v">1-2</span></div>
+    <div class="sc-row"><span class="sc-k">Jun 1 score</span><span class="sc-v" style="color:#185FA5">9.43</span></div>
+    <div class="sc-row"><span class="sc-k">Jul 1 score</span><span class="sc-v" style="color:#185FA5">9.45</span></div>
+    <div class="sc-row"><span class="sc-k">Dec 2026 score</span><span class="sc-v" style="color:#185FA5">9.50</span></div>
+    <div style="font-size:8px;color:#555;margin-top:5px;line-height:1.4">Projected outcome if protocol maintained at current quality level with gradual improvement.</div>
+  </div>
+  <div class="sc" style="border-top:3px solid #A32D2D">
+    <div class="sc-t" style="color:#A32D2D">🔴 BEAR CASE — Discipline Failures</div>
+    <div class="sc-row"><span class="sc-k">Trades by Jun 1</span><span class="sc-v">20</span></div>
+    <div class="sc-row"><span class="sc-k">Process Quality avg</span><span class="sc-v">3.0 / 5</span></div>
+    <div class="sc-row"><span class="sc-k">CLV logged</span><span class="sc-v">40% trades</span></div>
+    <div class="sc-row"><span class="sc-k">CHAOS_ENTRY repeats</span><span class="sc-v">3+</span></div>
+    <div class="sc-row"><span class="sc-k">Jun 1 score</span><span class="sc-v" style="color:#A32D2D">9.37</span></div>
+    <div class="sc-row"><span class="sc-k">Jul 1 score</span><span class="sc-v" style="color:#A32D2D">9.38</span></div>
+    <div class="sc-row"><span class="sc-k">Dec 2026 score</span><span class="sc-v" style="color:#A32D2D">9.44</span></div>
+    <div style="font-size:8px;color:#555;margin-top:5px;line-height:1.4">Result if April 4 pattern repeats, CLV logging is inconsistent, and TAMASIC missed-LPs accumulate.</div>
+  </div>
+</div>
+
+<div class="sec">Critical path — the three constraints that determine everything</div>
+<div class="crit">
+  <div class="cr" style="border-top:3px solid #A32D2D">
+    <div class="cr-t" style="color:#A32D2D">1. TRADE VOLUME (T→10 by Apr 25)</div>
+    <div class="cr-item">Need 8 more closed trades in 3 weeks</div>
+    <div class="cr-item">PRECIOUS_OPPORTUNITY_GATE: missing LEICESTER_PRIME = failure</div>
+    <div class="cr-item">Don't force (RAJASIC). Don't avoid (TAMASIC). See clearly (SATTVIC).</div>
+    <div class="cr-item">Any qualified FIRE_MODE entry that resolves counts</div>
+    <div class="cr-item">T=10 → ε=0.56 → MW first reliable direction signal</div>
+    <div class="cr-item">Without T=10: June 1 paste = T=35 but with no early-phase calibration</div>
+  </div>
+  <div class="cr" style="border-top:3px solid #854F0B">
+    <div class="cr-t" style="color:#854F0B">2. PROCESS QUALITY (≥ 4/5 consistently)</div>
+    <div class="cr-item">April 4: 6 CHAOS_ENTRY violations in one day</div>
+    <div class="cr-item">ONE repeat of April 4 = contaminated CAL data = wasted calibration</div>
+    <div class="cr-item">EMPTY_CUP → CIRCLE_CAST → RIGPA → VIVEKA: mandatory every session</div>
+    <div class="cr-item">TONGLEN pre-entry: accept the stop before pressing the trigger</div>
+    <div class="cr-item">L3 (decision discipline) IS the bottleneck — not model quality</div>
+    <div class="cr-item">The training IS the trading. No dress rehearsal mode.</div>
+  </div>
+  <div class="cr" style="border-top:3px solid #185FA5">
+    <div class="cr-t" style="color:#185FA5">3. CLV LOGGING (quality data for June 1)</div>
+    <div class="cr-item">CLV = entry price vs Polymarket/Kalshi VWAP at resolution close</div>
+    <div class="cr-item">Without CLV: June 1 paste = 30% signal (outcome only)</div>
+    <div class="cr-item">With CLV: June 1 paste = 100% signal (70% CLV + 30% outcome)</div>
+    <div class="cr-item">Screenshot Polymarket at EXACT entry moment. Always.</div>
+    <div class="cr-item">Record: entry_price, market_close_price, CLV = close − entry</div>
+    <div class="cr-item">Positive CLV = PROCESS_WIN. Compounding on what's right, not lucky.</div>
+  </div>
+</div>
+
+<div class="bottom">
+<strong style="color:#A32D2D">The pipeline architecture is complete at 9.32. Every point from here is earned in execution, not design.</strong><br><br>
+The revised timeline moves real money to July 1 rather than August. This is the right call — June is for API integration and live-data paper trading, which means by July 1 the infrastructure is live, the HMM has a first emission matrix, the CLV baseline is established, and the character armour patterns are visible across ~55 trades. July 1 entry with SNIPER-only + QUARTER_UNIT maximum is the correct risk profile for the first real-money month.<br><br>
+<strong>The three constraints that determine June 1 quality:</strong> (1) Trade volume — T=35 by June 1 means ~5 trades per week through April and May. Not forced, not avoided. SATTVIC engagement with every genuine FIRE_MODE setup. (2) Process quality — the April 4 violations were the most expensive data point in the pipeline's history. Not because of P&L but because CHAOS_ENTRY data is contaminated calibration. One repeat costs more than 10 PROCESS_WIN trades gain. (3) CLV logging — this is the single most important data hygiene change. The difference between outcome-weighted calibration (30% signal) and CLV-weighted calibration (100% signal) is the difference between noise and precision. Screenshot every entry. Every time.<br><br>
+<strong>The score ceiling of ~9.76 is entirely a CAL constraint.</strong> At T=120 and CAL=9.5, the remaining gap is ~0.18 — which is the residual uncertainty from having architecture that has never been tested against live real-money P&L at scale. That gap closes through the July-December 2026 real trading period. Not through more architecture work. The architecture is built.
+</div>
+
+</body></html>

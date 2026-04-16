@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pipeline V5.7+ — SPF / Michelangelo Session</title>
+<style>
+:root{--bg:#090908;--bg2:#111110;--bg3:#181817;--bd:#1e1e1c;--bd2:#282826;--tx:#e8e8e0;--tx2:#909088;--tx3:#484840;--ac:#d4a855;--gr:#22c55e;--rd:#ef4444;--or:#f97316;--yl:#eab308;--pu:#a855f7;--te:#14b8a6;--bl:#3b82f6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:28px 22px 64px;font-size:13px;line-height:1.5}
+
+/* HEADER */
+.hdr{margin-bottom:22px;padding-bottom:14px;border-bottom:1px solid var(--bd)}
+.hdr-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap}
+.hdr-title{font-size:.95rem;font-weight:700}
+.hdr-source{font-size:.67rem;color:var(--ac);margin-top:2px}
+.hdr-date{font-size:.62rem;color:var(--tx3);font-family:monospace}
+.hdr-sub{font-size:.65rem;color:var(--tx3);margin-top:6px;line-height:1.75}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(8,1fr);gap:7px;margin-bottom:20px}
+@media(max-width:700px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:9px 7px;text-align:center}
+.sv{font-size:1.45rem;font-weight:700;line-height:1;font-family:monospace}
+.sl{font-size:.55rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+/* SESSION */
+.sess{background:#120f08;border:1px solid #302818;border-radius:7px;padding:12px 14px;margin-bottom:20px;font-size:.68rem;color:#c09050;line-height:1.9}
+.sess strong{color:#e0b870}
+
+/* SPF MATRIX */
+.spf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+@media(max-width:500px){.spf-grid{grid-template-columns:1fr}}
+.spf-card{background:var(--bg2);border:1px solid var(--bd2);border-radius:7px;padding:12px 14px}
+.spf-name{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;font-family:monospace}
+.spf-def{font-size:.66rem;color:var(--tx2);line-height:1.6;margin-bottom:5px}
+.spf-ex{font-size:.61rem;color:var(--te);font-family:monospace;line-height:1.4}
+.spf-purity{border-color:#2a1a08;background:#0a0804}
+.spf-comp{border-color:#082a18;background:#040c08}
+.spf-acc{border-color:#082028;background:#040810}
+
+/* SCENARIO TABLE */
+.scene-table{width:100%;border-collapse:collapse;font-size:.64rem;margin-bottom:16px}
+.scene-table th{background:var(--bg3);color:var(--tx3);padding:6px 9px;text-align:left;border:1px solid var(--bd);font-size:.57rem;letter-spacing:.05em;text-transform:uppercase}
+.scene-table td{padding:6px 9px;border:1px solid var(--bd);color:var(--tx2);vertical-align:top;line-height:1.45}
+.scene-table tr:nth-child(even) td{background:#0e0e0c}
+.hi{color:#d4a855;font-weight:700}
+.lo{color:#ef4444;font-weight:700}
+.md{color:#f97316;font-weight:700}
+
+/* NEW MECH */
+.new-box{background:#120e04;border:1px solid #2a2008;border-radius:7px;padding:14px 16px;margin-bottom:20px}
+.new-t{font-size:.61rem;font-weight:700;color:var(--ac);letter-spacing:.09em;text-transform:uppercase;margin-bottom:12px}
+.mech{background:var(--bg3);border:1px solid var(--bd2);border-radius:5px;padding:11px 13px;border-left:3px solid var(--ac)}
+.mech-n{font-size:.73rem;font-weight:700;color:var(--tx);margin-bottom:5px;font-family:monospace}
+.mech-d{font-size:.68rem;color:var(--tx2);line-height:1.65}
+.mech-retro{background:#0e0a04;border:1px solid #201808;border-radius:4px;padding:8px 10px;margin-top:7px;font-size:.63rem;color:#907030;font-family:monospace;line-height:1.75}
+.mtag{display:inline-block;font-size:.57rem;font-weight:700;padding:2px 6px;border-radius:3px;margin-top:5px;margin-right:4px}
+.mt-go{background:#181208;color:#d4a855}
+.mt-gr{background:#031a0c;color:#22c55e}
+.mt-pk{background:#1a0518;color:#ec4899}
+.mt-te{background:#021812;color:#14b8a6}
+
+/* CUMULATIVE SOURCE STACK */
+.cum{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;padding:13px 15px;margin-bottom:20px}
+.cum-t{font-size:.61rem;font-weight:700;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:11px}
+.ctable{width:100%;border-collapse:collapse;font-size:.64rem}
+.ctable th{background:var(--bg3);color:var(--tx3);padding:6px 9px;text-align:left;border:1px solid var(--bd);font-size:.57rem;letter-spacing:.04em;text-transform:uppercase}
+.ctable td{padding:6px 9px;border:1px solid var(--bd);color:var(--tx2);vertical-align:top;line-height:1.45}
+.ctable tr:nth-child(even) td{background:#0e0e0c}
+.tnew{background:#1a1208;color:#d4a855;font-size:.55rem;font-weight:700;padding:1px 5px;border-radius:2px;display:inline-block}
+.tprev{background:#04080e;color:#3b82f6;font-size:.55rem;font-weight:700;padding:1px 5px;border-radius:2px;display:inline-block}
+
+/* MODULE GRID */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(193px,1fr));gap:8px;margin-bottom:20px}
+.mod{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;padding:12px 13px;position:relative}
+.mod::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:7px 0 0 7px}
+.mod.ceiling::before{background:var(--gr)}
+.mod.tooling::before{background:var(--bl)}
+.mod.structural::before{background:var(--or)}
+.mod.empirical::before{background:var(--pu)}
+.mod.debt::before{background:var(--rd)}
+.mod.improved{border-color:#2a2008}
+.mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.mname{font-size:.62rem;font-weight:700;color:var(--tx3);letter-spacing:.09em;text-transform:uppercase;font-family:monospace}
+.mtag2{font-size:.55rem;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase}
+.t-ceil{background:#031a0c;color:#22c55e}
+.t-tool{background:#04100e;color:#3b82f6}
+.t-stru{background:#200c00;color:#f97316}
+.t-emp{background:#120820;color:#a855f7}
+.t-debt{background:#200505;color:#ef4444}
+.srow{display:flex;align-items:baseline;gap:6px;margin-bottom:4px}
+.sval{font-size:2rem;font-weight:700;line-height:1;font-family:monospace}
+.sdelta{font-size:.67rem;font-weight:700;padding:2px 5px;border-radius:3px}
+.dp{background:#031a0c;color:#22c55e}
+.dz{background:#121210;color:#404038}
+.bar{height:2px;background:var(--bd2);border-radius:1px;margin-bottom:5px;overflow:hidden;position:relative}
+.bf{height:100%;border-radius:1px;position:absolute;left:0}
+.mnote{font-size:.62rem;color:var(--tx3);line-height:1.55}
+.mhint{font-size:.59rem;color:var(--ac);margin-top:3px;font-style:italic}
+
+/* CRIT */
+.crit{background:#0e0404;border:1px solid #7f1d1d;border-radius:7px;padding:12px 14px;margin-bottom:20px}
+.crit-t{font-size:.6rem;font-weight:700;color:var(--rd);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.ci{display:flex;gap:8px;margin-bottom:6px;font-size:.67rem;color:#fca5a5;line-height:1.55}
+.cd{width:5px;height:5px;border-radius:50%;background:var(--rd);margin-top:4px;flex-shrink:0}
+
+/* PROJ */
+.proj{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;padding:12px 14px;margin-bottom:20px}
+.proj-t{font-size:.6rem;font-weight:700;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.prow{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:.67rem}
+.pdate{color:var(--tx3);min-width:68px;font-family:monospace;font-size:.63rem}
+.pev{color:var(--tx2);flex:1}
+.pscore{color:var(--gr);font-weight:700;min-width:32px;text-align:right;font-family:monospace}
+.pbar{width:75px;height:2px;background:var(--bd2);border-radius:1px;overflow:hidden}
+.pbf{height:100%;background:var(--gr);border-radius:1px}
+
+footer{font-size:.57rem;color:var(--tx3);text-align:center;line-height:2.3;margin-top:8px;font-family:monospace}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-row">
+    <div>
+      <div class="hdr-title">PIPELINE V5.7+ — SCORECARD</div>
+      <div class="hdr-source">Sequential Node Failure · Cheap Signal Theory · Source Purity Architecture · Assamese Proverb</div>
+    </div>
+    <div class="hdr-date">Apr 16, 2026</div>
+  </div>
+  <div class="hdr-sub">+0.0010 · S0→9.56 · Gap 0.19 · 28 already built · 1 new mechanism (highest precision, lowest multiplicity session)</div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="sv" style="color:var(--ac)">9.57</div><div class="sl">Score</div></div>
+  <div class="stat"><div class="sv" style="color:var(--or)">0.19</div><div class="sl">Gap</div></div>
+  <div class="stat"><div class="sv">9.76</div><div class="sl">Ceiling</div></div>
+  <div class="stat"><div class="sv" style="color:var(--rd)">T=6</div><div class="sl">Trades</div></div>
+  <div class="stat"><div class="sv" style="color:var(--ac)">+2.69</div><div class="sl">Total V2</div></div>
+  <div class="stat"><div class="sv" style="color:var(--gr)">+1</div><div class="sl">New mech</div></div>
+  <div class="stat"><div class="sv">28</div><div class="sl">Already built</div></div>
+  <div class="stat"><div class="sv" style="color:var(--yl)">97%</div><div class="sl">Overlap</div></div>
+</div>
+
+<!-- SESSION -->
+<div class="sess">
+  <strong>Session:</strong> Game-theory / trust-architecture spec. Sequential node failure, desire vs repair regime, adversarial framing, cheap signal discounting, source purity decomposition.<br>
+  <strong>Density:</strong> 28/29 (97%). Highest overlap rate. Core mechanisms all previously formalised across the archive.<br>
+  <strong>Movement:</strong> S0 +0.01 (SPF architecture — three-factor decomposition upgrades signal intake source scoring)<br>
+  <strong>Key insight:</strong> The pipeline had a single distortion score per source. SPF formally separates WHY a source fails into three independent axes with different operational responses.
+</div>
+
+<!-- SPF THREE-FACTOR -->
+<div style="font-size:.61rem;font-weight:700;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">SOURCE_PURITY_FACTOR — Three Independent Failure Modes</div>
+<div class="spf-grid">
+  <div class="spf-card spf-purity">
+    <div class="spf-name" style="color:var(--ac)">SPF — Strategic Distortion</div>
+    <div class="spf-def">How much does this source INTENTIONALLY distort? Activist PR, government spin, sports agent claims, echo chambers. Updates: slow (baseline characterization).</div>
+    <div class="spf-ex">0.0 = Polymarket mechanics (near-zero)<br>0.5 = institutional research (incentive structure)<br>1.0 = known manipulator / spin narrative</div>
+  </div>
+  <div class="spf-card spf-comp">
+    <div class="spf-name" style="color:var(--gr)">SCS — Domain Competence</div>
+    <div class="spf-def">Does this source UNDERSTAND the relevant domain? Out-of-domain celebrity vs deep domain expert. Updates: moderate (expertise relatively stable).</div>
+    <div class="spf-ex">0.0 = celebrity tweeting geopolitics<br>0.5 = adjacent domain proximity<br>1.0 = deep expert with track record</div>
+  </div>
+  <div class="spf-card spf-acc">
+    <div class="spf-name" style="color:var(--bl)">SAS — Accuracy Track Record</div>
+    <div class="spf-def">Empirical hit rate on THIS signal class. Computed from Moltbook outcomes. Updates: FAST (per closed trade). The declining-SAS pattern is the most dangerous.</div>
+    <div class="spf-ex">0.0 = below chance on similar predictions<br>0.5 = random noise baseline<br>1.0 = significantly above base rate</div>
+  </div>
+</div>
+
+<!-- SCENARIO TABLE -->
+<div style="font-size:.61rem;font-weight:700;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">SPF Decision Matrix — Four Key Scenarios</div>
+<table class="scene-table">
+  <tr><th>SPF</th><th>SCS</th><th>SAS</th><th>Source Type</th><th>Pipeline Response</th></tr>
+  <tr>
+    <td><span class="lo">HIGH distortion</span></td>
+    <td><span class="hi">HIGH competence</span></td>
+    <td><span class="hi">HIGH accuracy</span></td>
+    <td>Strategic actor (Polymarket whale, activist investor)</td>
+    <td>Decode their POSITION not their STATEMENT. Trust the action, not the word. Current SBS over-discounts this source.</td>
+  </tr>
+  <tr>
+    <td><span class="hi">LOW distortion</span></td>
+    <td><span class="lo">LOW competence</span></td>
+    <td><span class="lo">LOW accuracy</span></td>
+    <td>Sincere but useless (out-of-domain commentator)</td>
+    <td>Discount despite good faith. Current pipeline trusts low-SBS sources too much. SCS/SAS reveal the gap.</td>
+  </tr>
+  <tr>
+    <td><span class="hi">LOW distortion</span></td>
+    <td><span class="hi">HIGH competence</span></td>
+    <td><span class="md">DECLINING accuracy</span></td>
+    <td>Trustworthy expert losing calibration (regime drift)</td>
+    <td>Apply SAS penalty to recent outputs ONLY. Do not discard entire source. Track SAS velocity.</td>
+  </tr>
+  <tr>
+    <td><span class="md">MED distortion</span></td>
+    <td><span class="hi">HIGH competence</span></td>
+    <td><span class="lo">LOW SAS on this class</span></td>
+    <td>Expert in wrong domain (war analyst on energy equities)</td>
+    <td>Apply class-specific SAS discount. Reuters on geopolitics ≠ Reuters on energy equity timing. Always late by ~80d.</td>
+  </tr>
+</table>
+
+<!-- NEW MECH -->
+<div class="new-box">
+  <div class="new-t">1 New Mechanism This Session</div>
+  <div class="mech">
+    <div class="mech-n">SOURCE_PURITY_FACTOR Architecture (SPF / SCS / SAS)</div>
+    <div class="mech-d">Formally decomposes source trustworthiness into three independent dimensions. The pipeline has SOURCE_BUBBLE_SCORE (SBS) which measures distortion but as one composite. SPF separates three distinct failure modes with different operational responses and different update rates. T_i = (1−SPF_s) × SCS_s × SAS_s replaces single-score distortion_prior with a three-factor product. SPF: strategic distortion tendency (slow updates — baseline characterization). SCS: domain competence (moderate updates — expertise is stable). SAS: empirical accuracy on THIS signal class (FAST updates — computed from Moltbook per closed trade). The Assamese proverb insight operationalized: "excessive devotion = suspicious" because cost is low and consistency is low (SPF=HIGH, SCS may be irrelevant, SAS=unknown). "Children speak truth" operationalized: low SPF, variable SCS, variable SAS — high purity, uncertain competence, uncertain accuracy.</div>
+    <div class="mech-retro">
+      Reuters war-escalation (CVX/XOM) through SPF:
+      SPF = 0.2 (institutional, moderate distortion) — reasonable
+      SCS = 0.7 (geopolitical domain, competent) — reasonable
+      SAS on "war escalation → energy equity TIMING": ~0.2 (always ~80 days late vs Polymarket Day 0-5)
+      T_Reuters_on_this_class = (1−0.2) × 0.7 × 0.2 = 0.112
+      vs current approach: Layer 2 distortion_prior = 0.15 → Reuters weighted at 0.85
+      Three-factor: Reuters on energy equity timing = 0.112 (appropriately low)
+      The SAS on timing class was the missing dimension.
+    </div>
+    <span class="mtag mt-go">S0 +0.01</span>
+    <span class="mtag mt-gr">SAS updates from Moltbook T=7 forward</span>
+    <span class="mtag mt-pk">NBA: separate pundit motivation (SPF) from domain knowledge (SCS) from track record (SAS)</span>
+  </div>
+</div>
+
+<!-- CUMULATIVE SOURCE STACK -->
+<div class="cum">
+  <div class="cum-t">Full Cumulative Source Intelligence Stack</div>
+  <table class="ctable">
+    <tr><th>Layer</th><th>Mechanism</th><th>Added</th><th>Function</th></tr>
+    <tr><td>1 — Category</td><td>SOURCE_ISP_HIERARCHY L1–5</td><td><span class="tprev">Prior sessions</span></td><td>Category distortion_prior by source type (0.05–0.50)</td></tr>
+    <tr><td>2 — Individual distortion</td><td>SOURCE_BUBBLE_SCORE (SBS)</td><td><span class="tprev">Earlier today</span></td><td>Per-source insularity, echo_density, falsification rate</td></tr>
+    <tr><td>3 — Access friction</td><td>ENTRY_TAX_LAYER (ETL)</td><td><span class="tprev">Earlier today</span></td><td>Access cost predicts edge window duration</td></tr>
+    <tr><td>4 — Timing lag</td><td>NARRATIVE_LAG_REGISTER (NLR)</td><td><span class="tprev">Earlier today</span></td><td>Empirical Layer1→3 timing per signal class</td></tr>
+    <tr><td>5 — Selector quality</td><td>TASTE_SIGNAL_LAYER (TSL)</td><td><span class="tprev">Earlier today</span></td><td>Calibration quality of actors driving moves</td></tr>
+    <tr><td>6 — Three-factor</td><td>SPF / SCS / SAS architecture</td><td><span class="tnew">This session</span></td><td>Strategic distortion + competence + accuracy track record independently</td></tr>
+  </table>
+  <div style="font-size:.62rem;color:var(--tx3);margin-top:9px;line-height:1.6">Combined: w_s = (1−SBS_s) × EACL_s × C_hist × (1+ETL_boost) × (1+TSL_boost). Then T_i = (1−SPF_s) × SCS_s × SAS_s decomposes the (1−SBS_s) component into three independent axes. SPF = strategic intention, SCS = domain understanding, SAS = empirical track record on THIS class specifically.</div>
+</div>
+
+<!-- MODULE GRID -->
+<div class="mgrid">
+
+  <div class="mod tooling improved">
+    <div class="mhdr"><span class="mname">S0</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--bl)">9.56</span><span class="sdelta dp">+0.01</span></div>
+    <div class="bar"><div class="bf" style="width:95.6%;background:var(--bl)"></div></div>
+    <div class="mnote">SPF/SCS/SAS architecture ← this session. PBSC + TVG + ETL + SBS + TSL + NLR. STILLNESS_SIGNAL_EXTRACTOR · NARRATIVE_PREMIUM_DECOMPOSER.</div>
+    <div class="mhint">↑ T_i = (1−SPF) × SCS × SAS three-factor source weight</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S1</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.59</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:95.9%;background:var(--gr)"></div></div>
+    <div class="mnote">SSSC + OAD + TSL + NLR. SPF SAS updates feed here: class-specific accuracy track record per Moltbook trade.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S2</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">At ceiling. TEMPORAL_GRAMMAR · NARRATIVE_HALF_LIFE · HAUNTOLOGICAL_PERSISTENCE. Unchanged.</div>
+  </div>
+
+  <div class="mod structural">
+    <div class="mhdr"><span class="mname">S3A</span><span class="mtag2 t-stru">structural</span></div>
+    <div class="srow"><span class="sval" style="color:var(--or)">9.14</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:91.4%;background:var(--or)"></div></div>
+    <div class="mnote">Capital flow structural ceiling. S9 Phase 2. HYDROTHERMAL_VENT · GLS_t · CARNOT_CEILING.</div>
+  </div>
+
+  <div class="mod tooling">
+    <div class="mhdr"><span class="mname">S3B</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--bl)">8.96</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:89.6%;background:var(--bl)"></div></div>
+    <div class="mnote">INTEGRATION_COST_THRESHOLD active. Awaiting S9 May 13.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S35</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">At ceiling. GRADUATED_EXIT · OPERATOR_LOCK · COUNT_D · CVS · THREE_POISONS. Unchanged.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S4</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">At ceiling. FIRE_MODE · CHIGURH · LALO · GHOST_STANCE prerequisites. Unchanged.</div>
+  </div>
+
+  <div class="mod debt">
+    <div class="mhdr"><span class="mname">ATOM</span><span class="mtag2 t-debt">⚠ DEBT</span></div>
+    <div class="srow"><span class="sval" style="color:var(--rd)">8.90</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:89%;background:var(--rd)"></div></div>
+    <div class="mnote">95→35 CORE. BLOCKING. SPF does not add ATOM fields — source scoring lives in source_profiles.json (S9 build).</div>
+  </div>
+
+  <div class="mod empirical">
+    <div class="mhdr"><span class="mname">S5</span><span class="mtag2 t-emp">empirical</span></div>
+    <div class="srow"><span class="sval" style="color:var(--pu)">8.51</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:85.1%;background:var(--pu)"></div></div>
+    <div class="mnote">BRP + BIS + THREE_POISONS + REALM_CLASSIFIER. SELF_MODEL_CALIBRATION · GHOST_STANCE · SIA. BIS tracking active.</div>
+  </div>
+
+  <div class="mod empirical">
+    <div class="mhdr"><span class="mname">S7</span><span class="mtag2 t-emp">empirical</span></div>
+    <div class="srow"><span class="sval" style="color:var(--pu)">9.65</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:96.5%;background:var(--pu)"></div></div>
+    <div class="mnote">LEGITIMACY_DECAY_TRACKER · SAECULAR_REGIME_LAYER · NARRATIVE_DOMINANCE_SCORE · HPS. Near ceiling.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S8</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.83</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98.3%;background:var(--gr)"></div></div>
+    <div class="mnote">TAIL_RISK_COUNTERFACTUAL · POSITION_ENTANGLEMENT_SCORE · DECOHERENCE_TIMESCALE · INTEGRATION_COST_THRESHOLD.</div>
+  </div>
+
+  <div class="mod tooling">
+    <div class="mhdr"><span class="mname">S9</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--bl)">8.37</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:83.7%;background:var(--bl)"></div></div>
+    <div class="mnote">Build May 13. SPF/SCS/SAS in source_profiles.json (Phase 1). SAS auto-update from Moltbook closed trades (Phase 2).</div>
+  </div>
+
+  <div class="mod debt">
+    <div class="mhdr"><span class="mname">CAL</span><span class="mtag2 t-debt">data void</span></div>
+    <div class="srow"><span class="sval" style="color:var(--yl)">5.41</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:54.1%;background:var(--yl)"></div></div>
+    <div class="mnote">T=6 (4.2 clean FCS-adj). April 25→T=10. ε=1.0→0.56. SAS track record begins updating from T=7 closed trades.</div>
+  </div>
+
+</div>
+
+<!-- CRITICAL PATH -->
+<div class="crit">
+  <div class="crit-t">⚠ Critical Path — Unchanged</div>
+  <div class="ci"><div class="cd"></div>ATOM retirement (95→35) — BLOCKING before next trade.</div>
+  <div class="ci"><div class="cd"></div>T=6→10 by April 25. BRP status: USO CHAOS_LOSS → ~21d minimum → clears ~Apr 25.</div>
+  <div class="ci"><div class="cd"></div>S9 build May 13. SPF/SCS/SAS in source_profiles.json Phase 1. SAS auto-update Phase 2.</div>
+  <div class="ci" style="color:#fde68a"><div class="cd" style="background:var(--yl)"></div>For every new entry: manually log SPF/SCS/SAS estimate for primary sources consulted. This is the first step toward automated three-factor scoring at T=35.</div>
+</div>
+
+<!-- PROJ -->
+<div class="proj">
+  <div class="proj-t">Score Projection</div>
+  <div class="prow"><span class="pdate">Apr 25</span><span class="pev">T=10 · ε→0.56 · BRP clears · SPF logging begins</span><span class="pscore">9.58</span><div class="pbar"><div class="pbf" style="width:5%"></div></div></div>
+  <div class="prow"><span class="pdate">May 31</span><span class="pev">S9 Phase 1 · ATOM retired · source_profiles.json live</span><span class="pscore">9.62</span><div class="pbar"><div class="pbf" style="width:26%"></div></div></div>
+  <div class="prow"><span class="pdate">Jun 30</span><span class="pev">Phase 2 · SAS auto-update from Moltbook · FinBERT</span><span class="pscore">9.65</span><div class="pbar"><div class="pbf" style="width:47%"></div></div></div>
+  <div class="prow"><span class="pdate">Jul 31</span><span class="pev">IBKR paper · live MW · first class-specific SAS estimates</span><span class="pscore">9.70</span><div class="pbar"><div class="pbf" style="width:68%"></div></div></div>
+  <div class="prow"><span class="pdate">Aug 2026</span><span class="pev">Real capital · T≥35 · T_i calibrated from data</span><span class="pscore">9.74</span><div class="pbar"><div class="pbf" style="width:89%"></div></div></div>
+  <div class="prow"><span class="pdate">Ceiling</span><span class="pev">9.76 — residual empirical reserve</span><span class="pscore">9.76</span><div class="pbar"><div class="pbf" style="width:100%"></div></div></div>
+</div>
+
+<footer>
+PIPELINE V5.7+ · Apr 16, 2026 · Score 9.57 · Gap 0.19 · T=6 · ε=1.0 · Ceiling 9.76<br>
+S0=9.56 · S1=9.59 · S2=9.80 · S3A=9.14 · S3B=8.96 · S35=9.80 · S4=9.80<br>
+ATOM=8.90 · S5=8.51 · S7=9.65 · S8=9.83 · S9=8.37 · CAL=5.41 · V2=+2.69<br>
+<br>
+"Judge the source and the message separately. As the node nears, the board matters more than the mouth."
+</footer>
+
+</body>
+</html>

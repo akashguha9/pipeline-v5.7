@@ -1,0 +1,307 @@
+═══════════════════════════════════════════════════════════════
+GEOPOLITICAL SIGNAL PIPELINE — PAPER TRADING OPERATING BRIEF
+V5.7+ · April 2026 · Score 9.31/10
+═══════════════════════════════════════════════════════════════
+
+THE PIPELINE IDENTITY:
+"Detect what is emerging. Never predict what might happen.
+Capital moves before language. Structure forms before capital.
+Price reconciles last. The operator is the instrument.
+Yi must be clear before Qi can flow and Xue can follow."
+
+═══════════════════════════════════════════════════════════════
+PRE-SESSION PROTOCOL (mandatory — run before every session)
+═══════════════════════════════════════════════════════════════
+
+Step 1 — FIELD_CLEARING_PROTOCOL
+  Acknowledge and release prior session residue.
+  "The trade I lost yesterday: I see it, I learn, I release the charge."
+  Uncleaned field = prior emotion contaminates current signal.
+
+Step 2 — CIRCLE_CASTING
+  (a) Set aside: explicitly name external noise being left at the door.
+  (b) Centre: state current structural reality in one sentence.
+  (c) Consecrate: PRANAYAMA — box breathing (4-4-4-4 × 3 rounds).
+  (d) Open: NKB_UNCONDITIONAL_ATTENTION — "I have no position on
+      what this signal should say."
+
+Step 3 — DAN_TIAN_CHECK
+  Which center is dominant right now?
+  Lower (fear/survival) → ARCHITECTURE_PAUSE before proceeding.
+  Middle (emotion) → HIGH_AROUSAL protocol, reduce FIRE_MODE.
+  Upper (clarity) → proceed to signal evaluation.
+
+Step 4 — OPERATOR_STATE assessment
+  SHUTDOWN / DISTORTED / UNDERACTIVE / OVERSTIMULATED /
+  OPTIMAL / STHITAPRAJNA / HANUMAN
+  If below OPTIMAL: no SNIPER entries until state shifts.
+
+Step 5 — IDA_PINGALA_BALANCE check
+  IDA excess (over-receptive, waiting too long)? → LOCK_MODE + deadline.
+  PINGALA excess (over-active, forcing entries)? → DRIFT_MODE + breath.
+  Balanced? → proceed.
+
+═══════════════════════════════════════════════════════════════
+SECTION 1 — PHASE CLASSIFICATION (run before signal evaluation)
+═══════════════════════════════════════════════════════════════
+
+PRE_NARRATIVE_PHASE (temporal_arbitrage ×3):
+  Market drifting >5% over 4h WITHOUT news catalyst.
+  Informed actors moving before public narrative.
+  Maximum asymmetric entry window.
+
+NARRATIVE_PHASE (temporal_arbitrage ×1.5):
+  Public narrative forming. Standard pipeline applies.
+
+TERMINAL_PHASE (temporal_arbitrage ×0.3):
+  Event confirmed. Market priced it. Most value extracted.
+  Reduce leave_score −4. Rarely worth entry.
+
+═══════════════════════════════════════════════════════════════
+SECTION 2 — SIGNAL DISCRIMINATION STACK
+═══════════════════════════════════════════════════════════════
+
+Before ANY thesis evaluation, run all three:
+
+PRIMA_MATERIA: "The observable fact, stripped of all interpretation, is: ___."
+  If uncertain: all downstream processing is suspect.
+
+NETI_NETI_PROTOCOL: eliminate what the signal is NOT.
+  Not driven by: narrative / sentiment / momentum / anchoring.
+  What survives ALL negations = the real signal.
+
+VIVEKA_FILTER: "The ONE structural mechanism that makes this
+  inevitable is: ___." One sentence. Structural only.
+  No sentence → FIRE_MODE blocked. Full stop.
+
+BRAHMAN_SUBSTRATE_DETECTOR: Is the thesis anchored to an
+  invariant structural reality? (base rate / power structure /
+  physical fact). If YES: maximum legitimacy_score + outlast_factor.
+
+═══════════════════════════════════════════════════════════════
+SECTION 3 — PROCESSING SEQUENCE
+═══════════════════════════════════════════════════════════════
+
+STEP -2   PERCEPTION_VALVE
+          perception_door: OPEN / AJAR / CLOSED
+          salience_gap [0-10]
+          CLOSED + structural signal = PROMETHEUS_CONDITION
+
+STEP -2.5 VISIBILITY_BIAS_CORRECTION
+          IF visibility_index > 7 AND prior_24h_move > 15%:
+            leave_score −3 (legibility premium extracted)
+          IF visibility_index < 3 AND market_drift > 3%:
+            temporal_arbitrage_score +4 (maximum edge)
+
+STEP -0.3 NON_REACTION_SIGNAL_DETECTOR
+          Catalyst arrived AND market_move < 1% in 30min?
+          → INFORMED_SILENCE or COUNTER_POSITION investigation.
+          → DISTORTION_SCORE +2.
+
+STEP 0    PATH_AUTOCORRELATION
+          r < -0.3: HIGH_NOISE → FIRE_MODE max M16.
+          r > +0.3: DIRECTIONAL_DRIFT → TRUE_INERTIA confirmed.
+
+STEP 1    TEMPORAL_INERTIA
+          Apply EDGE_DECAY_MULTIPLIER: ×0.85^(months/18).
+
+STEP 6    CAPITAL_FLOW_VALIDATION
+          LIQUIDITY_FRICTION_SCORE: current_spread / 5d_avg.
+          > 1.5 → COLLAPSE Step 2 elevated.
+          > 2.0 → reduce position 50%.
+          MARKET_STRUCTURE_FLAG: BOOKMAKER / PREDICTION_MARKET / EXCHANGE.
+
+STEP 6.5  CONTAGION_GEOMETRY classification.
+          DEMIURGE_CHECK: narrative_strength > 8 AND
+          capital_flow_confirmation < 3? → DEMIURGE_CONDITION.
+          Maximum fade setup. Do NOT enter in direction of narrative.
+
+STEP 9    POSITIONING
+          KELLY_CRITERION: f* = (bp − q)/b
+          f*/2 for paper trading. HARD CAP: 5% of bankroll.
+          NET_THESIS_VALUE: E[upside×p] − E[cost+opp+risk] > 0.
+          SYSTEM_FIT_SCORE: diversification + regime + exposure fit.
+
+          PROCESS_QUALITY_CHECK (5 binary gates):
+          ☐ FIRE_MODE triggered (not override)?
+          ☐ Position ≤ Kelly fraction?
+          ☐ Hard stop defined (price/event/threshold)?
+          ☐ Arousal state OPTIMAL or better?
+          ☐ CLV target logged (entry vs expected close)?
+          < 4/5: DO NOT ENTER.
+
+STEP 10   FIRE_MODE: SNIPER / M16 / UZI / NONE
+          Standard 9-condition gate.
+
+          LATENT_ENTRY gate (4th FIRE_MODE condition):
+          IF drift > 5% over 4h AND no_news_catalyst
+          AND temporal_arbitrage HIGH AND DK_risk LOW
+          AND PROCESS_QUALITY 5/5 → SNIPER eligible
+          WITHOUT NARRATIVE_PHASE confirmation.
+
+═══════════════════════════════════════════════════════════════
+SECTION 4 — MYTHOLOGY / ARCHETYPE CONDITIONS
+═══════════════════════════════════════════════════════════════
+
+PROMETHEUS_CONDITION:
+  PERCEPTION_VALVE CLOSED + leave_score > 7.
+  Fire is real before market knows it exists.
+  Maximum patience + SNIPER.
+
+CASSANDRA_TRAP:
+  leave_score > 7 AND NON_REACTION_SIGNAL AND MATURATION = FERMENTING.
+  Signal is real. Market cannot receive it yet.
+  SNIPER entry. KHABIB patience. NO_RELEASE_MONITOR active.
+  Most asymmetric setup in the pipeline.
+
+HYDRA_CONDITION:
+  Institutional/regulatory suppression of narrative
+  AND structural driver intact.
+  → leave_score +2. Suppression = accelerant.
+
+DEMIURGE_CONDITION:
+  narrative_strength > 8 AND capital_flow < 3.
+  Compelling story, no structural backing. Fade setup.
+
+OSIRIS_RECONSTRUCTION:
+  MATURATION = CONTAMINATED.
+  Full deconstruction required. No re-entry until complete.
+
+TZIMTZUM_SIGNAL:
+  EDS_DOMINANT actor activity drops >60% AND no news.
+  Space being created. Structural move forming in vacuum.
+
+INTERSTITIAL_TIME_WINDOW:
+  Between major catalysts. Institutional actors absent.
+  SEEP_MYCELIAL premium. SILENT_BUILD zone.
+
+═══════════════════════════════════════════════════════════════
+SECTION 5 — OPERATOR STATE HIERARCHY (7 levels)
+═══════════════════════════════════════════════════════════════
+
+Level 1: SHUTDOWN — No execution.
+Level 2: DISTORTED — Block new positions.
+Level 3: UNDERACTIVE — LOCK_MODE + deadline.
+Level 4: OVERSTIMULATED — Halve size, 2 confirmations.
+Level 5: OPTIMAL — Normal pipeline.
+Level 6: STHITAPRAJNA — OPTIMAL under extreme pressure.
+         PROCESS_QUALITY stable regardless of P&L trajectory.
+Level 7: HANUMAN — Zero ego, pure instrument.
+         "Is any part of this decision about ME?"
+         If YES: ego contamination. Reduce FIRE_MODE.
+         If NO: HANUMAN_STATE. Full pipeline capacity.
+
+GUNA_CLASSIFIER (unifies AROUSAL + SONIC + MATURATION):
+  TAMAS: inertia, TAMASIC conditions → missed LEICESTER_PRIME.
+  RAJAS: restless, RAJASIC conditions → CHAOS_ENTRY risk.
+  SATTVA: clarity, SATTVIC conditions → SNIPER eligible.
+  Only SATTVIC decisions qualify for SNIPER entries.
+
+NISHKAMA_KARMA_GATE:
+  Outcome attachment markers detected?
+  (escalating commitment, averaging without thesis upgrade,
+  holding through stop)
+  → KARMA_CONTAMINATED. Reduce FIRE_MODE one level.
+
+TAT_TVAM_ASI_DIVERGENCE:
+  operator_arousal_state − market_arousal_state.
+  Positive divergence = independent view = potential edge.
+  Zero divergence = cognitive fusion with crowd = no edge.
+  Negative divergence = operator more fearful than market = STOP.
+
+HANUMAN_PRE_ENTRY CHECK:
+  "Is any part of this decision about me rather than the structure?"
+  If YES: wait. If NO: proceed.
+
+═══════════════════════════════════════════════════════════════
+SECTION 6 — PRE-EXECUTION FINAL STACK
+═══════════════════════════════════════════════════════════════
+
+Before pressing the execution trigger, in order:
+
+1. PRIMA_MATERIA stated (observable fact, no interpretation)
+2. NETI_NETI passed (signal survives all negations)
+3. VIVEKA_FILTER passed (one structural sentence written)
+4. BRAHMAN_SUBSTRATE identified (invariant anchor present)
+5. WU_WEI_CHECK: is this channeling structure or forcing will?
+   Force → wait. Recognition → proceed.
+6. THELEMIC_WILL_ALIGNMENT: does position archetype
+   match current operator archetype state?
+7. REIKI_CHANNEL_CHECK: channeling or forcing?
+8. SHADOW_ACTIVE: name the cognitive shadow present.
+9. KUMBHAKA_DECISION_POINT: 3-second still point.
+   All three questions: structure clear / thesis valid / exit defined?
+10. PROCESS_QUALITY_CHECK: 5/5 required for SNIPER.
+
+═══════════════════════════════════════════════════════════════
+SECTION 7 — COLLAPSE TRIAGE (all open positions)
+═══════════════════════════════════════════════════════════════
+
+Step 1: No stated thesis schema at entry.
+Step 2: Catalyst passed WITHOUT exit trigger firing. ← EARLIEST SIGNAL.
+Step 3: Forced adjustment. Now responding, not initiating.
+Step 4: Outcome decided before last move.
+
+TRIAGE on every position:
+Q1: Stated exit trigger exists? (price/event/threshold). NO → Step 2.
+Q2: SONIC_STATE = ECHO? → Exit required.
+Q3: CONOR in slow regime? → −3.5 conor_score → reassess.
+Q4: LIQUIDITY_FRICTION > 1.5? → Step 2 elevated.
+Q5: NON_REACTION to new catalyst? → INFORMED_SILENCE check.
+Q6: ROOTING_CHECK: conviction structural or price-dependent?
+
+═══════════════════════════════════════════════════════════════
+SECTION 8 — CLV CALIBRATION (mandatory for June 1 paste)
+═══════════════════════════════════════════════════════════════
+
+Log at every entry:
+  entry_timestamp · phase (PRE/NARRATIVE/TERMINAL)
+  entry_price · CLV_target (expected close)
+  liquidity_friction_at_entry · visibility_index
+  arousal_state · guna_state · DK_zone
+  leave_score · kelly_fraction · process_quality (0-5)
+  stated_exit_trigger · sonic_state · maturation_state
+  SHADOW_ACTIVE · prima_materia_stated (Y/N)
+  rooting_check (Y/N) · wu_wei_check (Y/N)
+  hanuman_check (Y/N)
+
+Log at resolution:
+  close_price · CLV (entry vs close — POSITIVE = PROCESS_WIN)
+  outcome · PROCESS_WIN (Y/N) · collapse_step_at_exit
+  decision_quality_score (5 components including PROCESS_QUALITY)
+  one-sentence Moltbook pattern
+
+MW UPDATE (CLV 70%, outcome 30%):
+  PROCESS_WIN + WIN: full upward.
+  PROCESS_WIN + LOSS: 70% upward (good process, variance).
+  PROCESS_LOSS + WIN: 30% upward (luck, not edge).
+  PROCESS_LOSS + LOSS: full downward.
+
+═══════════════════════════════════════════════════════════════
+NON-NEGOTIABLE RULES
+═══════════════════════════════════════════════════════════════
+
+1. SPOT LONGS ONLY. No shorts, futures, leverage.
+2. HARD STOP: −10% from entry. Non-negotiable.
+3. PROCESS_QUALITY < 4/5: DO NOT ENTER regardless of leave_score.
+4. KELLY CAP: f*/2 for paper. Never exceed 5% bankroll.
+5. No entry without STATED EXIT TRIGGER.
+6. FIRE_MODE NONE = valid state. Empty cup is useful.
+7. ECHO state = exit, not hold.
+8. HIGH/EXTREME arousal = PRANAYAMA first. Then reassess.
+9. HANUMAN check before every SNIPER entry.
+10. FIELD_CLEARING at every session start. Non-negotiable.
+11. CONTAMINATED thesis = OSIRIS_RECONSTRUCTION before re-entry.
+12. DEMIURGE_CONDITION = fade setup. Do not enter with narrative.
+13. CLV logged at every entry. June 1 paste requires 30+ CLV data points.
+
+═══════════════════════════════════════════════════════════════
+CALIBRATION STATUS
+T=2 · ε=1.0 · CAL=5.10 · Score=9.31
+Target Apr 25: T=10 → ε=0.56 → MW first direction signal
+Target Jun 1: T≈34 → CLV-weighted MW paste
+Target Jul: API build (Kalshi+Polymarket+GDELT+EDGAR+Reddit)
+Target Aug: real capital · Kelly-sized · LATENT_ENTRY live
+═══════════════════════════════════════════════════════════════
+END — PAPER TRADING BRIEF V5.7+
+═══════════════════════════════════════════════════════════════

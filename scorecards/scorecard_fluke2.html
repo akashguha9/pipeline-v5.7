@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pipeline V5.7+ — Scorecard · Session 2</title>
+<style>
+:root{--bg:#08080b;--bg2:#101018;--bg3:#181820;--bd:#1c1c28;--bd2:#272736;--tx:#dcdcf0;--tx2:#8888a8;--tx3:#484868;--ac:#5577ff;--gr:#22c55e;--rd:#ef4444;--or:#f97316;--yl:#eab308;--pu:#a855f7;--te:#14b8a6;--pk:#ec4899}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:'SF Mono',ui-monospace,monospace;padding:28px 22px 60px;font-size:12.5px}
+
+.hdr{margin-bottom:22px}
+.hdr-row{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:3px}
+.hdr-title{font-size:.92rem;font-weight:700;letter-spacing:.02em}
+.hdr-date{font-size:.62rem;color:var(--tx3)}
+.hdr-sub{font-size:.64rem;color:var(--tx3);line-height:1.7}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(8,1fr);gap:7px;margin-bottom:18px}
+@media(max-width:700px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:9px 7px;text-align:center}
+.sv{font-size:1.45rem;font-weight:700;line-height:1;font-family:monospace}
+.sl{font-size:.55rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+/* SESSION */
+.sess{border:1px solid #1c2858;background:#04081a;border-radius:7px;padding:12px 15px;margin-bottom:18px;font-size:.68rem;color:#6888d0;line-height:1.9}
+.sess strong{color:#8aadff}
+
+/* DUPLICATE NOTICE */
+.dup{background:#0f0d04;border:1px solid #3a3008;border-radius:7px;padding:11px 14px;margin-bottom:18px;font-size:.68rem;color:#c8a830;line-height:1.7}
+.dup-t{font-size:.61rem;font-weight:700;color:var(--yl);letter-spacing:.08em;text-transform:uppercase;margin-bottom:7px}
+
+/* NEW MECHS */
+.new-box{background:#040c22;border:1px solid #183060;border-radius:7px;padding:13px 15px;margin-bottom:18px}
+.new-t{font-size:.61rem;font-weight:700;color:var(--ac);letter-spacing:.09em;text-transform:uppercase;margin-bottom:11px}
+.mech{background:var(--bg3);border:1px solid var(--bd2);border-radius:5px;padding:10px 12px;margin-bottom:8px;border-left:3px solid var(--ac)}
+.mech:last-child{margin-bottom:0}
+.mech-n{font-size:.72rem;font-weight:700;color:var(--tx);margin-bottom:5px}
+.mech-d{font-size:.67rem;color:var(--tx2);line-height:1.65}
+.mtag{display:inline-block;font-size:.57rem;font-weight:700;padding:2px 6px;border-radius:3px;margin-top:5px;margin-right:4px}
+.mt-bl{background:#040e28;color:#5577ff}
+.mt-gr{background:#031a0c;color:#22c55e}
+.mt-pk{background:#1a0518;color:#ec4899}
+.mt-pu{background:#120820;color:#a855f7}
+.mt-te{background:#022018;color:#14b8a6}
+
+/* CUMULATIVE MECH TABLE */
+.cum{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;padding:13px 15px;margin-bottom:18px}
+.cum-t{font-size:.61rem;font-weight:700;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:11px}
+.ctable{width:100%;border-collapse:collapse;font-size:.65rem}
+.ctable th{background:var(--bg3);color:var(--tx3);padding:6px 10px;text-align:left;border:1px solid var(--bd);font-size:.58rem;letter-spacing:.04em;text-transform:uppercase}
+.ctable td{padding:6px 10px;border:1px solid var(--bd);color:var(--tx2);vertical-align:top;line-height:1.5}
+.ctable tr:nth-child(even) td{background:#0c0c14}
+.tag-new{background:#031a0c;color:#22c55e;font-size:.56rem;font-weight:700;padding:1px 5px;border-radius:2px;display:inline-block}
+.tag-prev{background:#04081a;color:#5577ff;font-size:.56rem;font-weight:700;padding:1px 5px;border-radius:2px;display:inline-block}
+
+/* MODULE GRID */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(192px,1fr));gap:8px;margin-bottom:20px}
+.mod{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;padding:12px 13px;position:relative}
+.mod::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:7px 0 0 7px}
+.mod.ceiling::after{background:var(--gr)}
+.mod.tooling::after{background:var(--ac)}
+.mod.structural::after{background:var(--or)}
+.mod.empirical::after{background:var(--pu)}
+.mod.debt::after{background:var(--rd)}
+.mod.improved{border-color:#1e3060}
+.mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.mname{font-size:.6rem;font-weight:700;color:var(--tx3);letter-spacing:.09em;text-transform:uppercase}
+.mtag2{font-size:.55rem;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.04em}
+.t-ceil{background:#031a0c;color:#22c55e}
+.t-tool{background:#040e28;color:#5577ff}
+.t-stru{background:#200c00;color:#f97316}
+.t-emp{background:#120820;color:#a855f7}
+.t-debt{background:#200505;color:#ef4444}
+.srow{display:flex;align-items:baseline;gap:6px;margin-bottom:4px}
+.sval{font-size:1.9rem;font-weight:700;line-height:1;font-family:monospace}
+.sdelta{font-size:.68rem;font-weight:700;padding:2px 5px;border-radius:3px}
+.dp{background:#031a0c;color:#22c55e}
+.dz{background:#12121c;color:#404060}
+.bar{height:2px;background:var(--bd2);border-radius:1px;margin-bottom:5px;overflow:hidden;position:relative}
+.bf{height:100%;border-radius:1px;position:absolute;left:0}
+.mnote{font-size:.62rem;color:var(--tx3);line-height:1.55}
+.mhint{font-size:.59rem;color:#5577ff;margin-top:3px;font-style:italic}
+
+/* CRITICAL */
+.crit{background:#0e0404;border:1px solid #7f1d1d;border-radius:7px;padding:12px 14px;margin-bottom:18px}
+.crit-t{font-size:.6rem;font-weight:700;color:var(--rd);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.ci{display:flex;gap:8px;margin-bottom:6px;font-size:.67rem;color:#fca5a5;line-height:1.55}
+.cd{width:5px;height:5px;border-radius:50%;background:var(--rd);margin-top:4px;flex-shrink:0}
+
+/* PROJ */
+.proj{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;padding:12px 14px;margin-bottom:18px}
+.proj-t{font-size:.6rem;font-weight:700;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.prow{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:.67rem}
+.pdate{color:var(--tx3);min-width:68px;font-family:monospace;font-size:.63rem}
+.pev{color:var(--tx2);flex:1}
+.pscore{color:var(--gr);font-weight:700;min-width:32px;text-align:right;font-family:monospace}
+.pbar{width:75px;height:2px;background:var(--bd2);border-radius:1px;overflow:hidden;position:relative}
+.pbf{height:100%;background:var(--gr);border-radius:1px}
+
+footer{font-size:.57rem;color:var(--tx3);text-align:center;line-height:2.2;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-row">
+    <div class="hdr-title">PIPELINE V5.7+ — SCORECARD</div>
+    <div class="hdr-date">Apr 16, 2026 · Session 2 of day</div>
+  </div>
+  <div class="hdr-sub">Fluke / Adrien Brody / Entry Tax / Taste Layer · +0.0018 · S0→9.53 · S1→9.57 · Gap 0.19</div>
+</div>
+
+<div class="stats">
+  <div class="stat"><div class="sv" style="color:var(--ac)">9.57</div><div class="sl">Score</div></div>
+  <div class="stat"><div class="sv" style="color:var(--or)">0.19</div><div class="sl">Gap</div></div>
+  <div class="stat"><div class="sv">9.76</div><div class="sl">Ceiling</div></div>
+  <div class="stat"><div class="sv" style="color:var(--rd)">T=6</div><div class="sl">Trades</div></div>
+  <div class="stat"><div class="sv" style="color:var(--ac)">+2.69</div><div class="sl">Total V2</div></div>
+  <div class="stat"><div class="sv" style="color:var(--gr)">+2</div><div class="sl">New mechs</div></div>
+  <div class="stat"><div class="sv">22</div><div class="sl">Already built</div></div>
+  <div class="stat"><div class="sv" style="color:var(--yl)">92%</div><div class="sl">Overlap</div></div>
+</div>
+
+<div class="sess">
+  <strong>Session source:</strong> Fluke / Adrien Brody / Entry Tax / Taste Signal spec (second fluke session in same day).<br>
+  <strong>Honest accounting:</strong> 22 of 24 mechanisms were in the <em>prior fluke session</em> (already built). This spec restates FRE, CBDL, EACL, NLR, SBS, EdgeScore, emotion-to-mechanism — all formalized earlier today.<br>
+  <strong>Genuine additions:</strong> ENTRY_TAX_LAYER (access friction as edge-window duration predictor) + TASTE_SIGNAL_LAYER (selector quality scoring for Polymarket/Kalshi actors).<br>
+  <strong>Movement:</strong> S0 +0.01 (ETL in signal intake) · S1 +0.01 (TSL in belief state)
+</div>
+
+<div class="dup">
+  <div class="dup-t">⚠ Partial Duplicate Detected</div>
+  The pipeline's cross-check protocol applies: submitting the same spec twice does not change the architecture. 22 of 24 mechanisms were already formalised in the earlier fluke session (SOURCE_BUBBLE_SCORE, NARRATIVE_LAG_REGISTER, FRE, CBDL, EACL, EdgeScore formula). The 2 genuine additions (ETL + TSL) are the components that were NOT in the prior session — they represent the incremental value of this second pass.
+</div>
+
+<!-- NEW MECHS -->
+<div class="new-box">
+  <div class="new-t">2 New Mechanisms This Session</div>
+  
+  <div class="mech">
+    <div class="mech-n">ENTRY_TAX_LAYER (ETL)</div>
+    <div class="mech-d">Access friction as a predictor of edge window duration. NLR measures how long each signal class takes to travel Layer 1→Layer 3 empirically. ETL explains WHY that lag exists and predicts it prospectively. ETL = w_m×money_barrier + w_n×network_gate + w_g×geo_gate + w_l×language_gate. A Kalshi private analytics group (network_gate=0.8) has much higher ETL than an open Polymarket market (ETL≈0.05). Expected lag = NLR_base_lag × (1 + β×ETL_score). High-ETL signals justify earlier entry at similar COMPOSITE_EDGE: fewer competitors are simultaneously observing. Reduces the 'adversary has already priced this' discount proportionally to ETL. At T=35: test correlation between ETL and actual NLR lag_days.</div>
+    <span class="mtag mt-bl">S0 +0.01</span>
+    <span class="mtag mt-gr">S9 Phase 1 build</span>
+    <span class="mtag mt-pk">NBA: closed sharp forums vs public Twitter</span>
+  </div>
+  
+  <div class="mech" style="border-left-color:var(--pu)">
+    <div class="mech-n">TASTE_SIGNAL_LAYER (TSL)</div>
+    <div class="mech-d">Selector quality scoring for actors driving prediction market moves. VISOR_EFFECT_PROTOCOL asks "who moved the odds?" TSL scores the quality of that answer. Per selector: taste_consistency (Brier score on similar signal classes), noise_rejection (how often did they NOT enter popular/crowded positions?), narrative_density (do their entries have rich multi-factor thesis structure?). SELECTOR_CONFIRMED (high-TSL actor present) → COMPOSITE_EDGE boost +max 0.08. Low-TSL FOMO-driven entry → ADVERSARIAL_OCCUPANCY signal (crowd = late, not validating). Fills precision gap between binary sharp/retail and quantified selector calibration. TSL requires Moltbook entries noting which selectors were present at entry. Test at T=35: do SELECTOR_CONFIRMED entries have higher hit rates?</div>
+    <span class="mtag mt-pu">S1 +0.01</span>
+    <span class="mtag mt-gr">T=35 empirical validation</span>
+    <span class="mtag mt-pk">NBA: track specific sharp syndicate calibration</span>
+  </div>
+</div>
+
+<!-- CUMULATIVE SOURCE STACK THIS WEEK -->
+<div class="cum">
+  <div class="cum-t">Cumulative Source Intelligence Stack (this week)</div>
+  <table class="ctable">
+    <tr>
+      <th>Mechanism</th>
+      <th>Added</th>
+      <th>Function</th>
+    </tr>
+    <tr>
+      <td>SOURCE_ISP_HIERARCHY Layer 1–5</td>
+      <td><span class="tag-prev">Prior sessions</span></td>
+      <td>Category-level distortion prior per source type</td>
+    </tr>
+    <tr>
+      <td>SOURCE_BUBBLE_SCORE (SBS)</td>
+      <td><span class="tag-prev">Session 1 today</span></td>
+      <td>Individual-source credibility within a layer. insularity + falsification rate + echo density</td>
+    </tr>
+    <tr>
+      <td>NARRATIVE_LAG_REGISTER (NLR)</td>
+      <td><span class="tag-prev">Session 1 today</span></td>
+      <td>Empirical timing: how long each signal class takes Layer 1 → Layer 3</td>
+    </tr>
+    <tr>
+      <td>ENTRY_TAX_LAYER (ETL)</td>
+      <td><span class="tag-new">This session</span></td>
+      <td>Predicts NLR lag prospectively from access friction. money + network + geo + language gates</td>
+    </tr>
+    <tr>
+      <td>TASTE_SIGNAL_LAYER (TSL)</td>
+      <td><span class="tag-new">This session</span></td>
+      <td>Selector quality scoring. SELECTOR_CONFIRMED → COMPOSITE_EDGE boost. Fills VISOR precision gap</td>
+    </tr>
+  </table>
+  <div style="font-size:.62rem;color:var(--tx3);margin-top:9px;line-height:1.6">Combined signal quality formula: w_s = (1 − SBS_s) × EACL_s × C_hist × (1 + ETL_boost) × (1 + TSL_boost). Source enters as Layer 1 → gets SBS adjusted distortion prior → NLR checks timing → ETL predicts window duration → TSL scores the actors behind the move → COMPOSITE_EDGE updated.</div>
+</div>
+
+<!-- MODULE GRID -->
+<div class="mgrid">
+
+  <div class="mod tooling improved">
+    <div class="mhdr"><span class="mname">S0</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--ac)">9.53</span><span class="sdelta dp">+0.01</span></div>
+    <div class="bar"><div class="bf" style="width:95.3%;background:var(--ac)"></div></div>
+    <div class="mnote">ENTRY_TAX_LAYER ← this session. SOURCE_BUBBLE_SCORE (prev). STILLNESS_SIGNAL_EXTRACTOR · NARRATIVE_PREMIUM_DECOMPOSER · VISOR_EFFECT_AUDIT.</div>
+    <div class="mhint">↑ ETL: access friction → edge window predictor</div>
+  </div>
+
+  <div class="mod ceiling improved">
+    <div class="mhdr"><span class="mname">S1</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.57</span><span class="sdelta dp">+0.01</span></div>
+    <div class="bar"><div class="bf" style="width:95.7%;background:var(--gr)"></div></div>
+    <div class="mnote">TASTE_SIGNAL_LAYER ← this session. NARRATIVE_LAG_REGISTER (prev). SPECTRAL_SIGNAL_CLASSIFIER · LEGITIMACY_DECAY_TRACKER · CVS · PSYCHO_MANTIS.</div>
+    <div class="mhint">↑ TSL: selector quality fills VISOR precision gap</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S2</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">At ceiling. TEMPORAL_GRAMMAR · NARRATIVE_HALF_LIFE_ENGINE · HAUNTOLOGICAL_PERSISTENCE. Unchanged.</div>
+  </div>
+
+  <div class="mod structural">
+    <div class="mhdr"><span class="mname">S3A</span><span class="mtag2 t-stru">structural</span></div>
+    <div class="srow"><span class="sval" style="color:var(--or)">9.14</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:91.4%;background:var(--or)"></div></div>
+    <div class="mnote">Capital flow. Structural ceiling. Requires live institutional flow (S9 Phase 2).</div>
+  </div>
+
+  <div class="mod tooling">
+    <div class="mhdr"><span class="mname">S3B</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--ac)">8.96</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:89.6%;background:var(--ac)"></div></div>
+    <div class="mnote">INTEGRATION_COST_THRESHOLD active. Awaiting S9 May 13.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S35</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">At ceiling. GRADUATED_EXIT · OPERATOR_LOCK · COUNT_D · CVS · THREE_POISONS gate.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S4</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">At ceiling. FIRE_MODE · CHIGURH · LALO · GHOST_STANCE prerequisites.</div>
+  </div>
+
+  <div class="mod debt">
+    <div class="mhdr"><span class="mname">ATOM</span><span class="mtag2 t-debt">⚠ DEBT</span></div>
+    <div class="srow"><span class="sval" style="color:var(--rd)">8.90</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:89%;background:var(--rd)"></div></div>
+    <div class="mnote">95 → 35 CORE fields. BLOCKING. MICHELANGELO_SUBTRACTION_AUDIT pilot. caddy_packet 7-field crisis compression required.</div>
+  </div>
+
+  <div class="mod empirical">
+    <div class="mhdr"><span class="mname">S5</span><span class="mtag2 t-emp">empirical</span></div>
+    <div class="srow"><span class="sval" style="color:var(--pu)">8.49</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:84.9%;background:var(--pu)"></div></div>
+    <div class="mnote">THREE_POISONS_BIAS_ENGINE + REALM_CLASSIFIER (+0.02 over last week). SELF_MODEL_CALIBRATION · GHOST_STANCE_EMERGENCE · SOVEREIGN_IDENTITY_ANCHOR.</div>
+  </div>
+
+  <div class="mod empirical">
+    <div class="mhdr"><span class="mname">S7</span><span class="mtag2 t-emp">empirical</span></div>
+    <div class="srow"><span class="sval" style="color:var(--pu)">9.65</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:96.5%;background:var(--pu)"></div></div>
+    <div class="mnote">LEGITIMACY_DECAY_TRACKER · SAECULAR_REGIME_LAYER · NARRATIVE_DOMINANCE_SCORE · HPS. Near ceiling.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S8</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.83</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98.3%;background:var(--gr)"></div></div>
+    <div class="mnote">TAIL_RISK_COUNTERFACTUAL · POSITION_ENTANGLEMENT_SCORE · DECOHERENCE_TIMESCALE_GATE · INTEGRATION_COST_THRESHOLD.</div>
+  </div>
+
+  <div class="mod tooling">
+    <div class="mhdr"><span class="mname">S9</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--ac)">8.37</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:83.7%;background:var(--ac)"></div></div>
+    <div class="mnote">Build May 13. ADAPTIVE_STRATEGY_POPULATION · GENERATIVE_CONSTRAINT_ENGINE · IMMEDIATE_DIAGNOSTIC_DISPLAY. ETL + TSL + SBS all build here.</div>
+  </div>
+
+  <div class="mod debt">
+    <div class="mhdr"><span class="mname">CAL</span><span class="mtag2 t-debt">data void</span></div>
+    <div class="srow"><span class="sval" style="color:var(--yl)">5.41</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:54.1%;background:var(--yl)"></div></div>
+    <div class="mnote">T=6 (4.2 clean FCS-adj). April 25 → T=10. ε=1.0. LPC + TRC + FCS improve MW precision. First direction at T=10, ε→0.56.</div>
+  </div>
+
+</div>
+
+<!-- CRITICAL PATH -->
+<div class="crit">
+  <div class="crit-t">⚠ Critical Path — Unchanged</div>
+  <div class="ci"><div class="cd"></div>ATOM retirement (95→35) — BLOCKING before next trade.</div>
+  <div class="ci"><div class="cd"></div>T=6→10 by April 25. TLT+TIP = T=7,8. UNG/FCG = T=9,10. ε→0.56 at T=10.</div>
+  <div class="ci"><div class="cd"></div>S9 build May 13 — source_profiles.json (SBS) + NLR logging + ETL scoring + TSL selector profiles.</div>
+  <div class="ci" style="color:#fde68a"><div class="cd" style="background:var(--yl)"></div>Seed NLR with T=6 timing data NOW. Tag selector presence in next Moltbook entries.</div>
+</div>
+
+<!-- PROJECTION -->
+<div class="proj">
+  <div class="proj-t">Score Projection</div>
+  <div class="prow"><span class="pdate">Apr 25</span><span class="pev">T=10 · ε→0.56 · first MW direction</span><span class="pscore">9.58</span><div class="pbar"><div class="pbf" style="width:5%"></div></div></div>
+  <div class="prow"><span class="pdate">May 31</span><span class="pev">S9 Phase 1 · ATOM retired · ETL/TSL/SBS live</span><span class="pscore">9.62</span><div class="pbar"><div class="pbf" style="width:26%"></div></div></div>
+  <div class="prow"><span class="pdate">Jun 30</span><span class="pev">Phase 2 · FinBERT + Polymarket API + first auto signal</span><span class="pscore">9.65</span><div class="pbar"><div class="pbf" style="width:47%"></div></div></div>
+  <div class="prow"><span class="pdate">Jul 31</span><span class="pev">IBKR paper · live MW · NLR class estimates ready</span><span class="pscore">9.70</span><div class="pbar"><div class="pbf" style="width:68%"></div></div></div>
+  <div class="prow"><span class="pdate">Aug 2026</span><span class="pev">Real capital · T≥35 · E_op>0.80 · MW calibrated</span><span class="pscore">9.74</span><div class="pbar"><div class="pbf" style="width:89%"></div></div></div>
+  <div class="prow"><span class="pdate">Ceiling</span><span class="pev">9.76 — residual empirical reserve</span><span class="pscore">9.76</span><div class="pbar"><div class="pbf" style="width:100%"></div></div></div>
+</div>
+
+<footer>
+GEOPOLITICAL SIGNAL PIPELINE V5.7+ · April 16, 2026<br>
+Score 9.57 · Gap 0.19 · T=6 · ε=1.0 · Ceiling 9.76 · Total V2 +2.69<br>
+S0=9.53 · S1=9.57 · S2=9.80 · S3A=9.14 · S3B=8.96 · S35=9.80 · S4=9.80 · ATOM=8.90 · S5=8.49 · S7=9.65 · S8=9.83 · S9=8.37 · CAL=5.41
+</footer>
+
+</body>
+</html>

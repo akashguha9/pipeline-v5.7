@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pipeline V5.7+ — Crown Shyness / Sangam Session</title>
+<style>
+:root{--bg:#070a0c;--bg2:#0e1218;--bg3:#151820;--bd:#1a2028;--bd2:#222c38;--tx:#dde8f0;--tx2:#7a9ab0;--tx3:#3a5870;--ac:#38c0ff;--gr:#22c55e;--rd:#ef4444;--or:#f97316;--yl:#eab308;--pu:#a855f7;--te:#14b8a6;--pk:#ec4899;--cyan:#06b6d4}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:28px 22px 64px;font-size:13px;line-height:1.5}
+.mono{font-family:'SF Mono',ui-monospace,monospace;font-size:.85em}
+
+/* HEADER */
+.hdr{margin-bottom:22px;padding-bottom:16px;border-bottom:1px solid var(--bd)}
+.hdr-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap}
+.hdr-title{font-size:.95rem;font-weight:700}
+.hdr-source{font-size:.67rem;color:var(--ac);margin-top:2px}
+.hdr-date{font-size:.62rem;color:var(--tx3);font-family:monospace;white-space:nowrap}
+.hdr-sub{font-size:.65rem;color:var(--tx3);margin-top:6px;line-height:1.75}
+
+/* NATURE STACK */
+.nature{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:22px}
+@media(max-width:640px){.nature{grid-template-columns:repeat(2,1fr)}}
+.nl{background:var(--bg2);border:1px solid var(--bd2);border-radius:7px;padding:11px 13px}
+.nl-icon{font-size:1.4rem;margin-bottom:6px}
+.nl-name{font-size:.65rem;font-weight:700;color:var(--ac);letter-spacing:.04em;text-transform:uppercase;margin-bottom:3px}
+.nl-concept{font-size:.7rem;color:var(--tx);font-weight:600;margin-bottom:3px}
+.nl-map{font-size:.62rem;color:var(--tx3);line-height:1.5}
+.nl-mech{font-size:.58rem;color:var(--te);font-family:monospace;margin-top:4px}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(8,1fr);gap:7px;margin-bottom:20px}
+@media(max-width:700px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--bg2);border:1px solid var(--bd);border-radius:6px;padding:9px 7px;text-align:center}
+.sv{font-size:1.45rem;font-weight:700;line-height:1;font-family:monospace}
+.sl{font-size:.55rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+
+/* SESSION */
+.sess{background:#040c12;border:1px solid #102844;border-radius:7px;padding:12px 14px;margin-bottom:20px;font-size:.68rem;color:#5a90b8;line-height:1.9}
+.sess strong{color:#7ab8e0}
+
+/* NEW MECHS */
+.new-box{background:#03090e;border:1px solid #0e2840;border-radius:7px;padding:14px 16px;margin-bottom:20px}
+.new-t{font-size:.61rem;font-weight:700;color:var(--ac);letter-spacing:.09em;text-transform:uppercase;margin-bottom:12px}
+.mech{background:var(--bg3);border:1px solid var(--bd2);border-radius:5px;padding:11px 13px;margin-bottom:9px;border-left:3px solid var(--ac)}
+.mech:last-child{margin-bottom:0}
+.mech-n{font-size:.73rem;font-weight:700;color:var(--tx);margin-bottom:5px;font-family:monospace}
+.mech-d{font-size:.68rem;color:var(--tx2);line-height:1.65}
+.mech-retro{background:#050d10;border:1px solid #0a2030;border-radius:4px;padding:8px 10px;margin-top:7px;font-size:.64rem;color:#4a8aaa;font-family:monospace;line-height:1.7}
+.mtag{display:inline-block;font-size:.57rem;font-weight:700;padding:2px 6px;border-radius:3px;margin-top:5px;margin-right:4px}
+.mt-bl{background:#041018;color:#38c0ff}
+.mt-gr{background:#031a0c;color:#22c55e}
+.mt-pk{background:#1a0518;color:#ec4899}
+.mt-te{background:#021812;color:#14b8a6}
+
+/* SANGAM STATE MACHINE */
+.states{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:20px}
+@media(max-width:500px){.states{grid-template-columns:1fr}}
+.state-card{background:var(--bg2);border:1px solid var(--bd2);border-radius:7px;padding:12px 14px}
+.st-name{font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;font-family:monospace}
+.st-def{font-size:.66rem;color:var(--tx2);line-height:1.55;margin-bottom:6px}
+.st-action{font-size:.62rem;color:var(--te);font-family:monospace}
+.st-conf{border-color:#1e3a1e;background:#040e04}
+.st-pnm{border-color:#1a2a3a;background:#040810}
+.st-bt{border-color:#3a2a0a;background:#100900}
+.st-sc{border-color:#2a0a3a;background:#0c0410}
+
+/* MODULE GRID */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:8px;margin-bottom:20px}
+.mod{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;padding:12px 13px;position:relative}
+.mod::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:7px 0 0 7px}
+.mod.ceiling::before{background:var(--gr)}
+.mod.tooling::before{background:var(--ac)}
+.mod.structural::before{background:var(--or)}
+.mod.empirical::before{background:var(--pu)}
+.mod.debt::before{background:var(--rd)}
+.mod.improved{border-color:#102030}
+.mhdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.mname{font-size:.62rem;font-weight:700;color:var(--tx3);letter-spacing:.09em;text-transform:uppercase;font-family:monospace}
+.mtag2{font-size:.55rem;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.03em}
+.t-ceil{background:#031a0c;color:#22c55e}
+.t-tool{background:#04101a;color:#38c0ff}
+.t-stru{background:#200c00;color:#f97316}
+.t-emp{background:#120820;color:#a855f7}
+.t-debt{background:#200505;color:#ef4444}
+.srow{display:flex;align-items:baseline;gap:6px;margin-bottom:4px}
+.sval{font-size:2rem;font-weight:700;line-height:1;font-family:monospace}
+.sdelta{font-size:.67rem;font-weight:700;padding:2px 5px;border-radius:3px}
+.dp{background:#031a0c;color:#22c55e}
+.dz{background:#10141a;color:#3a5870}
+.bar{height:2px;background:var(--bd2);border-radius:1px;margin-bottom:5px;overflow:hidden;position:relative}
+.bf{height:100%;border-radius:1px;position:absolute;left:0}
+.mnote{font-size:.62rem;color:var(--tx3);line-height:1.55}
+.mhint{font-size:.59rem;color:var(--ac);margin-top:3px;font-style:italic}
+
+/* CRITICAL */
+.crit{background:#0e0404;border:1px solid #7f1d1d;border-radius:7px;padding:12px 14px;margin-bottom:20px}
+.crit-t{font-size:.6rem;font-weight:700;color:var(--rd);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.ci{display:flex;gap:8px;margin-bottom:6px;font-size:.67rem;color:#fca5a5;line-height:1.55}
+.cd{width:5px;height:5px;border-radius:50%;background:var(--rd);margin-top:4px;flex-shrink:0}
+
+/* PROJ */
+.proj{background:var(--bg2);border:1px solid var(--bd);border-radius:7px;padding:12px 14px;margin-bottom:20px}
+.proj-t{font-size:.6rem;font-weight:700;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.prow{display:flex;align-items:center;gap:8px;margin-bottom:5px;font-size:.67rem}
+.pdate{color:var(--tx3);min-width:68px;font-family:monospace;font-size:.63rem}
+.pev{color:var(--tx2);flex:1}
+.pscore{color:var(--gr);font-weight:700;min-width:32px;text-align:right;font-family:monospace}
+.pbar{width:75px;height:2px;background:var(--bd2);border-radius:1px;overflow:hidden}
+.pbf{height:100%;background:var(--gr);border-radius:1px}
+
+footer{font-size:.57rem;color:var(--tx3);text-align:center;line-height:2.3;margin-top:8px;font-family:monospace}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-row">
+    <div>
+      <div class="hdr-title">PIPELINE V5.7+ — SCORECARD</div>
+      <div class="hdr-source">Crown Shyness · Tyndall Effect · Raman Scattering · Sangam · Saraswati Hidden Current</div>
+    </div>
+    <div class="hdr-date">Apr 16, 2026</div>
+  </div>
+  <div class="hdr-sub">+0.0018 · S0→9.54 · S1→9.59 · Gap 0.19 · 34 already built · 2 new mechanisms</div>
+</div>
+
+<!-- NATURE STACK -->
+<div class="nature">
+  <div class="nl">
+    <div class="nl-icon">🌿</div>
+    <div class="nl-name">Crown Shyness</div>
+    <div class="nl-concept">Proximity without merger</div>
+    <div class="nl-map">Trees share canopy while preserving precise gaps. Optimal distance maximizes light capture, minimizes friction.</div>
+    <div class="nl-mech">POSITION_ENTANGLEMENT_SCORE<br>DRIFT_RISK cap</div>
+  </div>
+  <div class="nl">
+    <div class="nl-icon">☀️</div>
+    <div class="nl-name">Tyndall Effect</div>
+    <div class="nl-concept">Signal × medium = visibility</div>
+    <div class="nl-map">Light beam only visible when particles scatter it. Signal only legible when medium is sufficiently dense.</div>
+    <div class="nl-mech">TVG ← NEW<br>BIOLUMINESCENCE_THRESHOLD</div>
+  </div>
+  <div class="nl">
+    <div class="nl-icon">🔬</div>
+    <div class="nl-name">Raman Layer</div>
+    <div class="nl-concept">Transformation detection</div>
+    <div class="nl-map">Not just seeing the beam, but detecting what interaction changed its frequency. Structural shift ≠ surface scatter.</div>
+    <div class="nl-mech">TRANSITION_ENGINE<br>DECOHERENCE_TIMESCALE</div>
+  </div>
+  <div class="nl">
+    <div class="nl-icon">🌊</div>
+    <div class="nl-name">Sangam / Saraswati</div>
+    <div class="nl-concept">Non-merging flows + hidden current</div>
+    <div class="nl-map">Multiple visible flows coexist without merging. Hidden underground current shapes surface without being seen.</div>
+    <div class="nl-mech">SSSC ← NEW<br>VISOR_EFFECT_PROTOCOL</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat"><div class="sv" style="color:var(--ac)">9.57</div><div class="sl">Score</div></div>
+  <div class="stat"><div class="sv" style="color:var(--or)">0.19</div><div class="sl">Gap</div></div>
+  <div class="stat"><div class="sv">9.76</div><div class="sl">Ceiling</div></div>
+  <div class="stat"><div class="sv" style="color:var(--rd)">T=6</div><div class="sl">Trades</div></div>
+  <div class="stat"><div class="sv" style="color:var(--ac)">+2.69</div><div class="sl">Total V2</div></div>
+  <div class="stat"><div class="sv" style="color:var(--gr)">+2</div><div class="sl">New mechs</div></div>
+  <div class="stat"><div class="sv">34</div><div class="sl">Already built</div></div>
+  <div class="stat"><div class="sv" style="color:var(--yl)">97%</div><div class="sl">Overlap</div></div>
+</div>
+
+<!-- SESSION -->
+<div class="sess">
+  <strong>Session:</strong> Nature → Architecture: Crown Shyness (spacing), Tyndall (visibility), Raman (transformation), Sangam/Saraswati (conflict geometry + hidden variable).<br>
+  <strong>Density:</strong> 34/36 — highest-quality nature→architecture translation in the archive. Each phenomenon maps precisely to an existing mechanism.<br>
+  <strong>Movement:</strong> S0 +0.01 (TYNDALL_VISIBILITY_GATE in signal intake) · S1 +0.01 (SANGAM_SIGNAL_STATE_CLASSIFIER in belief state)<br>
+  <strong>Key precision gap filled:</strong> COMPOSITE_EDGE is a weighted sum that loses signal topology. SSSC preserves the geometry. TVG adds medium-density check before signal strength check.
+</div>
+
+<!-- NEW MECHS -->
+<div class="new-box">
+  <div class="new-t">2 New Mechanisms This Session</div>
+  
+  <div class="mech">
+    <div class="mech-n">SANGAM_SIGNAL_STATE_CLASSIFIER (SSSC)</div>
+    <div class="mech-d">Four-state relational topology for when multiple signal dimensions are simultaneously active. COMPOSITE_EDGE (weighted sum) loses the geometry of how flows relate. SSSC preserves it: CONFLUENCE (all flows aligned, D_total < 0.2 — likely priced, check OAD), PARALLEL_NON_MIXING (flows diverge, H low — wait for confirmation), BOUNDARY_TENSION (two agree, one sharply disagrees — investigate the dissenting flow, it contains the Raman signal), SUBSURFACE_CONTROL (H > 0.6, surface weak — follow hidden current, reduce size). Inputs: SA=Polymarket delta/vol, SB=FinBERT sentiment direction, SC=GLS_t direction, H=TSL score + VISOR risk. State feeds FIRE_MODE: CONFLUENCE+low OAD→SHADOW_BOOK; BOUNDARY_TENSION+high OAD→SNIPER; SUBSURFACE_CONTROL→LOW_SIZE_ENTRY.</div>
+    <div class="mech-retro">
+      CVX/XOM retrospective: SA=+0.7 (war narrative rising), SB=+0.6 (RSS coverage bullish), SC=−0.2 (GLS_t declining, Fed tightening)
+      D_AC = |0.7 − (−0.2)| = 0.9 → State = BOUNDARY_TENSION
+      The capital flow (SC) was the dissenting flow — the Raman layer nobody read.
+      SSSC would have flagged: "why does capital flow disagree?" Answer: GLS_t declining = structural shift.
+      A weighted COMPOSITE_EDGE averaged over this. SSSC would not have.
+    </div>
+    <span class="mtag mt-bl">S1 +0.01</span>
+    <span class="mtag mt-gr">S9 Phase 2 build</span>
+    <span class="mtag mt-pk">NBA: line movement + sentiment + sharp money topology</span>
+  </div>
+  
+  <div class="mech" style="border-left-color:var(--te)">
+    <div class="mech-n">TYNDALL_VISIBILITY_GATE (TVG)</div>
+    <div class="mech-d">Pre-processing medium check before signal strength check. BIOLUMINESCENCE_THRESHOLD measures signal strength. TVG measures whether current market conditions allow the pipeline to 'see' the signal at all. M_total = 0.4×M_liquidity (Polymarket volume/avg_30d) + 0.4×M_narrative (headline_rate × cross_source_count) + 0.2×M_timing (active news cycle for this class). TVG_visibility = COMPOSITE_EDGE × M_total. Gate: M_total < 0.3 → VISIBILITY_TOO_LOW → SHADOW_BOOK (signal exists but cannot be seen through current medium). New pipeline sequence: [signal arrives] → [TVG medium check] → [SNR/BIOLUMINESCENCE] → [CVS] → [FIRE_MODE].</div>
+    <div class="mech-retro">
+      CVX/XOM Day 0-5: M_liquidity=HIGH (rapid Polymarket movement), M_narrative=HIGH (war coverage burst), M_timing=1.0 → TVG=HIGH → valid entry window
+      CVX/XOM Day 80: M_liquidity=LOW (normalized volume), M_narrative=LOW (no new articles), M_timing=0.0 → M_total≈0.12 → TVG=LOW_VISIBILITY → SHADOW_BOOK
+      Entering on Day 80 was shining a laser into a vacuum. The beam was real. The medium had cleared.
+    </div>
+    <span class="mtag mt-bl">S0 +0.01</span>
+    <span class="mtag mt-gr">S9 Phase 1 build</span>
+    <span class="mtag mt-pk">NBA: betting visibility = active game + public commentary + elevated volume</span>
+  </div>
+</div>
+
+<!-- SANGAM STATE MACHINE -->
+<div style="font-size:.61rem;font-weight:700;color:var(--tx2);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px">SSSC State Machine — Four Relational States</div>
+<div class="states">
+  <div class="state-card st-conf">
+    <div class="st-name" style="color:#22c55e">CONFLUENCE</div>
+    <div class="st-def">All flows aligned. D_total < 0.2. Three rivers flowing the same direction. High agreement but potentially already priced.</div>
+    <div class="st-action">→ Check OAD. Low OAD = SHADOW_BOOK (too obvious). High OAD = SNIPER (rare consensus-wrong case).</div>
+  </div>
+  <div class="state-card st-pnm">
+    <div class="st-name" style="color:#38c0ff">PARALLEL NON-MIXING</div>
+    <div class="st-def">Flows visible, directions different, no convergence. D_total [0.2–0.5], H < 0.3. Like Sangam where flows coexist.</div>
+    <div class="st-action">→ WAIT_CONFIRMATION or PROBE. Thesis ambiguity. Reduce size if entering.</div>
+  </div>
+  <div class="state-card st-bt">
+    <div class="st-name" style="color:#eab308">BOUNDARY TENSION</div>
+    <div class="st-def">Two flows agree, one sharply disagrees. One D_pair > 0.6. The dissenting flow contains the Raman signal — investigate it.</div>
+    <div class="st-action">→ Check OUTSIDER_ADVANTAGE_DETECTOR + TSL. The dissenter may be the edge signal. SNIPER if OAD high.</div>
+  </div>
+  <div class="state-card st-sc">
+    <div class="st-name" style="color:#a855f7">SUBSURFACE CONTROL</div>
+    <div class="st-def">H > 0.6. Surface flows weak/noisy. VISOR flags high-volume move with no news catalyst. Saraswati is active.</div>
+    <div class="st-action">→ Follow hidden current direction. LOW_SIZE_ENTRY due to opacity. Run TASTE_SIGNAL_LAYER check.</div>
+  </div>
+</div>
+
+<!-- MODULE GRID -->
+<div class="mgrid">
+
+  <div class="mod tooling improved">
+    <div class="mhdr"><span class="mname">S0</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--ac)">9.54</span><span class="sdelta dp">+0.01</span></div>
+    <div class="bar"><div class="bf" style="width:95.4%;background:var(--ac)"></div></div>
+    <div class="mnote">TYNDALL_VISIBILITY_GATE ← this session. ETL + SOURCE_BUBBLE_SCORE (prior). STILLNESS_SIGNAL_EXTRACTOR · NARRATIVE_PREMIUM_DECOMPOSER · VISOR_EFFECT_AUDIT.</div>
+    <div class="mhint">↑ TVG: medium density check before signal strength check</div>
+  </div>
+
+  <div class="mod ceiling improved">
+    <div class="mhdr"><span class="mname">S1</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.59</span><span class="sdelta dp">+0.01</span></div>
+    <div class="bar"><div class="bf" style="width:95.9%;background:var(--gr)"></div></div>
+    <div class="mnote">SANGAM_SIGNAL_STATE_CLASSIFIER ← this session. OAD + TSL + NLR + SPECTRAL_SIGNAL_CLASSIFIER · LEGITIMACY_DECAY_TRACKER · CVS · PSYCHO_MANTIS.</div>
+    <div class="mhint">↑ SSSC: signal topology replaces scalar sum</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S2</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">At ceiling. TEMPORAL_GRAMMAR · NARRATIVE_HALF_LIFE · HAUNTOLOGICAL_PERSISTENCE. Unchanged.</div>
+  </div>
+
+  <div class="mod structural">
+    <div class="mhdr"><span class="mname">S3A</span><span class="mtag2 t-stru">structural</span></div>
+    <div class="srow"><span class="sval" style="color:var(--or)">9.14</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:91.4%;background:var(--or)"></div></div>
+    <div class="mnote">Capital flow. Structural ceiling. SSSC's SC dimension (GLS_t direction) feeds here. S9 Phase 2 required for full automated flow.</div>
+  </div>
+
+  <div class="mod tooling">
+    <div class="mhdr"><span class="mname">S3B</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--ac)">8.96</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:89.6%;background:var(--ac)"></div></div>
+    <div class="mnote">INTEGRATION_COST_THRESHOLD active. Awaiting S9 May 13.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S35</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">At ceiling. GRADUATED_EXIT · OPERATOR_LOCK · COUNT_D · CVS · THREE_POISONS gate. SSSC state now feeds FIRE_MODE via S35.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S4</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.80</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98%;background:var(--gr)"></div></div>
+    <div class="mnote">At ceiling. FIRE_MODE · CHIGURH · LALO timing · GHOST_STANCE prerequisites.</div>
+  </div>
+
+  <div class="mod debt">
+    <div class="mhdr"><span class="mname">ATOM</span><span class="mtag2 t-debt">⚠ DEBT</span></div>
+    <div class="srow"><span class="sval" style="color:var(--rd)">8.90</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:89%;background:var(--rd)"></div></div>
+    <div class="mnote">95→35 CORE fields. BLOCKING. MICHELANGELO_SUBTRACTION_AUDIT pilot. 7-field caddy_packet crisis compression required.</div>
+  </div>
+
+  <div class="mod empirical">
+    <div class="mhdr"><span class="mname">S5</span><span class="mtag2 t-emp">empirical</span></div>
+    <div class="srow"><span class="sval" style="color:var(--pu)">8.50</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:85%;background:var(--pu)"></div></div>
+    <div class="mnote">BEHAVIORAL_INTEGRITY_SCORER + THREE_POISONS_BIAS_ENGINE + REALM_CLASSIFIER. SELF_MODEL_CALIBRATION · GHOST_STANCE · SOVEREIGN_IDENTITY_ANCHOR. BIS tracking starts now.</div>
+  </div>
+
+  <div class="mod empirical">
+    <div class="mhdr"><span class="mname">S7</span><span class="mtag2 t-emp">empirical</span></div>
+    <div class="srow"><span class="sval" style="color:var(--pu)">9.65</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:96.5%;background:var(--pu)"></div></div>
+    <div class="mnote">LEGITIMACY_DECAY_TRACKER · SAECULAR_REGIME_LAYER · NARRATIVE_DOMINANCE_SCORE · HPS. Near ceiling.</div>
+  </div>
+
+  <div class="mod ceiling">
+    <div class="mhdr"><span class="mname">S8</span><span class="mtag2 t-ceil">ceiling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--gr)">9.83</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:98.3%;background:var(--gr)"></div></div>
+    <div class="mnote">TAIL_RISK_COUNTERFACTUAL · POSITION_ENTANGLEMENT_SCORE (crown shyness) · DECOHERENCE_TIMESCALE (Sangam mixing delay) · INTEGRATION_COST_THRESHOLD.</div>
+  </div>
+
+  <div class="mod tooling">
+    <div class="mhdr"><span class="mname">S9</span><span class="mtag2 t-tool">tooling</span></div>
+    <div class="srow"><span class="sval" style="color:var(--ac)">8.37</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:83.7%;background:var(--ac)"></div></div>
+    <div class="mnote">Build May 13. TVG requires Polymarket volume tracking + headline rate → S9 Phase 1. SSSC requires FinBERT sentiment + GLS_t automation → S9 Phase 2.</div>
+  </div>
+
+  <div class="mod debt">
+    <div class="mhdr"><span class="mname">CAL</span><span class="mtag2 t-debt">data void</span></div>
+    <div class="srow"><span class="sval" style="color:var(--yl)">5.41</span><span class="sdelta dz">+0.00</span></div>
+    <div class="bar"><div class="bf" style="width:54.1%;background:var(--yl)"></div></div>
+    <div class="mnote">T=6 (4.2 clean FCS-adj). April 25→T=10. ε=1.0→0.56. LPC+TRC+FCS improve MW precision. SSSC states logged in Moltbook from next trade forward.</div>
+  </div>
+
+</div>
+
+<!-- CRITICAL PATH -->
+<div class="crit">
+  <div class="crit-t">⚠ Critical Path — Unchanged</div>
+  <div class="ci"><div class="cd"></div>ATOM retirement (95→35) — BLOCKING before next trade.</div>
+  <div class="ci"><div class="cd"></div>T=6→10 by April 25. TLT+TIP=T=7,8. UNG/FCG=T=9,10. ε→0.56 at T=10.</div>
+  <div class="ci"><div class="cd"></div>S9 build May 13. TVG (Phase 1) + SSSC (Phase 2). BIS tracking starts immediately.</div>
+  <div class="ci" style="color:#fde68a"><div class="cd" style="background:var(--yl)"></div>For every new entry: manually compute SSSC state (SA/SB/SC directions). Log which state was active. This is the first step toward automated SSSC. No tooling required yet.</div>
+</div>
+
+<!-- PROJ -->
+<div class="proj">
+  <div class="proj-t">Score Projection</div>
+  <div class="prow"><span class="pdate">Apr 25</span><span class="pev">T=10 · ε→0.56 · SSSC manual classification begins</span><span class="pscore">9.58</span><div class="pbar"><div class="pbf" style="width:5%"></div></div></div>
+  <div class="prow"><span class="pdate">May 31</span><span class="pev">S9 Phase 1 · ATOM retired · TVG volume tracking live</span><span class="pscore">9.62</span><div class="pbar"><div class="pbf" style="width:26%"></div></div></div>
+  <div class="prow"><span class="pdate">Jun 30</span><span class="pev">Phase 2 · FinBERT + Polymarket API · SSSC automated</span><span class="pscore">9.65</span><div class="pbar"><div class="pbf" style="width:47%"></div></div></div>
+  <div class="prow"><span class="pdate">Jul 31</span><span class="pev">IBKR paper · live MW · first SSSC state distribution data</span><span class="pscore">9.70</span><div class="pbar"><div class="pbf" style="width:68%"></div></div></div>
+  <div class="prow"><span class="pdate">Aug 2026</span><span class="pev">Real capital · T≥35 · E_op>0.80 · BIS>0.85 earned</span><span class="pscore">9.74</span><div class="pbar"><div class="pbf" style="width:89%"></div></div></div>
+  <div class="prow"><span class="pdate">Ceiling</span><span class="pev">9.76 — residual empirical reserve</span><span class="pscore">9.76</span><div class="pbar"><div class="pbf" style="width:100%"></div></div></div>
+</div>
+
+<footer>
+PIPELINE V5.7+ · Apr 16, 2026 · Score 9.57 · Gap 0.19 · T=6 · ε=1.0 · Ceiling 9.76<br>
+S0=9.54 · S1=9.59 · S2=9.80 · S3A=9.14 · S3B=8.96 · S35=9.80 · S4=9.80<br>
+ATOM=8.90 · S5=8.50 · S7=9.65 · S8=9.83 · S9=8.37 · CAL=5.41 · V2=+2.69<br>
+<br>
+Edge = Spacing × Visibility × Causal Decode × Conflict Structure × Data Integrity
+</footer>
+
+</body>
+</html>

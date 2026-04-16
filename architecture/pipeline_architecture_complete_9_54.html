@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MVP Pipeline Architecture · V5.7+ · 9.54</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;500;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+:root{
+  --bg:#030508;--bg2:#08090f;--bg3:#0d0f18;--bg4:#131620;
+  --b:rgba(255,255,255,.07);--b2:rgba(255,255,255,.13);
+  --t:#dde4f8;--t2:#6878a8;--t3:#2a3058;
+  --gold:#d4a843;--gold2:#f0c868;
+  --teal:#1fd8c0;--blue:#4a9eff;--purple:#9b7ff0;
+  --red:#e05555;--amber:#e8a030;--green:#38c878;
+  --pink:#e060a0;--cyan:#40d8e8;--lime:#80e040;
+  --bio:#2dd4a0;--ghost:#9060c0;--wind:#60b0e8;
+  --dark:#60d0a0;--blueprint:#40c8e0;
+  --mono:'JetBrains Mono',monospace;
+  --display:'Orbitron',sans-serif;
+  --sans:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--t);font-size:12px;line-height:1.6;overflow-x:hidden}
+
+/* ── SCANLINE OVERLAY ── */
+body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);pointer-events:none;z-index:1000}
+
+/* ── NAV ── */
+nav{position:sticky;top:0;z-index:500;background:rgba(3,5,8,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(29,216,192,.2);height:44px;display:flex;align-items:center;padding:0 20px;gap:2px;overflow-x:auto}
+nav a{color:var(--t3);text-decoration:none;font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:3px;white-space:nowrap;transition:all .15s;font-family:var(--mono)}
+nav a:hover{color:var(--teal);background:rgba(31,216,192,.08)}
+.nav-score{margin-left:auto;font-family:var(--mono);font-size:13px;font-weight:700;color:var(--gold);border:1px solid rgba(212,168,67,.4);padding:3px 12px;border-radius:3px;background:rgba(212,168,67,.06);white-space:nowrap;letter-spacing:.04em}
+
+/* ── PAGE ── */
+.page{max-width:1400px;margin:0 auto;padding:0 20px 100px}
+
+/* ── HERO ── */
+.hero{padding:52px 0 40px;border-bottom:1px solid var(--b);margin-bottom:32px;position:relative;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:280px 1fr;gap:40px;align-items:start}
+.hero-score-block{}
+.hero-label{font-family:var(--mono);font-size:10px;color:var(--t3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px}
+.hero-score{font-family:var(--display);font-size:100px;font-weight:900;color:var(--gold);line-height:.85;letter-spacing:-.02em;text-shadow:0 0 60px rgba(212,168,67,.3)}
+.hero-prev{font-family:var(--mono);font-size:14px;color:var(--t3);text-decoration:line-through;margin-top:6px}
+.hero-v2{font-family:var(--mono);font-size:16px;color:var(--teal);margin-top:4px}
+.hero-right{}
+.hero-title{font-family:var(--display);font-size:22px;font-weight:700;color:var(--t);margin-bottom:8px;letter-spacing:.02em}
+.hero-subtitle{font-size:13px;color:var(--t2);line-height:1.9;margin-bottom:16px}
+.hero-subtitle strong{color:var(--gold2);font-weight:500}
+.hero-stats{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.hstat{background:var(--bg2);border:1px solid var(--b);border-radius:6px;padding:10px 12px}
+.hstat-v{font-family:var(--display);font-size:18px;font-weight:700;display:block;margin-bottom:2px}
+.hstat-l{font-size:9px;color:var(--t3);letter-spacing:.07em;text-transform:uppercase}
+
+/* ── SECTION ── */
+.sec{display:flex;align-items:center;gap:12px;margin-bottom:16px;margin-top:32px}
+.sec-n{font-family:var(--mono);font-size:10px;color:var(--t3);min-width:30px}
+.sec-t{font-family:var(--display);font-size:14px;font-weight:700;letter-spacing:.04em}
+.sec-line{flex:1;height:1px;background:linear-gradient(to right,var(--b2),transparent)}
+
+/* ── PIPELINE FLOW ── */
+.pipeline-flow{display:flex;align-items:stretch;gap:0;background:var(--bg2);border:1px solid var(--b2);border-radius:10px;overflow:hidden;margin-bottom:24px}
+.pf-stage{flex:1;padding:14px 10px;text-align:center;border-right:1px solid var(--b);cursor:default;transition:background .15s;position:relative}
+.pf-stage:last-child{border-right:none}
+.pf-stage:hover{background:rgba(255,255,255,.03)}
+.pf-label{font-family:var(--display);font-size:10px;font-weight:700;letter-spacing:.06em;margin-bottom:4px}
+.pf-sub{font-size:9px;color:var(--t3);line-height:1.3}
+.pf-dot{width:6px;height:6px;border-radius:50%;margin:4px auto 0}
+
+/* ── MASTER EQUATION ── */
+.master-eq{background:var(--bg3);border:1px solid rgba(212,168,67,.3);border-radius:10px;padding:20px 24px;margin-bottom:20px}
+.meq-title{font-family:var(--mono);font-size:10px;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;font-weight:700}
+.meq-formula{font-family:var(--mono);font-size:12px;color:var(--gold2);line-height:2.4;overflow-x:auto;margin-bottom:14px}
+.meq-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.meq-item{background:var(--bg2);border:1px solid var(--b);border-radius:5px;padding:8px;text-align:center}
+.meq-sym{font-family:var(--mono);font-size:18px;font-weight:700;margin-bottom:2px}
+.meq-name{font-size:9px;font-weight:600;margin-bottom:1px}
+.meq-src{font-size:9px;color:var(--t3);line-height:1.2}
+
+/* ── PROCESSING SEQUENCE ── */
+.proc-seq{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:20px}
+.ps-item{background:var(--bg2);border:1px solid var(--b);border-radius:6px;padding:10px 12px;border-left:2px solid var(--c,#888)}
+.ps-step{font-family:var(--mono);font-size:9px;color:var(--c,#888);margin-bottom:3px;font-weight:700;letter-spacing:.06em}
+.ps-name{font-size:10px;font-weight:600;margin-bottom:2px}
+.ps-detail{font-size:9px;color:var(--t3);line-height:1.3}
+
+/* ── MODULE GRID ── */
+.mod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+.mod{background:var(--bg2);border:1px solid var(--b);border-radius:8px;padding:12px;border-left:3px solid var(--c,#888)}
+.mod-head{display:flex;justify-content:space-between;align-items:start;margin-bottom:4px}
+.mod-code{font-family:var(--mono);font-size:10px;font-weight:700;color:var(--c,#888);letter-spacing:.08em}
+.mod-wt{font-size:9px;color:var(--t3);background:rgba(255,255,255,.05);padding:1px 5px;border-radius:2px}
+.mod-score{font-family:var(--display);font-size:24px;font-weight:700;line-height:1;margin-bottom:2px}
+.mod-bar{height:2px;background:rgba(255,255,255,.05);border-radius:1px;position:relative;margin-bottom:4px}
+.mod-fill{height:100%;border-radius:1px;position:absolute;left:0;top:0}
+.mod-ceil{height:100%;border-radius:1px;position:absolute;left:0;top:0;opacity:.1}
+.mod-gap{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px}
+.mod-note{font-size:9px;color:var(--t3);line-height:1.3}
+
+/* ── EQUATIONS TABLE ── */
+.eq-table{background:var(--bg2);border:1px solid var(--b);border-radius:10px;overflow:hidden;margin-bottom:20px}
+.eqt-header{display:grid;grid-template-columns:160px 1fr;background:var(--bg3);padding:7px 16px;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);border-bottom:1px solid var(--b);font-family:var(--mono)}
+.eqt-row{display:grid;grid-template-columns:160px 1fr;padding:9px 16px;border-bottom:1px solid rgba(255,255,255,.03);align-items:center}
+.eqt-row:last-child{border-bottom:none}
+.eqt-name{font-size:10px;font-weight:600;color:var(--t)}
+.eqt-formula{font-family:var(--mono);font-size:10px;color:var(--teal);line-height:1.6;overflow-x:auto}
+
+/* ── LAYER CARDS (philosophy/wisdom) ── */
+.layer-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+.lc{background:var(--bg2);border:1px solid var(--b);border-radius:8px;padding:14px;position:relative;overflow:hidden}
+.lc::before{content:attr(data-glyph);position:absolute;right:8px;top:4px;font-size:40px;opacity:.06;pointer-events:none;line-height:1}
+.lc-src{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;margin-bottom:4px}
+.lc-name{font-size:13px;font-weight:600;margin-bottom:5px}
+.lc-eq{font-family:var(--mono);font-size:10px;background:rgba(0,0,0,.4);border-radius:4px;padding:6px 8px;line-height:1.7;margin-bottom:6px;color:var(--teal)}
+.lc-body{font-size:10px;color:var(--t2);line-height:1.5}
+
+/* ── PROJECTIONS ── */
+.proj-table{background:var(--bg2);border:1px solid var(--b);border-radius:10px;overflow:hidden;margin-bottom:20px}
+.pt-header{display:grid;grid-template-columns:120px 50px 60px 80px 80px 1fr;background:var(--bg3);padding:7px 16px;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--t3);border-bottom:1px solid var(--b);font-family:var(--mono)}
+.pt-row{display:grid;grid-template-columns:120px 50px 60px 80px 80px 1fr;padding:10px 16px;border-bottom:1px solid rgba(255,255,255,.03);font-size:11px;align-items:center}
+.pt-row:last-child{border-bottom:none}
+.pt-date{font-weight:600}
+.pt-score{font-family:var(--display);font-weight:700;font-size:13px}
+.pt-note{font-size:10px;color:var(--t2)}
+.pt-mono{font-family:var(--mono);font-size:10px}
+
+/* ── PENDING ACTIONS ── */
+.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:20px}
+.act{background:var(--bg2);border:1px solid var(--b);border-radius:7px;padding:12px 14px;display:flex;gap:10px;align-items:start}
+.act-num{font-family:var(--display);font-size:18px;font-weight:700;min-width:28px;line-height:1.1}
+.act-body{}
+.act-title{font-size:11px;font-weight:600;margin-bottom:2px}
+.act-detail{font-size:10px;color:var(--t3);line-height:1.4}
+
+/* ── WISDOM GRID ── */
+.wisdom{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:20px}
+.w-item{background:var(--bg2);border:1px solid var(--b);border-radius:5px;padding:8px 10px;font-size:10px;color:var(--t2);font-style:italic;line-height:1.4}
+
+/* ── BOTTOM ── */
+.bottom{background:var(--bg3);border:1px solid var(--b2);border-left:3px solid var(--gold);border-radius:10px;padding:18px 22px;font-size:11px;color:var(--t2);line-height:1.9}
+.bottom strong{color:var(--t);font-weight:500}
+
+footer{text-align:center;padding:40px 0;border-top:1px solid var(--b);color:var(--t3);font-size:10px;font-family:var(--mono)}
+footer .big{font-family:var(--display);font-size:52px;font-weight:900;color:var(--gold);display:block;line-height:1;margin-bottom:10px;text-shadow:0 0 40px rgba(212,168,67,.4);letter-spacing:.04em}
+
+/* Scanline ticker at bottom */
+.ticker{background:var(--bg2);border-top:1px solid var(--b2);border-bottom:1px solid var(--b2);padding:6px 0;overflow:hidden;white-space:nowrap;font-family:var(--mono);font-size:10px;color:var(--t3);margin-bottom:24px}
+.ticker-inner{display:inline-block;animation:ticker 40s linear infinite}
+@keyframes ticker{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
+.ticker-sep{margin:0 24px;color:var(--gold)}
+
+@media(max-width:900px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-stats{grid-template-columns:repeat(3,1fr)}
+  .mod-grid{grid-template-columns:repeat(2,1fr)}
+  .layer-cards{grid-template-columns:1fr}
+  .proc-seq{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#overview">Overview</a>
+  <a href="#master">Master Eq</a>
+  <a href="#flow">Pipeline</a>
+  <a href="#sequence">Sequence</a>
+  <a href="#modules">Modules</a>
+  <a href="#equations">Equations</a>
+  <a href="#philosophy">Philosophy</a>
+  <a href="#projections">Projections</a>
+  <a href="#actions">Actions</a>
+  <span class="nav-score">9.54 / 10 · V5.7+</span>
+</nav>
+
+<div class="page">
+
+<!-- ═══ HERO ═══ -->
+<section id="overview" class="hero">
+  <div class="hero-grid">
+    <div class="hero-score-block">
+      <div class="hero-label">Pipeline Score</div>
+      <div class="hero-score">9.54</div>
+      <div class="hero-prev">V2 start: 6.88</div>
+      <div class="hero-v2">Total V2: +2.66</div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-title">MVP PIPELINE ARCHITECTURE</div>
+      <div class="hero-subtitle">
+        Geopolitical Signal Intelligence Engine · V5.7+ · April 9, 2026 · 900+ sessions<br>
+        <strong>32 modules · 18 processing steps · 12 key equations · Gap: 0.22</strong><br>
+        Sense → Refine → Interpret → Map → Simulate → Allocate → Adapt<br>
+        Biology + Prediction Markets + Narrative Flow → Position Sizing → Moltbook
+      </div>
+      <div class="hero-stats">
+        <div class="hstat"><span class="hstat-v" style="color:var(--gold)">9.54</span><span class="hstat-l">Score</span></div>
+        <div class="hstat"><span class="hstat-v" style="color:var(--red)">5.10</span><span class="hstat-l">CAL</span></div>
+        <div class="hstat"><span class="hstat-v" style="color:var(--teal)">T=2</span><span class="hstat-l">Trades</span></div>
+        <div class="hstat"><span class="hstat-v" style="color:var(--gold)">0.22</span><span class="hstat-l">Gap</span></div>
+        <div class="hstat"><span class="hstat-v" style="color:var(--green)">Jul 1</span><span class="hstat-l">Real $</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker"><div class="ticker-inner" id="tickerInner"></div></div>
+
+<!-- ═══ PIPELINE FLOW ═══ -->
+<section id="flow">
+  <div class="sec"><span class="sec-n">01</span><span class="sec-t">PIPELINE FLOW</span><div class="sec-line"></div></div>
+  <div class="pipeline-flow" id="pipeFlow"></div>
+</section>
+
+<!-- ═══ MASTER EQUATION ═══ -->
+<section id="master">
+  <div class="sec"><span class="sec-n">02</span><span class="sec-t">MASTER EQUATION</span><div class="sec-line"></div></div>
+  <div class="master-eq">
+    <div class="meq-title">MVP_t — unified control signal → w_t position size</div>
+    <div class="meq-formula">MVP_t = [ (O × Gk × Df × Mf × St) × (EV × IA × TQ × EX) × (CIE × CC) × (Q × (1+DG)) × EvFactor × Rob ]
+        / [ 1 + Risk + InternalStrain + Noise + SurvivorshipBias ]
+
+w_t = c · (MVP_t / σ_t²) · g(CAL_t, PQ_t, ρ_t) · h(Q_t)
+
+If ANY role factor = 0 → MVP_t = 0 · Denominator explosion → ARCHITECTURE_PAUSE
+h(Q_t) = biological gate · g() = CAL/PQ/correlation gate · both required</div>
+    <div class="meq-grid" id="meqGrid"></div>
+  </div>
+</section>
+
+<!-- ═══ PROCESSING SEQUENCE ═══ -->
+<section id="sequence">
+  <div class="sec"><span class="sec-n">03</span><span class="sec-t">PROCESSING SEQUENCE — 18 steps</span><div class="sec-line"></div></div>
+  <div class="proc-seq" id="procSeq"></div>
+</section>
+
+<!-- ═══ MODULES ═══ -->
+<section id="modules">
+  <div class="sec"><span class="sec-n">04</span><span class="sec-t">MODULE SCORECARDS</span><div class="sec-line"></div></div>
+  <div class="mod-grid" id="modGrid"></div>
+</section>
+
+<!-- ═══ EQUATIONS ═══ -->
+<section id="equations">
+  <div class="sec"><span class="sec-n">05</span><span class="sec-t">KEY EQUATIONS</span><div class="sec-line"></div></div>
+  <div class="eq-table">
+    <div class="eqt-header"><span>System</span><span>Equation</span></div>
+    <div id="eqRows"></div>
+  </div>
+</section>
+
+<!-- ═══ PHILOSOPHY LAYERS ═══ -->
+<section id="philosophy">
+  <div class="sec"><span class="sec-n">06</span><span class="sec-t">KNOWLEDGE INTEGRATION LAYERS</span><div class="sec-line"></div></div>
+  <div class="layer-cards" id="layerCards"></div>
+</section>
+
+<!-- ═══ PROJECTIONS ═══ -->
+<section id="projections">
+  <div class="sec"><span class="sec-n">07</span><span class="sec-t">SCORE PROJECTIONS</span><div class="sec-line"></div></div>
+  <div class="proj-table">
+    <div class="pt-header"><span>Milestone</span><span>T</span><span>ε</span><span>CAL</span><span>Score</span><span>Key event</span></div>
+    <div id="projRows"></div>
+  </div>
+</section>
+
+<!-- ═══ PENDING ACTIONS ═══ -->
+<section id="actions">
+  <div class="sec"><span class="sec-n">08</span><span class="sec-t">CRITICAL PENDING ACTIONS</span><div class="sec-line"></div></div>
+  <div class="actions" id="actionsGrid"></div>
+</section>
+
+<!-- ═══ WISDOM ═══ -->
+<div class="sec"><span class="sec-n">09</span><span class="sec-t">THE TRUTHS</span><div class="sec-line"></div></div>
+<div class="wisdom" id="wisdomGrid"></div>
+
+<!-- ═══ BOTTOM ═══ -->
+<div class="bottom">
+  <strong>Architecture at 9.54 · Gap 0.22 · Total V2 +2.66 · CAL 5.10 (DATA_VOID → data_void_engine.py deployed) · T=2</strong><br><br>
+  The pipeline integrates: biological signal layer (GV4 Mingmen → h(Q_t)), prediction market ingestion (Kalshi/Polymarket), narrative formation (Lotka-Volterra capital dynamics), actor incentive compatibility (IC_i), macro transmission (FCI_t), portfolio interaction (Σ⁻¹μ), simulation (adversarial minimax), attribution (Shapley), cognitive modes (Zero-Sum/Positive-Sum/Ambidextrous), embodied experience (E_t with pressure conditioning), Norman compactification (Gödel boundaries), GV meridian pathway (GV1→GV28), Dark temporal topology (Knot/Bootstrap/Origin), Blueprint Zero Point, integration bias detection (schema vs decision update gap), swarm intelligence (stigmergy, quorum sensing), Attenborough/Goodall field methodology (patient observation, non-disturbance, longitudinal patterns), GoaGill third-space architecture, Iceberg Slim power dynamics, and the data void inference stack.<br><br>
+  <strong>The architecture is complete. The next increment is not architectural. It is T=10 by April 25. Close eight trades. Log CLV. Fill the Moltbook. The divergence from any copy compounds from the first rep. dE_t/dt >> dÊ_t/dt is the real edge. dB_t/dt is the real moat.</strong>
+</div>
+
+</div><!-- /page -->
+
+<footer>
+  <span class="big">9.54</span>
+  MVP Pipeline Architecture · V5.7+ · April 9, 2026 · 900+ sessions<br>
+  32 modules · Gap 0.22 · Total V2 +2.66 · T=2 · Real money July 1, 2026<br><br>
+  <span style="color:var(--gold);font-family:var(--sans);font-style:italic;font-size:12px">"Observes like Goodall · Explains like Attenborough · Simulates like a game engine<br>
+  Executes like a trader · Evolves like a biological organism · Closes like GV28"</span>
+</footer>
+
+<script>
+// ── TICKER ──
+const tickerItems=[
+  'Score: 9.54','Gap: 0.22','T=2 closed trades','CAL: 5.10 DATA_VOID → PATCHED',
+  'dE_t/dt >> dÊ_t/dt','dB_t/dt is the moat','GV16 Wind Palace · GV20 Baihui',
+  'LEIPCESTER_PRIME: 6 conditions','FIRE_MODE: SNIPER requires δ≥0.40',
+  'Knot vs Structural: check bootstrap','CLAUDIA_SCAN every session',
+  'Mingmen morning check before HRV','h(Q_t)<0.40 = MONITOR only',
+  'ATOM retirement CRITICAL','June 1: Zero Point + CRISPR edits',
+  'Jul 1: IBKR · Copa América · real $','V2 start 6.88 → 9.54 (+2.66)',
+];
+const ti=document.getElementById('tickerInner');
+const txt=tickerItems.map(t=>`<span>${t}</span><span class="ticker-sep">◆</span>`).join('');
+ti.innerHTML=txt+txt;
+
+// ── PIPELINE FLOW ──
+const stages=[
+  {l:'SELF',s:'B_t·Q_t·h(Q_t)',c:'var(--bio)'},
+  {l:'SENSE',s:'S0·DG_t·void',c:'var(--blue)'},
+  {l:'REFINE',s:'S1B·S2·Q_t',c:'var(--teal)'},
+  {l:'MAP',s:'S3A·S3B·IC_i',c:'var(--amber)'},
+  {l:'SIMULATE',s:'S6·S7·MC',c:'var(--purple)'},
+  {l:'DECIDE',s:'S35·Modes',c:'var(--gold)'},
+  {l:'ALLOCATE',s:'S4·S9·Kelly',c:'var(--red)'},
+  {l:'ADAPT',s:'Moltbook·S*',c:'var(--bio)'},
+];
+const pf=document.getElementById('pipeFlow');
+stages.forEach((s,i)=>{
+  pf.innerHTML+=`<div class="pf-stage">
+    <div class="pf-label" style="color:${s.c}">${s.l}</div>
+    <div class="pf-sub">${s.s}</div>
+    <div class="pf-dot" style="background:${s.c}"></div>
+  </div>`;
+});
+
+// ── MASTER EQUATION COMPONENTS ──
+const meqData=[
+  {s:'O',n:'Owner',c:'var(--gold)',src:'Governance·Capital'},
+  {s:'Gk',n:'Goalkeeper',c:'var(--red)',src:'Tail Risk·Survival'},
+  {s:'Df',n:'Defender',c:'var(--blue)',src:'Stability·Anticipation'},
+  {s:'Mf',n:'Midfielder',c:'var(--teal)',src:'Routing·Tempo'},
+  {s:'St',n:'Striker',c:'var(--green)',src:'Setup×Timing×Exec'},
+  {s:'CIE',n:'Creative Intel',c:'var(--pink)',src:'V×N×D×Rh×M−Cost'},
+  {s:'CC',n:'Cultural Cog',c:'var(--purple)',src:'Frame+Decay'},
+  {s:'Q',n:'Signal Quality',c:'var(--teal)',src:'5-layer weighted'},
+  {s:'DG',n:'Distortion Gap',c:'var(--wind)',src:'GV16 Wind Palace'},
+  {s:'B_t',n:'Bio State',c:'var(--bio)',src:'GV4 Mingmen'},
+  {s:'E_t',n:'Experience',c:'var(--dark)',src:'Σγ^{t-i}(s,a,r,P)'},
+  {s:'∂S_t',n:'Gödel Boundary',c:'var(--ghost)',src:'Norman compact'},
+];
+const mg=document.getElementById('meqGrid');
+meqData.forEach(m=>{
+  mg.innerHTML+=`<div class="meq-item">
+    <div class="meq-sym" style="color:${m.c}">${m.s}</div>
+    <div class="meq-name">${m.n}</div>
+    <div class="meq-src">${m.src}</div>
+  </div>`;
+});
+
+// ── PROCESSING SEQUENCE ──
+const steps=[
+  {n:'STEP -3',name:'BIO GATE',detail:'B_t→Q_t→h(Q_t) · Mingmen check · Blueprint Zero Point',c:'var(--bio)'},
+  {n:'STEP -2',name:'PERCEPTION VALVE',detail:'GV16 Wind Palace · VISIBILITY_BIAS · ε_media correction',c:'var(--wind)'},
+  {n:'STEP -2.5',name:'BIAS DETECTION',detail:'INTEGRATION_BIAS_CHECK · schema≠decision gap · IB_flag',c:'var(--ghost)'},
+  {n:'STEP -1',name:'PRE-SIGNAL',detail:'STIGMERGY_DETECTOR · trail forming · pre-TACIT',c:'var(--blue)'},
+  {n:'STEP -0.5',name:'STATE + CLAUDIA',detail:'OBSERVABLE_STATE · CLAUDIA_SCAN SHORT/MEDIUM/LONG/ORIGIN',c:'var(--dark)'},
+  {n:'STEP -0.3',name:'VOID CHECK',detail:'DATA_VOID_DETECTION · KNOT_CLASSIFIER · BOOTSTRAP_SIGNAL',c:'var(--blueprint)'},
+  {n:'STEP 0',name:'INFO DECAY',detail:'PATH_AUTOCORRELATION · 33_YEAR_CYCLE_POSITION · DG_t',c:'var(--teal)'},
+  {n:'STEP 1',name:'TEMPORAL INERTIA',detail:'EDGE_DECAY · TEMPORAL_PROXIMITY · cycle phase check',c:'var(--amber)'},
+  {n:'STEP 2',name:'INGESTION GATE',detail:'QUORUM_PROXIMITY_SCORE · EMERGENCE_CLASSIFIER · S0B ρ=λ/μ',c:'var(--blue)'},
+  {n:'STEP 3',name:'LAYER ASSIGN',detail:'Foam/Crowd/Informed/Structural/Latent · w₁→w₅ weights',c:'var(--teal)'},
+  {n:'STEP 4',name:'FEMI / DEMI',detail:'ICEBERG_90% check · IC_i · ORIGIN_THREAD · actor payoffs',c:'var(--amber)'},
+  {n:'STEP 5',name:'DISTILLATION',detail:'PHASE_WEIGHT · GHOST_VULNERABILITY · YAMEN_CHECK',c:'var(--ghost)'},
+  {n:'STEP 6',name:'CAPITAL FLOW',detail:'PMX_FRICTION · PLAYER_TAX_AUDIT · STABLE_MAP · L-V phase',c:'var(--red)'},
+  {n:'STEP 6.5',name:'CONTAGION',detail:'CONTAGION_GEOMETRY · CROWD_QUALITY_CLASSIFIER · σ_t',c:'var(--purple)'},
+  {n:'STEP 7',name:'TIME STACK',detail:'GV14 DAZHUI_CONVERGENCE · FCI_t · macro regime β_i',c:'var(--gold)'},
+  {n:'STEP 8',name:'SURVIVAL FUNNEL',detail:'DONT_DIE · GODEL_MODE check · HARD_STOP gate · ∂S_t',c:'var(--red)'},
+  {n:'STEP 9',name:'POSITIONING',detail:'KELLY f* · f_adj=f/(1+Σρ|w|) · effective_N · δ gate',c:'var(--green)'},
+  {n:'STEP 10',name:'FIRE MODE',detail:'SNIPER/M16/UZI/MONITOR · LATENT_ENTRY · BAIHUI_CHECK',c:'var(--gold)'},
+];
+const ps=document.getElementById('procSeq');
+steps.forEach(s=>{
+  ps.innerHTML+=`<div class="ps-item" style="--c:${s.c}">
+    <div class="ps-step">${s.n}</div>
+    <div class="ps-name">${s.name}</div>
+    <div class="ps-detail">${s.detail}</div>
+  </div>`;
+});
+
+// ── MODULES ──
+const mods=[
+  {c:'S0',n:'Signal Ingestion',s:9.23,ceil:9.8,wt:12,gap:'TOOLING',col:'#4a9eff',note:'GDELT+Kalshi+Polymarket · STIGMERGY · GV16 Wind Palace · Data Void Engine'},
+  {c:'S1B',n:'Belief State (POMDP)',s:9.25,ceil:9.8,wt:10,gap:'CEILING',col:'#1fd8b8',note:'b_{t+1}∝P(o|s)Σb_t · 5 hidden states · CLAUDIA position · GV17 Brain Door'},
+  {c:'S2',n:'Narrative Engine',s:9.80,ceil:9.8,wt:10,gap:'CEILING',col:'#38c878',note:'AT CEILING · N_t+1=N_t+α·Conflict−γ·Resolution · L-V capital dynamics · CC decay'},
+  {c:'S3A',n:'Actor Layer',s:9.03,ceil:9.2,wt:10,gap:'STRUCTURAL',col:'#8b9880',note:'IC_i=1−|a_pub−a*|/Z · FD_adj · STABLE_MANAGEMENT · Ghost Heart · ORIGIN_HUNT'},
+  {c:'S3B',n:'Capital Flow',s:8.93,ceil:9.8,wt:8,gap:'TOOLING',col:'#4a9eff',note:'PMX_FRICTION · PLAYER_TAX · LOTKA_VOLTERRA phases · OBSERVABLE_STATE'},
+  {c:'S35',n:'Decision Quality',s:9.73,ceil:9.8,wt:10,gap:'CEILING',col:'#38c878',note:'MILK_TEST · BOUNDARY_DECISION_PROTOCOL · ROLE_ARCHITECTURE · BAIHUI gate'},
+  {c:'S4',n:'Execution Engine',s:9.77,ceil:9.9,wt:10,gap:'EMPIRICAL',col:'#9b7ff0',note:'MVP_t master eq · CRISPR 3 modes · Stack Audit · Elite curve δ · DON\'T_DIE'},
+  {c:'ATOM',n:'ATOM Object (RETIRE)',s:8.90,ceil:9.8,wt:10,gap:'⚠ DESIGN DEBT',col:'#f59e0b',note:'CRITICAL: retire CORE_35→35 fields BEFORE next trade · blocking CAL progress'},
+  {c:'S5',n:'Calibration (CAL)',s:8.18,ceil:9.5,wt:6,gap:'EMPIRICAL',col:'#9b7ff0',note:'CRISPR edits · Shapley → SPSA · SURVIVORSHIP_CORRECTION · Zero Point Jun 1'},
+  {c:'S6',n:'Simulation Lab',s:9.77,ceil:9.9,wt:0,gap:'CEILING',col:'#9b7ff0',note:'Replay+Counterfactual+Adversarial · max_π min_ω E[R] · BOSS_FIGHT · COMBO'},
+  {c:'S7',n:'Regime Detection',s:9.43,ceil:9.8,wt:8,gap:'EMPIRICAL',col:'#9b7ff0',note:'HMM+FCI_t · L-V phase portraits · 33-year cycle · CLAUDIA temporal positions'},
+  {c:'S8',n:'Operator State',s:9.80,ceil:9.9,wt:8,gap:'CEILING',col:'#38c878',note:'AT CEILING · STHITAPRAJNA=PC7 · COLD_AS_ICE · Mingmen · BAIHUI lifted'},
+  {c:'S9',n:'Sizing & Execution',s:8.23,ceil:9.7,wt:7,gap:'TOOLING',col:'#4a9eff',note:'f*=(bp-q)/b · f_adj=f/(1+Σρ|w|) · effective_N · M_t stake scale · δ gate'},
+  {c:'CAL',n:'Calibration Engine',s:5.10,ceil:10.0,wt:10,gap:'DATA VOID',col:'#e05555',note:'T=2 · ε=1.0 · DATA_VOID PATCHED · Jun 1=compactification · 60% of gap'},
+  {c:'S11',n:'Cognitive Modes',s:9.73,ceil:9.8,wt:0,gap:'CEILING',col:'#d4a843',note:'ZeroSum/PositiveSum/CoCreative/AllIn/Nothing/AMBIDEXTROUS · TWO_BRAIN_ARCH'},
+  {c:'S12',n:'Bio Layer (Layer 0)',s:8.18,ceil:9.5,wt:0,gap:'EMPIRICAL',col:'#2dd4a0',note:'B_t=[Energy,Cog,Stress,Longevity,Focus] · Q_t=g(B_t) · h(Q_t) sizing · S*'},
+  {c:'S13',n:'Swarm+Bias',s:9.23,ceil:9.8,wt:0,gap:'TOOLING',col:'#38c878',note:'Integration bias gap · Schema fossilisation · Stigmergy · Quorum · Emergence'},
+  {c:'S14',n:'System Compression',s:9.54,ceil:9.9,wt:0,gap:'CEILING',col:'#9b7ff0',note:'L-V+CRISPR+Yerkes-Dodson · Resource constraint · 5-function classifier'},
+  {c:'S15',n:'GoaGill Sonic',s:9.54,ceil:9.9,wt:0,gap:'CEILING',col:'#c060ff',note:'Third-space · FULL_TRANSPLANTATION · Ritual Technician · Sustained tension'},
+  {c:'S16',n:'Iceberg Slim',s:9.54,ceil:9.9,wt:0,gap:'CEILING',col:'#d4a843',note:'CONTROLLED_PERCEPTION · CHOOSE_UP · GAME_RECOGNITION 5 levels · PLAYER_TAX'},
+  {c:'S17',n:'Embodied Intel',s:9.54,ceil:9.9,wt:0,gap:'EMPIRICAL',col:'#60d8a0',note:'E_t=Σγ^{t-i}(s,a,r,P) · a_t=π(s|E,P,∂S) · Δ_t divergence · dE_t/dt edge'},
+  {c:'S18',n:'Pressure Field',s:9.54,ceil:9.9,wt:0,gap:'EMPIRICAL',col:'#60e8b0',note:'P_t 7-vector · C_t crowd · M_t stakes · σ_t social · elite curve δ · B_{t+1}'},
+  {c:'S19',n:'Compactification',s:9.52,ceil:9.9,wt:0,gap:'EMPIRICAL',col:'#9060e8',note:'Liar boundary · Gödel topology · MOLTBOOK ∂M · BOUNDARY_DECISION · ∂R'},
+  {c:'S20',n:'GV Meridian',s:9.53,ceil:9.9,wt:0,gap:'EMPIRICAL',col:'#40c0a0',note:'GV1→GV28 · GV4 Mingmen=h(Q_t) · GV16 Wind Palace · GV14 Dazhui · GV20 Baihui'},
+  {c:'S21',n:'Dark+Blueprint',s:9.54,ceil:9.9,wt:0,gap:'EMPIRICAL',col:'#60d0a0',note:'KNOT_MODEL · BOOTSTRAP · 33yr cycle · Eva/Adam · ORIGIN_THREAD · CLAUDIA'},
+  {c:'DVE',n:'Data Void Engine',s:8.18,ceil:9.5,wt:0,gap:'TOOLING',col:'#4a9eff',note:'5-layer fallback · Signal=α·Hist+β·Proxy+γ·Narr+δ·Prior · deployed to repo'},
+];
+const gapCol={'TOOLING':'#4a9eff','EMPIRICAL':'#9b7ff0','STRUCTURAL':'#8b9880','CEILING':'#38c878','DESIGN DEBT':'#f59e0b','DATA VOID':'#e05555','PHASE 2':'#e879f9','⚠ DESIGN DEBT':'#f59e0b'};
+const modg=document.getElementById('modGrid');
+mods.forEach(m=>{
+  const pct=(m.s/10*100).toFixed(0),cpct=(m.ceil/10*100).toFixed(0);
+  const gc=gapCol[m.gap]||'#888';
+  modg.innerHTML+=`<div class="mod" style="--c:${m.col}">
+    <div class="mod-head"><span class="mod-code">${m.c}</span>${m.wt?`<span class="mod-wt">wt:${m.wt}%</span>`:''}</div>
+    <div class="mod-score" style="color:${m.col}">${m.s.toFixed(2)}</div>
+    <div class="mod-bar">
+      <div class="mod-ceil" style="width:${cpct}%;background:${m.col}"></div>
+      <div class="mod-fill" style="width:${pct}%;background:${m.col}"></div>
+    </div>
+    <div class="mod-gap" style="color:${gc}">${m.gap}</div>
+    <div class="mod-note">${m.note}</div>
+  </div>`;
+});
+
+// ── EQUATIONS ──
+const eqs=[
+  ['Master MVP','MVP_t = [(O×Gk×Df×Mf×St)×(EV×IA×TQ×EX)×(CIE×CC)×(Q×(1+DG))×EvFactor×Rob] / [1+Risk+InternalStrain+Noise+SurvivorshipBias]'],
+  ['Position Size','w_t = c · (MVP_t/σ_t²) · g(CAL_t, PQ_t, ρ_t) · h(Q_t)'],
+  ['Composite Edge','Edge_t = αB_t + βI_t + γM_t + δN_t + ηL_t + θO_t + ζV_t − λR_t'],
+  ['Embodied Policy','a_t = π(s_t | E_t, P_t, ∂S_t, Ω_t)  [boundary-conditioned]'],
+  ['Experience','E_t = Σ_{i=1}^{t} γ^{t-i} · (s_i, a_i, r_i, P_i)  [pressure-conditioned]'],
+  ['Pressure Field','P_t = w₁C_t + w₂V_t + w₃M_t + w₄S_t^(soc) + w₅H_t + w₆U_t + w₇R_t'],
+  ['Elite Curve','Q_t^(elite) = a · P_t · e^{-b(P_t−δ)²}  [δ = pressure adaptation shift]'],
+  ['Body Intelligence','B_{t+1} = B_t + η · Ψ(s_t, a_t, r_t, P_t)  [pressure-weighted]'],
+  ['Belief Update','b_{t+1}(s\') ∝ P(o_{t+1}|s\') · Σ_s P(s\'|s,a) · b_t(s)  [POMDP Bayes]'],
+  ['Lotka-Volterra','dP/dt = αP − βPQ · dQ/dt = δPQ − γQ  [capital-liquidity dynamics]'],
+  ['Data Void','Signal_t = α·Historical + β·Proxy + γ·Narrative + δ·Prior  [α+β+γ+δ=1]'],
+  ['Objective','max E[U_t | E_t, P_t] = max E[Σ δᵗ R_t] subject to ∂S_t boundary constraints'],
+  ['GV Pathway','GV4(Mingmen=h(Q_t)) → GV14(Dazhui=COMPOSITE) → GV16(Fengfu=DG_t) → GV20(Baihui=MVP_t)'],
+  ['Kelly','f* = (bp−q)/b · w_t = c·Edge_t/σ_t² · g(CAL,PQ,ρ) · h(Q_t)'],
+  ['L-V Phase','P↑Q↓=LATENT_ENTRY · P↑Q↑=TAKEOFF · P↓Q↑=OVERRIPE · P↓Q↓=ECHO'],
+  ['Compactification','System S* = S ∪ ∂S · CAL* closed by T=35 empirical trades · Baihui = single-point'],
+];
+const er=document.getElementById('eqRows');
+eqs.forEach(e=>{
+  er.innerHTML+=`<div class="eqt-row">
+    <span class="eqt-name">${e[0]}</span>
+    <span class="eqt-formula">${e[1]}</span>
+  </div>`;
+});
+
+// ── PHILOSOPHY LAYERS ──
+const layers=[
+  {src:'GoaGill · Anjuna Beach 1970s',name:'Third-Space + Transplantation',glyph:'🌊',c:'#c060ff',
+   eq:'Full_transplant → STRUCTURAL+LATENT tier\nMidnight = LATENT_ENTRY · Hour 1 of 12-hour set',
+   body:'PRE_NARRATIVE ×3 = midnight at Anjuna. Ritual Technician orientation = back to crowd, facing signal. Ghost Forest = schema fossilisation. Third-space signal = unclassifiable in both frameworks = highest edge.'},
+  {src:'Iceberg Slim (Robert Beck)',name:'Power Architecture · Game Recognition',glyph:'🧊',c:'#d4a843',
+   eq:'PIMP_PATTERN: Perceived_Value − Actual_Value = EXPLOITATION_MARGIN\nIC_i = 0: visible 10% ≠ hidden 90%',
+   body:'CHOOSE_UP = manufactured consent. BOTTOM_PARADOX = most reliable = most dangerous if it inverts. PLAYER_TAX audit. GAME_RECOGNITION Level 3 minimum: see who runs which game.'},
+  {src:'Goodall · Attenborough · Field Method',name:'Patient Observation · Non-Disturbance',glyph:'🦍',c:'#60c870',
+   eq:'HABITUATING_PERIOD: RAW/FERMENTING ≠ 48h rule\nBANANA_TEST: am I adding to keep signal alive?',
+   body:'Longitudinal ±0.5 leave_score. Ecosystem health = market structural quality. RESIDUAL_CURIOSITY = genuine engagement quality indicator. Undisturbed system reveals more truth than provisioned one.'},
+  {src:'Dark (Netflix 2017-2020)',name:'Knots · Bootstrap · The Origin',glyph:'∞',c:'#60d0a0',
+   eq:'KNOT: P(E)=0 if belief removed? YES=knot · NO=structural\nORIGIN: the cause that predated the loop',
+   body:'CLAUDIA_SCAN: SHORT/MEDIUM/LONG/ORIGIN four positions at session start. Bootstrap entry at belief formation, exit at saturation. Eva/Adam = Ambidextrous. Origin always simple. Always human.'},
+  {src:'Norman Compactification',name:'Gödel Boundaries · Compact Systems',glyph:'○',c:'#9060e8',
+   eq:'S* = S ∪ ∂S · MOLTBOOK* adds GODEL_ENTRIES tier\nCAL closes only with T=35 empirical trades',
+   body:'GODEL_MODE at 3+ boundary modules. Boundary-conditioned policy adds ∂S_t. KALI_YUGA = ∂R. ADVERSARIAL_DIALOGUE = compactification operator. Ceiling 9.76 IS the pipeline\'s Gödel boundary.'},
+  {src:'GV Meridian · Chinese Medicine',name:'GV1→GV28 · Wind Palace · Ghost Points',glyph:'督',c:'#40c0a0',
+   eq:'GV4 Mingmen = biological reactor = h(Q_t) origin\nGV16 Fengfu = Wind Palace = PERCEPTION_VALVE',
+   body:'13 Ghost Points = vulnerability register (HT7=emotional attachment, PC7=cold protection, BL62=integration bias road). GV14 Dazhui = all Yang converges = COMPOSITE_EDGE junction. GV20 Baihui = MVP_t apex.'},
+  {src:'Bryan Johnson · Blueprint',name:'Zero Point · Stack Architecture · Don\'t Die',glyph:'⬡',c:'#40c8e0',
+   eq:'ZERO_POINT: measure before optimize · feelings≠data\nSTACK_SEQUENCE: sequential not simultaneous',
+   body:'DON\'T_DIE: SURVIVAL_FUNNEL + HARD_STOP are non-negotiable outer boundary. Zero Point before June 1 paste: measure all 7 components. Stack audit: IB_CHECK + ADVERSARIAL + BEAR simultaneous = cognitive overload.'},
+  {src:'Erik Alan Norman',name:'Integration Bias · Schema Fossilisation',glyph:'◈',c:'#e06040',
+   eq:'IB: operator CAN repeat back BEAR case BUT decisions unchanged\nBias_gap = schema_update − decision_update',
+   body:'Schema fossilisation: 5+ sessions of nominal updating. TREKCHO_CUT when Fossilisation_index rises. ADVERSARIAL_DIALOGUE catches confirmation bias. IB_CHECK catches the subtler failure. Both gates required.'},
+  {src:'Swarm Intelligence',name:'Stigmergy · Quorum · Emergence',glyph:'◯',c:'#40b8e0',
+   eq:'φ(x,t+1) = φ(x,t)·(1−ρ) + Σf_i(x,t)\nQUORUM_PROXIMITY = Σs_i(t) / Q*',
+   body:'STIGMERGY_DETECTOR = pre-whale detection. EMERGENCE_CLASSIFIER: remove dominant actor → pattern continues? Emergent Q_t×1.2, Designed Q_t×0.7. CROWD_QUALITY: variable w₂ 0.05-0.25 by independence.'},
+];
+const lc=document.getElementById('layerCards');
+layers.forEach(l=>{
+  lc.innerHTML+=`<div class="lc" data-glyph="${l.glyph}">
+    <div class="lc-src" style="color:${l.c}">${l.src}</div>
+    <div class="lc-name">${l.name}</div>
+    <div class="lc-eq" style="color:${l.c}">${l.eq.replace(/\n/g,'<br>')}</div>
+    <div class="lc-body">${l.body}</div>
+  </div>`;
+});
+
+// ── PROJECTIONS ──
+const proj=[
+  {d:'Apr 9 NOW',t:2,e:'1.00',cal:'5.10',score:'9.54',note:'Architecture complete · 8 trades to T=10',c:'var(--red)'},
+  {d:'Apr 25',t:12,e:'0.55',cal:'6.18',score:'9.58',note:'T=10 · MW first direction signal · ε=0.56',c:'var(--amber)'},
+  {d:'Jun 1',t:35,e:'0.32',cal:'7.84',score:'9.62',note:'PASTE: Zero Point → SPSA → CRISPR edits · γ calibrate',c:'var(--teal)'},
+  {d:'Jun 30',t:55,e:'0.26',cal:'8.68',score:'9.66',note:'All APIs live · Copa América · δ≥0.50 · n8n Gambits',c:'var(--green)'},
+  {d:'Jul 1 REAL $',t:55,e:'0.26',cal:'8.68',score:'9.66',note:'IBKR · SNIPER only · QUARTER_UNIT max · HARD STOP -10%',c:'var(--gold)'},
+  {d:'Dec 2026',t:120,e:'0.18',cal:'9.50',score:'9.72',note:'E_t pre-articulate · δ≥0.70 · architecture ceiling',c:'var(--purple)'},
+];
+const pr=document.getElementById('projRows');
+proj.forEach(p=>{
+  pr.innerHTML+=`<div class="pt-row">
+    <span class="pt-date" style="color:${p.c}">${p.d}</span>
+    <span class="pt-mono">${p.t}</span>
+    <span class="pt-mono">${p.e}</span>
+    <span class="pt-mono" style="color:${p.c}">${p.cal}</span>
+    <span class="pt-score" style="color:${p.c}">${p.score}</span>
+    <span class="pt-note">${p.note}</span>
+  </div>`;
+});
+
+// ── ACTIONS ──
+const actions=[
+  {n:'1',title:'RETIRE ATOM CORE_35',detail:'95→35 fields BEFORE next trade · DESIGN_DEBT blocking · most critical pending action',c:'var(--red)'},
+  {n:'2',title:'CLOSE 8 MORE TRADES',detail:'T=2→T=10 by April 25 · ε=0.56 → first MW direction signal · each trade = limit point in CAL*',c:'var(--amber)'},
+  {n:'3',title:'LOG CLV EVERY TRADE',detail:'Screenshot Polymarket/Kalshi at EXACT entry · 3.32 bits vs 1.0 bit · the multiplier on E_t quality',c:'var(--teal)'},
+  {n:'4',title:'MOLTBOOK 5-CHANNEL',detail:'All 5 channels per closed trade · Add pressure fields: M_t, ρ_t, R_t · Add GODEL_ENTRY tier',c:'var(--green)'},
+  {n:'5',title:'DEPLOY data_void_engine.py',detail:'Add to repo root · 3 edits to signal_engine.py · converts DATA_VOID → inferred signal',c:'var(--blueprint)'},
+  {n:'6',title:'PROCESS_QUALITY 5/5',detail:'Mandatory before every entry · BAIHUI convergence check · Mingmen morning check first',c:'var(--purple)'},
+  {n:'7',title:'JUNE 1 ZERO POINT',detail:'Measure all 7 components before any SPSA change · Blueprint protocol · baseline is not assumed',c:'var(--gold)'},
+  {n:'8',title:'CLAUDIA SCAN DAILY',detail:'SHORT/MEDIUM/LONG/ORIGIN at session start · 5 minutes · the non-local thesis is the durable thesis',c:'var(--dark)'},
+];
+const ag=document.getElementById('actionsGrid');
+actions.forEach(a=>{
+  ag.innerHTML+=`<div class="act" style="border-left:3px solid ${a.c}">
+    <span class="act-num" style="color:${a.c}">${a.n}</span>
+    <div class="act-body">
+      <div class="act-title">${a.title}</div>
+      <div class="act-detail">${a.detail}</div>
+    </div>
+  </div>`;
+});
+
+// ── WISDOM ──
+const wisdoms=[
+  'The architecture is not the bottleneck. Calibration and execution are. T=2.',
+  'CAL is an open set. It closes only with trades. Each trade = limit point in CAL*.',
+  'dE_t/dt >> dÊ_t/dt is the real edge. dB_t/dt is the real moat.',
+  'GV16 Wind Palace: the same portal that admits noise admits structural signal.',
+  'The Knot has no external origin. Find the Origin. It is always simple. Always human.',
+  'Midnight at Anjuna = LATENT_ENTRY. The crowd arrives at 5am wondering what they missed.',
+  'COLD_AS_ICE = PC7 pericardium = ψ=1.0. If you feel, ψ=0.3. That is CHAOS_ENTRY.',
+  'The Ghost Forest receives the wind. It cannot grow. Apply TREKCHO_CUT.',
+  'Gödel boundary: the ceiling of 9.76 cannot be proven from within. Only trades close it.',
+  'CLAUDIA holds SHORT + MEDIUM + LONG + ORIGIN simultaneously. That is the durable thesis.',
+  'NOTHING is not failure. NOTHING preserves bankroll for LEICESTER_PRIME.',
+  'Every closed trade with full CLV = 3.32× the information of one without. Log it.',
+  'Baihui: has the pipeline converged to a single clear output? No convergence = do not execute.',
+  'The blueprint: Don\'t Die. Everything else is optimisation on top of survival.',
+  'Be at Anjuna Beach at midnight. Not at 5am wondering what you missed.',
+];
+const wg=document.getElementById('wisdomGrid');
+wisdoms.forEach(w=>{wg.innerHTML+=`<div class="w-item">"${w}"</div>`});
+</script>
+</body>
+</html>

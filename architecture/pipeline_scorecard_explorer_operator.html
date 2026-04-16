@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pipeline V5.7+ Scorecard — Explorer/Operator Session</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#fafafa;color:#1a1a1a;padding:24px;font-size:13px}
+.hrow{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+.score-old{font-size:13px;color:#aaa;text-decoration:line-through}
+.score-new{font-size:52px;font-weight:600;color:#1a1a1a;line-height:1}
+.score-sub{font-size:12px;color:#777;margin-top:4px}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.pill{font-size:11px;padding:3px 10px;border-radius:6px;border:1px solid #ddd;color:#555}
+.pg{background:#f0faf0;color:#1a7a1a;border-color:#4caf50}
+.pr{background:#fff5f5;color:#c62828;border-color:#ef5350}
+.pa{background:#fffbf0;color:#e65100;border-color:#ff9800}
+.pb{background:#f0f6ff;color:#1565c0;border-color:#1976d2}
+.sec{font-size:10px;font-weight:700;color:#888;letter-spacing:.06em;text-transform:uppercase;margin:20px 0 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:20px}
+.card{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:13px 15px;position:relative}
+.card.improved{border:2px solid #1976d2;background:#f5f9ff}
+.utag{position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;background:#e3f2fd;color:#1565c0}
+.card-head{display:flex;justify-content:space-between;margin-bottom:8px}
+.mod{font-size:10px;font-weight:700;color:#888;letter-spacing:.05em;text-transform:uppercase}
+.badge{font-size:9px;padding:2px 7px;border-radius:4px;font-weight:600}
+.snum{font-size:28px;font-weight:700;color:#1a1a1a;line-height:1;margin-bottom:3px}
+.dtext{font-size:11px;margin-bottom:5px}
+.bar{height:3px;background:#eee;border-radius:2px;margin-bottom:5px;position:relative;overflow:hidden}
+.barfill{height:100%;border-radius:2px;position:absolute;left:0;top:0}
+.note{font-size:10px;color:#777;line-height:1.4}
+.twocol{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+@media(max-width:540px){.twocol{grid-template-columns:1fr}}
+.box{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:14px 16px}
+.box-title{font-size:10px;font-weight:700;color:#888;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+.plist{list-style:none}
+.plist li{font-size:11px;color:#1a1a1a;padding:5px 0;border-bottom:1px solid #f5f5f5;display:flex;gap:8px;line-height:1.4}
+.plist li:last-child{border-bottom:none}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.dr{background:#ef5350}.da{background:#ff9800}.dg{background:#4caf50}.db{background:#1976d2}
+.hbar{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.hlabel{font-size:10px;color:#666;min-width:100px}
+.hbg{flex:1;height:5px;background:#eee;border-radius:3px;overflow:hidden}
+.hfill{height:100%;border-radius:3px}
+.hval{font-size:10px;color:#1a1a1a;min-width:40px;text-align:right}
+.tag{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:600;display:inline-block;margin-top:3px}
+.tag-blue{background:#e3f2fd;color:#1565c0}
+.highlight{background:#e8f4fd;border:1px solid #90caf9;border-radius:8px;padding:12px 16px;margin-bottom:20px}
+.ht{font-size:11px;font-weight:700;color:#1565c0;margin-bottom:6px}
+.hd{font-size:11px;color:#444;line-height:1.6}
+.mono{font-family:monospace;background:#f0f6ff;padding:2px 6px;border-radius:3px;font-size:10px;color:#1565c0}
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{font-weight:700;color:#888;text-align:left;padding:5px 8px;border-bottom:1px solid #eee}
+.tbl td{padding:5px 8px;color:#1a1a1a;border-bottom:1px solid #f5f5f5;vertical-align:top;line-height:1.35}
+.tbl tr:last-child td{border-bottom:none}
+.pos{color:#1b5e20;font-weight:700}
+.phase-mat{border-collapse:collapse;font-size:10px;margin-top:8px;width:100%}
+.phase-mat th,.phase-mat td{padding:5px 8px;border:1px solid #e0e0e0;text-align:center}
+.phase-mat th{background:#f5f5f5;font-weight:700;color:#555}
+.allow{background:#f0faf0;color:#1b5e20;font-weight:600}
+.queue{background:#fffbf0;color:#e65100}
+.discard{background:#fff5f5;color:#c62828}
+</style>
+</head>
+<body>
+
+<div class="hrow">
+  <div>
+    <div class="score-old">9.57 (previous session)</div>
+    <div class="score-new">9.57</div>
+    <div class="score-sub">V5.7+ · April 15, 2026 · +0.0010 this session · Only S0 improved</div>
+    <div class="pills">
+      <span class="pill pb">S0 +0.01 ← only change</span>
+      <span class="pill pa">Gap 0.19</span>
+      <span class="pill pr">T=6 unchanged</span>
+      <span class="pill">27 already built</span>
+      <span class="pill pb">2 new mechanisms</span>
+      <span class="pill pr">ATOM debt RED</span>
+    </div>
+  </div>
+</div>
+
+<div class="highlight">
+  <div class="ht">What happened this session</div>
+  <div class="hd">
+    27 of 29 mechanisms already in pipeline. The entire Explorer→Refinery→Operator→Feedback architecture, all four phase layers, noise scoring, input throttle, operator lock concept, COMPAS_PROTOCOL, ACTIVATION_CLASSIFIER, DELTA_V_BUDGET, SIGNAL_RESOLUTION_PYRAMID — all previously formalised.<br><br>
+    The 2 genuine additions are precision instruments for what was previously handled informally:<br>
+    <span class="mono">OPERATOR_LOCK_PROTOCOL</span> — formal pipeline state (not just good practice) that freezes ALL raw feed influence during execution. Lands at S4 ceiling — adds governance to existing execution layer.<br>
+    <span class="mono">PHASE_AWARE_INPUT_GATING</span> — per-input compatibility matrix that routes every arriving signal to ALLOW/QUEUE/DISCARD based on current pipeline state. Lands in S0 → moves the needle.
+  </div>
+</div>
+
+<div class="sec">Module scores — S0 is the only block that improved (blue border)</div>
+<div class="grid" id="mg"></div>
+
+<div class="twocol">
+  <div class="box">
+    <div class="box-title">2 new mechanisms — this session</div>
+    <ul class="plist">
+      <li><span class="dot db"></span>
+        <div>
+          <strong>OPERATOR_LOCK_PROTOCOL</strong><br>
+          <span style="font-size:10px;color:#666">Formal pipeline state: during FIRE_MODE execution, I_raw(t) = 0 enforced structurally. No new Polymarket odds, no breaking news, no position resizing mid-entry. Unlock only after execution complete AND Moltbook logged. Emergency override only if price moved 3× daily range since decision.</span><br>
+          <span class="tag tag-blue">→ S4 execution (at ceiling — adds governance)</span>
+        </div>
+      </li>
+      <li><span class="dot db"></span>
+        <div>
+          <strong>PHASE_AWARE_INPUT_GATING</strong><br>
+          <span style="font-size:10px;color:#666">Every arriving input x is checked against current pipeline state M_t before DISTILLATION_FRACTION. G(x, M_t) ∈ {ALLOW, QUEUE, DISCARD}. Solves 'strong signal arrives mid-execution' — answer: QUEUE it for next Explorer beat. High-quality source can still be phase-incompatible.</span><br>
+          <span class="tag tag-blue">→ S0 signal intake (+0.01)</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="box">
+    <div class="box-title">Phase compatibility matrix</div>
+    <table class="phase-mat">
+      <thead>
+        <tr><th>Input type</th><th>EXPLORER</th><th>REFINERY</th><th>OPERATOR</th><th>FEEDBACK</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Breaking news</td><td class="allow">ALLOW</td><td class="queue">QUEUE</td><td class="discard">DISCARD</td><td class="queue">QUEUE</td></tr>
+        <tr><td>Polymarket move</td><td class="allow">ALLOW</td><td class="allow">ALLOW</td><td class="discard">DISCARD</td><td class="allow">ALLOW</td></tr>
+        <tr><td>Thesis confirm</td><td class="allow">ALLOW</td><td class="allow">ALLOW</td><td class="queue">QUEUE</td><td class="allow">ALLOW</td></tr>
+        <tr><td>New signal class</td><td class="allow">ALLOW</td><td class="discard">DISCARD</td><td class="discard">DISCARD</td><td class="queue">QUEUE</td></tr>
+        <tr><td>Exit trigger</td><td class="allow">ALLOW</td><td class="allow">ALLOW</td><td class="allow">ALLOW</td><td class="allow">ALLOW</td></tr>
+        <tr><td>Social chatter</td><td class="allow">ALLOW</td><td class="discard">DISCARD</td><td class="discard">DISCARD</td><td class="discard">DISCARD</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:10px;color:#888;margin-top:8px">Exit triggers always ALLOW — they are never phase-incompatible. QUEUE = stored for next Explorer beat.</div>
+  </div>
+</div>
+
+<div class="sec">Gap decomposition</div>
+<div class="box" style="margin-bottom:20px">
+  <div id="gd"></div>
+  <div style="font-size:10px;color:#888;margin-top:10px;padding-top:8px;border-top:1px solid #f0f0f0;line-height:1.5">
+    Architecture approaching 9.50+ on S0, 9.55 on S1. The gap of 0.19 closes with T-count and S9 tooling. OPERATOR_LOCK_PROTOCOL and PHASE_AWARE_INPUT_GATING are both buildable NOW — no S9 tooling required. They are protocol additions, not code additions.
+  </div>
+</div>
+
+<div class="twocol">
+  <div class="box">
+    <div class="box-title">April 4 CHAOS cluster — OPERATOR_LOCK lens</div>
+    <ul class="plist">
+      <li><span class="dot dr"></span>6 entries made in sequence on same high-volatility day. Each entry's chaos likely influenced the pre-trade eval of the next. Raw Explorer feed was active throughout all 6 executions.</li>
+      <li><span class="dot dr"></span>OPERATOR_LOCK_PROTOCOL would have: frozen raw feed after first FIRE_MODE trigger, prevented cascading contamination from entry 1 through entry 6, required UNLOCK after each Moltbook entry before re-entering Explorer state.</li>
+      <li><span class="dot dg"></span>The 6-entry cluster would have become: 1 entry → LOCK → UNLOCK → re-evaluate in new Explorer beat → probably no further entries (COORDINATION_VIABILITY_SCORE low on second evaluation).</li>
+    </ul>
+  </div>
+  <div class="box">
+    <div class="box-title">What 27 already-built covers</div>
+    <ul class="plist">
+      <li><span class="dot dg"></span>Explorer→Refinery→Operator→Feedback = S0→S1→S35→S4→Moltbook chain</li>
+      <li><span class="dot dg"></span>Phase state machine = PRE_PRE/PRE/IN/POST_GAME</li>
+      <li><span class="dot dg"></span>Noise scoring = DG_t + M_t + LEAKAGE_REGISTER L_info</li>
+      <li><span class="dot dg"></span>Operator lock concept = COMPAS_PROTOCOL Beat 4</li>
+      <li><span class="dot dg"></span>Input throttle = DELTA_V_BUDGET</li>
+      <li><span class="dot dg"></span>Execution purity = POWER_CEILING_INVERSION</li>
+      <li><span class="dot dg"></span>Same info = signal/noise by phase = SIGNAL_RESOLUTION_PYRAMID</li>
+      <li><span class="dot dg"></span>Awareness vs clarity = BIOLUMINESCENCE_THRESHOLD SNR_t</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+const gs={
+  ceiling:{bg:"#f0faf0",c:"#1b5e20"},
+  tooling:{bg:"#e8f4fd",c:"#1565c0"},
+  structural:{bg:"#fffbf0",c:"#e65100"},
+  empirical:{bg:"#f3f0ff",c:"#4527a0"},
+  debt:{bg:"#fff5f5",c:"#c62828"},
+  "data void":{bg:"#fff5f5",c:"#c62828"}
+};
+
+const mods=[
+  {c:"S0",  s:9.49, prev:9.48, ceil:9.8, gap:"tooling",    col:"#1976d2", note:"PHASE_AWARE_INPUT_GATING ← THIS SESSION. + miscalibration gap tracker + signal resolution pyramid + loop closure + noise scoring by phase."},
+  {c:"S1",  s:9.55, prev:9.55, ceil:9.8, gap:"ceiling",    col:"#4caf50", note:"At near-ceiling. Opponent adaptation rate register + spectral classifier + ODA architecture."},
+  {c:"S2",  s:9.80, prev:9.80, ceil:9.8, gap:"ceiling",    col:"#4caf50", note:"At ceiling."},
+  {c:"S3A", s:9.14, prev:9.14, ceil:9.2, gap:"structural", col:"#ff9800", note:"No change."},
+  {c:"S3B", s:8.95, prev:8.95, ceil:9.8, gap:"tooling",    col:"#1976d2", note:"Awaiting S9 build — May 13."},
+  {c:"S35", s:9.80, prev:9.80, ceil:9.8, gap:"ceiling",    col:"#4caf50", note:"At ceiling."},
+  {c:"S4",  s:9.80, prev:9.80, ceil:9.9, gap:"ceiling",    col:"#4caf50", note:"At ceiling. OPERATOR_LOCK_PROTOCOL adds formal governance to existing execution layer."},
+  {c:"ATOM",s:8.90, prev:8.90, ceil:9.8, gap:"debt",       col:"#ef5350", note:"⚠ CRITICAL — retire 95→35 before next trade. Unchanged."},
+  {c:"S5",  s:8.44, prev:8.44, ceil:9.5, gap:"empirical",  col:"#7e57c2", note:"Internal signal audit + stress scenario calibration (prior session). No change this session."},
+  {c:"S7",  s:9.65, prev:9.65, ceil:9.8, gap:"empirical",  col:"#7e57c2", note:"Saecular regime + generational flow + legitimacy decay. No change."},
+  {c:"S8",  s:9.80, prev:9.80, ceil:9.9, gap:"ceiling",    col:"#4caf50", note:"At ceiling. COMPAS_PROTOCOL already exists; OPERATOR_LOCK formalises Beat 4 governance."},
+  {c:"S9",  s:8.37, prev:8.37, ceil:9.7, gap:"tooling",    col:"#1976d2", note:"Build starts May 13."},
+  {c:"CAL", s:5.37, prev:5.37, ceil:10.0,gap:"data void",  col:"#ef5350", note:"T=6. April 25 deadline for T=10. Unchanged."},
+];
+
+const mg=document.getElementById("mg");
+mods.forEach(m=>{
+  const pct=(m.s/10*100).toFixed(1),cp=(m.ceil/10*100).toFixed(1);
+  const g=gs[m.gap]||gs.tooling;
+  const improved=Math.abs(m.s-m.prev)>0.005;
+  const div=document.createElement("div");
+  div.className="card"+(improved?" improved":"");
+  div.innerHTML=(improved?`<div class="utag">+${(m.s-m.prev).toFixed(2)} ↑</div>`:"")+
+    `<div class="card-head"><div class="mod">${m.c}</div><div class="badge" style="background:${g.bg};color:${g.c}">${m.gap}</div></div>`+
+    `<div class="snum">${m.s.toFixed(2)}</div>`+
+    `<div class="dtext" style="color:${improved?"#1565c0":"#bbb"}">${improved?`+${(m.s-m.prev).toFixed(2)} this session`:"—"}</div>`+
+    `<div class="bar"><div class="barfill" style="width:${cp}%;background:${m.col}22"></div></div>`+
+    `<div class="bar"><div class="barfill" style="width:${pct}%;background:${m.col}"></div></div>`+
+    `<div class="note">${m.note}</div>`;
+  mg.appendChild(div);
+});
+
+const gaps=[
+  {l:"Architecture (S0–S8)", pct:97, col:"#4caf50", v:"~9.57"},
+  {l:"Calibration (CAL)",    pct:54, col:"#ef5350", v:"5.37"},
+  {l:"Execution δ",          pct:50, col:"#ff9800", v:"0.50"},
+  {l:"Ecosystem E_op",       pct:30, col:"#1976d2", v:"≈0.30"},
+  {l:"T-count",              pct:17, col:"#4caf50", v:"T=6"},
+  {l:"ATOM debt",            pct:5,  col:"#ef5350", v:"RED"},
+];
+const gd=document.getElementById("gd");
+gaps.forEach(g=>{gd.innerHTML+=`<div class="hbar"><div class="hlabel">${g.l}</div><div class="hbg"><div class="hfill" style="width:${g.pct}%;background:${g.col}"></div></div><div class="hval">${g.v}</div></div>`});
+</script>
+</body>
+</html>

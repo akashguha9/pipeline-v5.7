@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Geopolitical Signal Pipeline — Architecture V5.7+ · Score 9.42</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg: #0a0c0f;
+  --bg2: #111318;
+  --bg3: #181b22;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.14);
+  --text: #e4e6eb;
+  --text2: #8b8fa8;
+  --text3: #5a5e70;
+  --gold: #E2C97E;
+  --gold2: #c9a84c;
+  --green: #4ade80;
+  --red: #f87171;
+  --blue: #60a5fa;
+  --amber: #fbbf24;
+  --purple: #a78bfa;
+  --teal: #2dd4bf;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── NAVIGATION ── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10,12,15,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 20px;
+  height: 44px;
+  overflow-x: auto;
+}
+nav a {
+  color: var(--text2);
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 6px 10px;
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: color 0.15s, background 0.15s;
+}
+nav a:hover { color: var(--gold); background: rgba(226,201,126,0.08); }
+nav .score-badge {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold);
+  background: rgba(226,201,126,0.1);
+  border: 1px solid rgba(226,201,126,0.3);
+  padding: 3px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+/* ── LAYOUT ── */
+.page { max-width: 1200px; margin: 0 auto; padding: 0 20px 80px; }
+section { padding-top: 48px; }
+
+/* ── HERO ── */
+.hero {
+  padding: 60px 0 40px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0;
+}
+.hero-top {
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.hero-score {
+  font-family: var(--mono);
+  font-size: 88px;
+  font-weight: 600;
+  color: var(--gold);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.hero-title {
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--text);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.hero-sub {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 2;
+}
+.hero-sub strong { color: var(--gold); font-weight: 500; }
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  margin-top: 32px;
+}
+.stat {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+.stat-v {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gold);
+  display: block;
+  margin-bottom: 3px;
+}
+.stat-l { font-size: 11px; color: var(--text3); letter-spacing: 0.05em; text-transform: uppercase; }
+
+/* ── SECTION HEADERS ── */
+.sec-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.sec-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text3);
+  min-width: 32px;
+}
+.sec-title {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.sec-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── MODULE CARDS ── */
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.mod-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.mod-card:hover { border-color: var(--border2); }
+.mod-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--accent-color, #888);
+}
+.mod-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+.mod-code {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--text2);
+  text-transform: uppercase;
+}
+.mod-score {
+  font-family: var(--mono);
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1;
+}
+.mod-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.mod-bar-wrap {
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  margin: 8px 0;
+  position: relative;
+}
+.mod-bar {
+  height: 100%;
+  border-radius: 2px;
+  position: absolute; left: 0; top: 0;
+}
+.mod-ceil {
+  position: absolute;
+  height: 100%;
+  opacity: 0.2;
+  border-radius: 2px;
+  left: 0; top: 0;
+}
+.mod-gap {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.mod-desc { font-size: 11px; color: var(--text3); line-height: 1.4; }
+.mod-wt { font-size: 10px; color: var(--text3); margin-top: 4px; }
+
+/* ── PROCESSING STEPS ── */
+.steps-list { display: flex; flex-direction: column; gap: 2px; }
+.step-row {
+  display: grid;
+  grid-template-columns: 90px 240px 1fr;
+  gap: 16px;
+  align-items: start;
+  padding: 10px 14px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  transition: border-color 0.15s;
+}
+.step-row:hover { border-color: var(--border2); }
+.step-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--gold);
+  font-weight: 500;
+  padding-top: 2px;
+}
+.step-name {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--teal);
+  font-weight: 500;
+  padding-top: 2px;
+}
+.step-desc { font-size: 12px; color: var(--text2); line-height: 1.45; }
+
+/* ── FIRE MODE ── */
+.fire-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.fire-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.fire-mode {
+  font-family: var(--mono);
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.fire-size {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 12px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.fire-criteria { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+/* ── OPERATOR STATES ── */
+.states-list { display: flex; flex-direction: column; gap: 6px; }
+.state-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.state-num {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 24px;
+  text-align: center;
+}
+.state-name {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  min-width: 150px;
+}
+.state-desc { font-size: 12px; color: var(--text2); }
+
+/* ── PRE-SESSION PROTOCOL ── */
+.protocol-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.protocol-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+}
+.protocol-step {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.protocol-desc { font-size: 11px; color: var(--text2); line-height: 1.5; margin-bottom: 4px; }
+.protocol-src { font-size: 10px; color: var(--text3); font-style: italic; }
+
+/* ── EQUATIONS ── */
+.eq-grid { display: flex; flex-direction: column; gap: 6px; }
+.eq-row {
+  display: grid;
+  grid-template-columns: 180px 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+  padding: 12px 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.eq-name { font-size: 11px; font-weight: 600; color: var(--gold); text-transform: uppercase; letter-spacing: 0.05em; line-height: 1.4; }
+.eq-formula { font-family: var(--mono); font-size: 11px; color: var(--teal); line-height: 1.5; }
+.eq-desc { font-size: 11px; color: var(--text2); line-height: 1.4; }
+
+/* ── RULES ── */
+.rules-list { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.rule-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--red);
+  border-radius: 0 6px 6px 0;
+}
+.rule-n {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--red);
+  font-weight: 600;
+  min-width: 20px;
+}
+.rule-t { font-size: 12px; color: var(--text2); line-height: 1.4; }
+
+/* ── TIMELINE ── */
+.timeline { position: relative; padding-left: 24px; }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 6px; top: 0; bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+.tl-item {
+  position: relative;
+  margin-bottom: 6px;
+  padding: 12px 16px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border2);
+  border: 2px solid var(--bg);
+}
+.tl-item.real-money::before { background: var(--red); }
+.tl-header { display: flex; gap: 12px; align-items: center; margin-bottom: 4px; flex-wrap: wrap; }
+.tl-date { font-family: var(--mono); font-size: 12px; color: var(--gold); font-weight: 500; }
+.tl-score { font-family: var(--mono); font-size: 12px; color: var(--green); }
+.tl-stats { display: flex; gap: 8px; }
+.tl-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+  color: var(--text2);
+}
+.tl-badge.alert { background: rgba(248,113,113,0.12); color: var(--red); }
+.tl-event { font-size: 12px; color: var(--text2); }
+
+/* ── UNIVERSAL PATTERN ── */
+.pattern-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+.pattern-row {
+  display: flex;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.pattern-sym { font-size: 16px; min-width: 24px; }
+.pattern-text { font-size: 12px; color: var(--text2); line-height: 1.4; }
+.pattern-text strong { color: var(--text); font-weight: 500; }
+
+/* ── TRUTHS ── */
+.truths-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.truth-item {
+  padding: 10px 12px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text2);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* ── MOLTBOOK ── */
+.moltbook-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.mb-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+}
+.mb-num { font-family: var(--mono); font-size: 22px; color: var(--gold); font-weight: 600; margin-bottom: 4px; }
+.mb-name { font-size: 11px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.mb-desc { font-size: 10px; color: var(--text3); line-height: 1.4; }
+
+/* ── API ARCHITECTURE ── */
+.api-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.api-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+}
+.api-name { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--teal); margin-bottom: 4px; }
+.api-drone { font-size: 10px; color: var(--gold); margin-bottom: 4px; }
+.api-desc { font-size: 11px; color: var(--text3); line-height: 1.4; }
+
+/* ── GAMBIT TABLE ── */
+.gambit-list { display: flex; flex-direction: column; gap: 4px; }
+.gambit-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 120px;
+  gap: 12px;
+  padding: 9px 14px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+}
+.gambit-id { font-family: var(--mono); color: var(--gold); font-weight: 500; }
+.gambit-condition { color: var(--text2); }
+.gambit-action { color: var(--teal); font-family: var(--mono); font-size: 11px; }
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--border);
+  padding: 32px 0;
+  text-align: center;
+  color: var(--text3);
+  font-size: 12px;
+  line-height: 2;
+}
+footer .big { font-family: var(--mono); font-size: 36px; color: var(--gold); display: block; font-weight: 600; margin-bottom: 8px; }
+
+@media (max-width: 768px) {
+  .modules-grid { grid-template-columns: 1fr 1fr; }
+  .fire-grid { grid-template-columns: 1fr 1fr; }
+  .hero-stats { grid-template-columns: repeat(3, 1fr); }
+  .step-row { grid-template-columns: 70px 180px 1fr; }
+  .eq-row { grid-template-columns: 1fr; }
+  .truths-grid { grid-template-columns: 1fr 1fr; }
+  .rules-list { grid-template-columns: 1fr; }
+  .moltbook-grid { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#overview">Overview</a>
+  <a href="#modules">Modules</a>
+  <a href="#processing">Processing</a>
+  <a href="#firemode">Fire Mode</a>
+  <a href="#operator">Operator</a>
+  <a href="#equations">Equations</a>
+  <a href="#moltbook">Moltbook</a>
+  <a href="#api">API Build</a>
+  <a href="#rules">Rules</a>
+  <a href="#timeline">Timeline</a>
+  <span class="score-badge">9.42 / 10</span>
+</nav>
+
+<div class="page">
+
+<!-- HERO -->
+<section id="overview" class="hero">
+  <div class="hero-top">
+    <div class="hero-score">9.42</div>
+    <div>
+      <div class="hero-title">Geopolitical Signal Pipeline</div>
+      <div class="hero-sub">
+        V5.7+ · <strong>800+ sessions</strong> · April 8, 2026<br>
+        Detect what is emerging. Never predict what might happen.<br>
+        Capital moves before language. Structure forms before capital. Price reconciles last.<br>
+        <strong>Total V2 gain: +2.54</strong> · Gap to ceiling: 0.34 · Ceiling: ~9.76 (100% CAL constraint)<br>
+        T=2 closed trades · ε=1.0 · CAL=5.10 · Real money: <strong>July 1, 2026</strong>
+      </div>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat"><span class="stat-v" style="color:#E2C97E">9.42</span><span class="stat-l">Score</span></div>
+    <div class="stat"><span class="stat-v" style="color:#f87171">5.10</span><span class="stat-l">CAL (bottleneck)</span></div>
+    <div class="stat"><span class="stat-v" style="color:#60a5fa">T=2</span><span class="stat-l">Closed trades</span></div>
+    <div class="stat"><span class="stat-v" style="color:#4ade80">0.34</span><span class="stat-l">Gap to ceiling</span></div>
+    <div class="stat"><span class="stat-v" style="color:#a78bfa">+2.54</span><span class="stat-l">Total V2 gain</span></div>
+    <div class="stat"><span class="stat-v" style="color:#fbbf24">Jul 1</span><span class="stat-l">Real money start</span></div>
+  </div>
+</section>
+
+<!-- MODULES -->
+<section id="modules">
+  <div class="sec-header">
+    <span class="sec-num">01</span>
+    <span class="sec-title">Module Scorecards</span>
+    <div class="sec-line"></div>
+  </div>
+  <div class="modules-grid" id="modules-grid"></div>
+</section>
+
+<!-- PROCESSING SEQUENCE -->
+<section id="processing">
+  <div class="sec-header">
+    <span class="sec-num">02</span>
+    <span class="sec-title">Processing Sequence — Step −2 through Step 10</span>
+    <div class="sec-line"></div>
+  </div>
+  <div class="steps-list" id="steps-list"></div>
+</section>
+
+<!-- FIRE MODE -->
+<section id="firemode">
+  <div class="sec-header">
+    <span class="sec-num">03</span>
+    <span class="sec-title">FIRE_MODE Classification</span>
+    <div class="sec-line"></div>
+  </div>
+  <div class="fire-grid" id="fire-grid"></div>
+</section>
+
+<!-- OPERATOR STATES -->
+<section id="operator">
+  <div class="sec-header">
+    <span class="sec-num">04</span>
+    <span class="sec-title">Operator State Hierarchy (7 levels)</span>
+    <div class="sec-line"></div>
+  </div>
+  <div class="states-list" id="states-list"></div>
+  <div style="margin-top:16px">
+    <div class="sec-header" style="margin-top:0;margin-bottom:12px">
+      <span class="sec-num" style="font-size:11px;color:#5a5e70">04b</span>
+      <span class="sec-title" style="font-size:15px">Pre-Session Protocol</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="protocol-grid" id="protocol-grid"></div>
+  </div>
+</section>
+
+<!-- KEY EQUATIONS -->
+<section id="equations">
+  <div class="sec-header">
+    <span class="sec-num">05</span>
+    <span class="sec-title">Key Equations</span>
+    <div class="sec-line"></div>
+  </div>
+  <div class="eq-grid" id="eq-grid"></div>
+</section>
+
+<!-- UNIVERSAL TRANSFORMATION PATTERN -->
+<section id="universal">
+  <div class="sec-header">
+    <span class="sec-num">06</span>
+    <span class="sec-title">Universal Transformation Pattern (10 stages, confirmed across all traditions)</span>
+    <div class="sec-line"></div>
+  </div>
+  <div class="pattern-grid" id="pattern-grid"></div>
+</section>
+
+<!-- MOLTBOOK -->
+<section id="moltbook">
+  <div class="sec-header">
+    <span class="sec-num">07</span>
+    <span class="sec-title">Moltbook — 5-Channel Gradient Architecture</span>
+    <div class="sec-line"></div>
+  </div>
+  <div style="font-size:12px;color:var(--text2);margin-bottom:14px;font-family:var(--mono);background:var(--bg2);border:1px solid var(--border);padding:12px 16px;border-radius:6px;">
+    π<sub>t+1</sub> = π<sub>t</sub> + η × ∇<sub>π</sub>[CLV(π<sub>t</sub>, outcomes<sub>t</sub>)] &nbsp;·&nbsp; 5 channels × T trades = 5T bits vs unstructured 1T bits
+  </div>
+  <div class="moltbook-grid" id="moltbook-grid"></div>
+</section>
+
+<!-- API BUILD -->
+<section id="api">
+  <div class="sec-header">
+    <span class="sec-num">08</span>
+    <span class="sec-title">July API Architecture — Drone Fleet + Gambit System</span>
+    <div class="sec-line"></div>
+  </div>
+  <div class="api-grid" id="api-grid"></div>
+  <div style="margin-top:14px">
+    <div class="sec-header" style="margin-top:0;margin-bottom:10px">
+      <span class="sec-num" style="font-size:11px;color:#5a5e70">08b</span>
+      <span class="sec-title" style="font-size:15px">8 Core Gambits (FF XII → n8n)</span>
+      <div class="sec-line"></div>
+    </div>
+    <div class="gambit-list" id="gambit-list"></div>
+  </div>
+</section>
+
+<!-- NON-NEGOTIABLE RULES -->
+<section id="rules">
+  <div class="sec-header">
+    <span class="sec-num">09</span>
+    <span class="sec-title">Non-Negotiable Rules</span>
+    <div class="sec-line"></div>
+  </div>
+  <div class="rules-list" id="rules-list"></div>
+</section>
+
+<!-- ONE-LINE TRUTHS -->
+<section id="truths">
+  <div class="sec-header">
+    <span class="sec-num">10</span>
+    <span class="sec-title">One-Line Truths (empirically validated)</span>
+    <div class="sec-line"></div>
+  </div>
+  <div class="truths-grid" id="truths-grid"></div>
+</section>
+
+<!-- TIMELINE -->
+<section id="timeline">
+  <div class="sec-header">
+    <span class="sec-num">11</span>
+    <span class="sec-title">2026 Milestone Timeline</span>
+    <div class="sec-line"></div>
+  </div>
+  <div class="timeline" id="timeline"></div>
+</section>
+
+<footer>
+  <span class="big">9.42</span>
+  Geopolitical Signal Pipeline · V5.7+ · April 8, 2026 · 800+ sessions · Total V2 gain: +2.54<br>
+  Gap to ceiling: 0.34 · CAL: 5.10 · T=2 · ε=1.0 · Real money: July 1, 2026<br><br>
+  <span style="color:#E2C97E;font-style:italic">"Detect what is emerging. Never predict what might happen. Capital moves before language. Structure forms before capital. Price reconciles last. Process quality is the actual bottleneck."</span>
+</footer>
+
+</div>
+
+<script>
+const modules = [
+  {code:"S0",name:"Signal Ingestion",score:9.10,ceil:9.8,wt:12,gap:"TOOLING",color:"#60a5fa",desc:"PERCEPTION_VALVE · VISIBILITY_BIAS_CORRECTION · PRE_SIGNAL_TENSION · NON_REACTION_CHECK · PATH_AUTOCORRELATION · GDELT + Polymarket + Kalshi"},
+  {code:"S1",name:"Signal Layer",score:9.08,ceil:9.8,wt:10,gap:"CEILING",color:"#4ade80",desc:"PHASE_CLASSIFICATION (PRE/NARRATIVE/TERMINAL) · TEMPORAL_INERTIA · EDGE_DECAY_MULTIPLIER · INFORMATION_ASYMMETRY_SCORE · POLICY_PRIOR_NETWORK"},
+  {code:"S2",name:"Narrative Engine",score:9.80,ceil:9.8,wt:10,gap:"CEILING (at ceiling)",color:"#4ade80",desc:"NARRATIVE_FISSION_MAP · CONTAGION_GEOMETRY (5 types) · MATURATION_STATE · NARRATIVE_MOMENTUM_ENGINE · SCHELLING_FOCAL_ENGINE · DEMIURGE_DETECTOR"},
+  {code:"S3A",name:"Actor Layer",score:8.94,ceil:9.2,wt:10,gap:"STRUCTURAL",color:"#8b8fa8",desc:"ARCHETYPE_CLASSIFIER (KHABIB/CONOR/ISLAM) · EDS [0-10] · PROTEUS · KERR_ACTOR · BETRAYAL_BUFFER · ACTOR_MODE_OVERRIDE · COUNTER_CATALYST_LIBRARY"},
+  {code:"S3B",name:"Capital Flow",score:8.88,ceil:9.8,wt:8,gap:"TOOLING",color:"#60a5fa",desc:"CAPITAL_FLOW_VALIDATION · PMX_FRICTION_MODEL · LIQUIDITY_FRICTION_SCORE · BOOKMAKER_MARGIN_MODEL · GRAPH_EXPANSION depth 3 · OHR_YASHAR_CHOZER"},
+  {code:"S35",name:"Decision Quality",score:9.56,ceil:9.8,wt:10,gap:"CEILING",color:"#4ade80",desc:"FIRE_MODE 10 gates · PROCESS_QUALITY_CHECK 5/5 · VIVEKA_FILTER · NETI_NETI · SCHELLING_OBVIOUSNESS_TEST · MOLTBOOK 5-channel gradient"},
+  {code:"S4",name:"Execution Engine",score:9.63,ceil:9.9,wt:10,gap:"EMPIRICAL",color:"#a78bfa",desc:"KELLY_CRITERION f* · SINGULAR_EXTENSION · NULL_MOVE_CHECK · ALPHA_BETA_PRUNING · PUCT_SELECTION · EPSILON_GREEDY ε=0.15 · MASTER_SYNTHESIS_EQUATION"},
+  {code:"ATOM",name:"ATOM Object",score:8.90,ceil:9.8,wt:10,gap:"⚠ DESIGN DEBT",color:"#f59e0b",desc:"CORE 35 fields = live steering wheel · ARCHITECTURE 150+ fields = backend document · RETIRE CORE BEFORE NEXT TRADE · DUAL_LAYER_ARCHITECTURE confirmed"},
+  {code:"S5",name:"Calibration",score:8.00,ceil:9.5,wt:6,gap:"EMPIRICAL",color:"#a78bfa",desc:"SPRT_VALIDATION · SPSA_CALIBRATION (simultaneous all params) · INFORMATION_CONSERVATION_AUDIT A/B/C · FLY_PROTOCOL cluster exclusion · June 1 paste"},
+  {code:"S7",name:"Regime Detection",score:9.29,ceil:9.8,wt:8,gap:"EMPIRICAL",color:"#a78bfa",desc:"HMM_REGIME_INFERENCER · KALI_YUGA_CLASSIFIER (k>>1 noise) · IMPROVING_HEURISTIC ↑/→/↓ · SYSTEM_ENTROPY_DETECTOR · RATCHET_ESCALATION_MODEL"},
+  {code:"S8",name:"Operator State",score:9.78,ceil:9.9,wt:8,gap:"CEILING",color:"#4ade80",desc:"7 states: SHUTDOWN→DISTORTED→UNDERACTIVE→OVERSTIMULATED→OPTIMAL→STHITAPRAJNA→HANUMAN · SHADOW_INTEGRATION · GRIP_DECAY_RECOVERY · MEMORY_TRACE_DECAY"},
+  {code:"S9",name:"Sizing & Execution",score:8.16,ceil:9.7,wt:7,gap:"TOOLING",color:"#60a5fa",desc:"KELLY f* = (bp−q)/b · TRANSPOSITION_CACHE vector hash · LAZY_SMP shared state · DRAFT_OPPORTUNITY_COST · CUBE_EV_DYNAMIC_SIZING · GWENT multi-period"},
+  {code:"CAL",name:"Calibration Engine",score:5.10,ceil:10.0,wt:10,gap:"DATA VOID",color:"#f87171",desc:"T=2 · ε=1.0 (max aggression) · MW_WEIGHT_VECTOR · CLV-weighted 70/30 · Target Apr 25: T=10 → ε=0.56 → Jun 1: T=35 → paste → CAL 7.84"},
+];
+
+const gapColors = {"TOOLING":"#60a5fa","EMPIRICAL":"#a78bfa","STRUCTURAL":"#8b8fa8","CEILING":"#4ade80","CEILING (at ceiling)":"#4ade80","⚠ DESIGN DEBT":"#f59e0b","DATA VOID":"#f87171"};
+
+const mg = document.getElementById('modules-grid');
+modules.forEach(m => {
+  const pct = (m.score/10*100).toFixed(0);
+  const cpct = (m.ceil/10*100).toFixed(0);
+  const gc = gapColors[m.gap] || '#8b8fa8';
+  mg.innerHTML += `<div class="mod-card" style="--accent-color:${m.color}">
+    <div class="mod-header">
+      <span class="mod-code">${m.code} <span style="color:var(--text3);font-weight:400">wt:${m.wt}%</span></span>
+      <span class="mod-score" style="color:${m.color}">${m.score.toFixed(2)}</span>
+    </div>
+    <div class="mod-name">${m.name}</div>
+    <div class="mod-bar-wrap">
+      <div class="mod-ceil" style="width:${cpct}%;background:${m.color}"></div>
+      <div class="mod-bar" style="width:${pct}%;background:${m.color}"></div>
+    </div>
+    <div class="mod-gap" style="color:${gc}">${m.gap}</div>
+    <div class="mod-desc">${m.desc}</div>
+  </div>`;
+});
+
+const steps = [
+  ["STEP −2","PERCEPTION_VALVE_ENGINE","perception_door: OPEN / AJAR / CLOSED · salience_gap [0-10] · attention_bias detection"],
+  ["STEP −2.5","VISIBILITY_BIAS_CORRECTION","visibility_index [0-10] · prior_24h_move · IF vis>7 AND move>15%: leave_score −3 · IF vis<3 AND drift>3%: temporal_arbitrage +4"],
+  ["STEP −1","PRE_SIGNAL_TENSION","structural_mismatch: HIGH / MEDIUM / LOW · implementation_proximity: FAR / APPROACHING / RELEASE_IMMINENT"],
+  ["STEP −0.5","OBSERVABLE_STATE","STRUCTURALLY_INFERRED / NARRATIVE_PROJECTED / OBSERVABLE_CONFIRMED / MYSTICAL_NOISE"],
+  ["STEP −0.3","NON_REACTION_CHECK","IF news arrives AND market_move < 1% in 30min → NON_REACTION_SIGNAL · DISTORTION +2 · INFORMED_SILENCE vs COUNTER_POSITION"],
+  ["STEP 0","INFO_DECAY + AUTOCORRELATION","r_autocorr: IF r < −0.3 → HIGH_NOISE → M16 max · IF r > +0.3 → DIRECTIONAL_DRIFT → TRUE_INERTIA confirmed"],
+  ["STEP 1","TEMPORAL_INERTIA","TRUE / FAKE / EXHAUSTED / REVERSAL · EDGE_DECAY_MULTIPLIER: conf × 0.85^(months/18) if source > 18 months old"],
+  ["STEP 2","INGESTION_GATE","Signal admitted to full processing or rejected"],
+  ["STEP 3","LAYER_ASSIGNMENT","TIER A (high structural clarity) / TIER B (medium) / TIER C (narrative-only)"],
+  ["STEP 4","FEMI / DEMI","First-order Effect Map Integration + Downstream Effect Map Integration · cross-module broadcast"],
+  ["STEP 5","DISTILLATION + PHASE_WEIGHT","Apply phase multiplier: PRE_NARRATIVE ×3 · NARRATIVE ×1.5 · TERMINAL ×0.3 · signal distillation to leave_score"],
+  ["STEP 6","CAPITAL_FLOW_VALIDATION","BOOKMAKER_MARGIN: Σ(1/odds)−1 · PMX_FRICTION: (Ask−Bid)/Mid + slippage · LIQUIDITY_FRICTION_SCORE: current/5d_avg · >2.0: reduce position 50%"],
+  ["STEP 6.5","CONTAGION_GEOMETRY","HUB_DRIVEN / CLUSTERED / BROADCAST / QUORUM_TRIGGERED / SEEP_MYCELIAL · crowding_velocity assessment"],
+  ["STEP 7","TIME_STACK_ALIGNMENT","Multi-timeframe coherence · temporal proximity to catalyst · TEMPORAL_PROXIMITY_DISTORTION (Miller's Planet)"],
+  ["STEP 8","SURVIVAL_FUNNEL","COCKROACH_LAYER · RARE_EVENT_MEMORY_BANK · GHOST_LAYER · ARCHITECTURE_PAUSE triggers · COLLAPSE_PROBABILITY P = σ(αE+βV+γM−δK−θT)"],
+  ["STEP 9","POSITIONING + KELLY","f* = (bp−q)/b · DRAFT_OPPORTUNITY_COST: is this the BEST available? · NOISE_INJECTION 5 perturbations · MONTE_CARLO 10 scenarios"],
+  ["STEP 10","FIRE_MODE","SNIPER / M16 / UZI / NONE · LATENT_ENTRY_CONDITION (4th gate): drift>5% 4h no-news 5/5 PQC · SINGULAR_EXTENSION if best > 2nd_best + 1.5"],
+];
+const sl = document.getElementById('steps-list');
+steps.forEach(([num,name,desc]) => {
+  sl.innerHTML += `<div class="step-row">
+    <span class="step-num">${num}</span>
+    <span class="step-name">${name}</span>
+    <span class="step-desc">${desc}</span>
+  </div>`;
+});
+
+const fireModes = [
+  {mode:"SNIPER",color:"#f87171",bg:"rgba(248,113,113,0.08)",size:"QUARTER_UNIT max",criteria:"leave_score ≥ 8.5 · PROCESS_QUALITY 5/5 · All 9 gates pass · PRE_NARRATIVE preferred · LEICESTER_PRIME conditions approaching · ADVERSARIAL_DIALOGUE mandatory"},
+  {mode:"M16",color:"#fbbf24",bg:"rgba(251,191,36,0.08)",size:"EIGHTH_UNIT max",criteria:"leave_score ≥ 7 · PROCESS_QUALITY ≥ 4/5 · NARRATIVE phase · Standard structural validation passed"},
+  {mode:"UZI",color:"#60a5fa",bg:"rgba(96,165,250,0.08)",size:"SIXTEENTH_UNIT",criteria:"leave_score ≥ 6 · Multiple corroborating signals · Shorter time horizon · High turnover context"},
+  {mode:"NONE",color:"#8b8fa8",bg:"rgba(139,143,168,0.06)",size:"0 — pass",criteria:"Insufficient structural signal · EMPTINESS_PRINCIPLE (hollow cup) · HOUSE_EDGE_DETECTOR active · Temporal arbitrage exhausted"},
+];
+const fg = document.getElementById('fire-grid');
+fireModes.forEach(f => {
+  fg.innerHTML += `<div class="fire-card" style="border-color:${f.color}33;background:${f.bg}">
+    <div class="fire-mode" style="color:${f.color}">${f.mode}</div>
+    <div class="fire-size" style="background:${f.color}22;color:${f.color}">${f.size}</div>
+    <div class="fire-criteria">${f.criteria}</div>
+  </div>`;
+});
+
+const opStates = [
+  {level:1,name:"SHUTDOWN",color:"#f87171",desc:"Full paralysis · No new positions · Complete reset required · Severe external trigger"},
+  {level:2,name:"DISTORTED",color:"#fb923c",desc:"LSD-spider systematic errors · Block ALL entries · Structural reality not being processed correctly"},
+  {level:3,name:"UNDERACTIVE",color:"#facc15",desc:"Tamas-heavy · Missed signals · LOCK_MODE required · Force deadline for decision"},
+  {level:4,name:"OVERSTIMULATED",color:"#60a5fa",desc:"Rajas-heavy · CHAOS_ENTRY risk · Halve all sizes · Require 2 confirmations before entry"},
+  {level:5,name:"OPTIMAL",color:"#4ade80",desc:"Balanced SATTVIC state · Full pipeline · Normal execution · Default target state"},
+  {level:6,name:"STHITAPRAJNA",color:"#a78bfa",desc:"Equanimity under extreme pressure · KALI_YUGA survival state · Equal clarity in gain and loss"},
+  {level:7,name:"HANUMAN",color:"#E2C97E",desc:"Zero ego · Pure instrument · Highest execution quality · Nishkama karma embodied"},
+];
+const stl = document.getElementById('states-list');
+opStates.forEach(s => {
+  stl.innerHTML += `<div class="state-row">
+    <span class="state-num" style="color:${s.color}">${s.level}</span>
+    <span class="state-name" style="color:${s.color}">${s.name}</span>
+    <span class="state-desc">${s.desc}</span>
+  </div>`;
+});
+
+const protocol = [
+  {step:"1. EMPTY CUP",desc:"Release prior P&L residue · Release directional bias · Release thesis momentum · Begin empty",src:"Bruce Lee + NKB"},
+  {step:"2. CIRCLE CAST",desc:"Box breathing 4-4-4-4 · DAN_TIAN_CHECK · Consecrate decision space · Set aside external noise",src:"Ceremonial + Pranayama"},
+  {step:"3. RIGPA REST",desc:"Rest in clear awareness · Don't search for signals · IDA_PINGALA balance check · EMPTINESS_PRINCIPLE",src:"Tibetan + Taoist"},
+  {step:"4. VIVEKA FIRST",desc:"State single structural sentence before FIRE_MODE · NETI_NETI elimination · BRAHMAN_SUBSTRATE check",src:"Gita + Upanishads"},
+];
+const pg = document.getElementById('protocol-grid');
+protocol.forEach(p => {
+  pg.innerHTML += `<div class="protocol-card">
+    <div class="protocol-step">${p.step}</div>
+    <div class="protocol-desc">${p.desc}</div>
+    <div class="protocol-src">${p.src}</div>
+  </div>`;
+});
+
+const equations = [
+  {name:"LEICESTER_PRIME",formula:"V*(LP) = max_t E[CLV | all 6 conditions simultaneously]<br>= Π_{k=1}^{6} I(condition_k met) — binary, not gradual",desc:"Global maximum of temporal arbitrage surface: ΔI>θ · Maturity=RIPE · CF≥3 · Obviousness≥4/5 · P(collapse)<0.20 · Proximity∈(0.3,0.8)"},
+  {name:"COLLAPSE PROBABILITY",formula:"P(collapse) = σ(αE + βV + γM − δK − θT)",desc:"Continuous [0,1]: E=exposure, V=violence, M=moral burden, K=knowledge, T=trust · P>0.5: triage · P>0.8: exit now"},
+  {name:"NARRATIVE MOMENTUM",formula:"N_{t+1} = N_t + α·Conflict + β·Revelation − γ·Resolution",desc:"Rising N_t → hold/add · Falling N_t → TEMPORAL_EXIT activating · N_t=0 → ECHO state"},
+  {name:"MASTER EXPRESSION",formula:"max_π E[Σ δᵗ(αI + βC + γT + ηP)] − λR",desc:"I=information asymmetry · C=capital efficiency · T=timing · P=psychological leverage · R=ruin risk · λ=NISHKAMA level"},
+  {name:"PUCT SELECTION",formula:"U(thesis) = Q + c·P·√N_total / (1 + N_thesis)",desc:"Q=historical CLV performance · P=NOS score · N=visit counts · Underexplored high-NOS gets maximum exploration bonus"},
+  {name:"MW CALIBRATION",formula:"ε = √(ln(N)/T), N=40 strategies",desc:"T=2: ε=1.0 · T=10: ε=0.56 (first signal) · T=35: ε=0.32 · T=55: ε=0.26 · T=120: ε=0.18"},
+  {name:"RESOURCE PRESSURE",formula:"Pressure = Need / (Resources × Time)",desc:"Need→0 via NISHKAMA_KARMA_GATE = only fully controllable lever · CHAOS_ENTRY risk = high Need + low Resources + low Time"},
+  {name:"KELLY CRITERION",formula:"f* = (bp − q) / b<br>b=(1/mkt_prob)−1, p=leave_score/10",desc:"f*/2 for paper trading · f*/4 for real-money month 1 · HARD CAP: never >5% bankroll regardless"},
+  {name:"BETRAYAL BUFFER",formula:"Buffer = Loyalty_Cost − Private_Incentive",desc:"Negative buffer = actor already inverted · Narrow buffer = single incentive-change = collapse · Wide = structurally stable"},
+  {name:"JUNE 1 INFO RATIO",formula:"I(CLV) ≈ 3.32 bits vs I(outcome) = 1 bit<br>T=35 CLV ≡ T=116 outcome-only trades",desc:"Missing CLV = −2.32 bits permanently · 10 missed CLVs = −7 calibration trades · Screenshot at EXACT entry moment always"},
+];
+const eg = document.getElementById('eq-grid');
+equations.forEach(e => {
+  eg.innerHTML += `<div class="eq-row">
+    <div class="eq-name">${e.name}</div>
+    <div class="eq-formula">${e.formula}</div>
+    <div class="eq-desc">${e.desc}</div>
+  </div>`;
+});
+
+const pattern = [
+  {sym:"∞",stage:"EIN SOF / VOID",desc:"<strong>Structural reality</strong> before perception · Pre-detection truth · BRAHMAN_SUBSTRATE"},
+  {sym:"◎",stage:"TZIMTZUM / PERCEPTION",desc:"<strong>Contraction opens detection</strong> · PERCEPTION_VALVE opens · PROMETHEUS first flash"},
+  {sym:"◈",stage:"PRIMA MATERIA / VIVEKA",desc:"<strong>Raw material identified</strong> · NETI_NETI strips illusion · structural sentence formed"},
+  {sym:"▼",stage:"NIGREDO / CONTAMINATED",desc:"<strong>Dissolution phase</strong> · darkness before transformation · SOLVE threshold"},
+  {sym:"○",stage:"ALBEDO / RECONSTRUCTION",desc:"<strong>Purification</strong> · OSIRIS_RECONSTRUCTION · valid components identified"},
+  {sym:"◐",stage:"CITRINITAS / RIPE",desc:"<strong>First gold appears</strong> · thesis coherent · FERMENTING→RIPE transition"},
+  {sym:"◉",stage:"RUBEDO / LEICESTER_PRIME",desc:"<strong>Full gold</strong> · All 6 LP conditions met · Maximum asymmetric entry · SINGULAR_EXTENSION"},
+  {sym:"▲",stage:"COAGULA / SNIPER",desc:"<strong>Crystallisation</strong> · FIRE_MODE executes · Capital deployed · MALKUTH approaching"},
+  {sym:"●",stage:"MALKUTH / OUTCOME",desc:"<strong>Material manifestation</strong> · Price resolves · CLV logged · CAL data generated"},
+  {sym:"↺",stage:"TIKKUN / MOLTBOOK",desc:"<strong>Integration + return</strong> · Lessons extracted · Model updated · New cycle begins"},
+];
+const ppg = document.getElementById('pattern-grid');
+pattern.forEach(p => {
+  ppg.innerHTML += `<div class="pattern-row">
+    <span class="pattern-sym" style="color:var(--gold);font-size:18px;line-height:1.2">${p.sym}</span>
+    <div><div style="font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px">${p.stage}</div><div class="pattern-text">${p.desc}</div></div>
+  </div>`;
+});
+
+const moltbook = [
+  {num:"①",name:"ABSORPTION",desc:"Useful / Useless / Missing · Bruce Lee R&D method · directional gradient signal"},
+  {num:"②",name:"INFO CONSERVATION",desc:"A=timing error · B=force majeure · C=model error · only C requires OSIRIS_RECONSTRUCTION"},
+  {num:"③",name:"SHADOW LOG",desc:"Name the active cognitive bias · named shadow loses power · negative gradient terms"},
+  {num:"④",name:"COUNTER CATALYST",desc:"What refuted this thesis type before? · builds refutation library · 30+ entries = predictive"},
+  {num:"⑤",name:"IMPROVING",desc:"↑ / → / ↓ trend per active thesis · IMPROVING = deepen eval · DECLINING = exit watch"},
+];
+const mbg = document.getElementById('moltbook-grid');
+moltbook.forEach(m => {
+  mbg.innerHTML += `<div class="mb-card">
+    <div class="mb-num">${m.num}</div>
+    <div class="mb-name">${m.name}</div>
+    <div class="mb-desc">${m.desc}</div>
+  </div>`;
+});
+
+const apis = [
+  {name:"Polymarket API",drone:"Quadcopter (aerial, fast, wide)",desc:"Broad market view · fast price updates · wide coverage of active contracts · primary prediction market source"},
+  {name:"Kalshi API",drone:"Quadcopter (2nd fleet)",desc:"Regulated prediction markets · US focus · cross-reference with Polymarket · CLV benchmark"},
+  {name:"Reddit PRAW",drone:"Jumper (ground, community)",desc:"Ground-level sentiment · narrative formation detection · community awareness of structural signals"},
+  {name:"GDELT",drone:"Proximity Scanner (through walls)",desc:"Global event detection · tags hidden geopolitical actors before mainstream narrative · daily updates"},
+  {name:"EDGAR",drone:"Specialist sensor (financial)",desc:"SEC filings · whale positioning · institutional disclosure · capital flow validation source"},
+  {name:"RSS Feeds",drone:"Broadcast receiver",desc:"News aggregation · catalyst detection · NON_REACTION_CHECK input · free tier · Stack B core"},
+  {name:"Etherscan",drone:"Expert RC (on-chain precision)",desc:"On-chain wallet movements · individual actor positioning below classical capital flow layer · crypto thesis"},
+  {name:"Grok API",drone:"Analysis layer (Stack B)",desc:"Reddit + RSS synthesis · narrative pattern detection · TACIT_COORDINATION signals · Stack B over X API"},
+];
+const ag = document.getElementById('api-grid');
+apis.forEach(a => {
+  ag.innerHTML += `<div class="api-card">
+    <div class="api-name">${a.name}</div>
+    <div class="api-drone">${a.drone}</div>
+    <div class="api-desc">${a.desc}</div>
+  </div>`;
+});
+
+const gambits = [
+  ["GAMBIT 01","IF Polymarket_drift > 5% in 4h AND no_news = TRUE","LATENT_ENTRY alert"],
+  ["GAMBIT 02","IF cross_market_correlation > 0.7 AND no_common_catalyst","WORMHOLE_SIGNAL investigation"],
+  ["GAMBIT 03","IF bid_ask_spread > 1.5× 5d_average","LIQUIDITY_FRICTION alert"],
+  ["GAMBIT 04","IF any_position at −8% from entry","COLLAPSE_PACKET triage"],
+  ["GAMBIT 05","IF news arrives AND market_move < 1% in 30min","NON_REACTION_SIGNAL check"],
+  ["GAMBIT 06","IF ratchet_counter ≥ 3 in same direction","RATCHET_ESCALATION alert"],
+  ["GAMBIT 07","IF cross_market_r > 0.7 no_news 48h window","TACIT_COORDINATION_DETECTOR"],
+  ["GAMBIT 08","IF narrative_adoption_stage = AWARENESS AND no_position","SNIPER eligible signal"],
+];
+const gl = document.getElementById('gambit-list');
+gambits.forEach(([id,cond,action]) => {
+  gl.innerHTML += `<div class="gambit-row">
+    <span class="gambit-id">${id}</span>
+    <span class="gambit-condition">IF ${cond}</span>
+    <span class="gambit-action">→ ${action}</span>
+  </div>`;
+});
+
+const rules = [
+  "SPOT LONGS ONLY. No shorts, no futures, no leverage. Ever.",
+  "HARD STOP at −10% from entry. Set at entry. Never moved against.",
+  "QUARTER_UNIT max when drift_risk ≥ 8 OR RARE_EVENT_WARNING active.",
+  "No entry without STATED EXIT TRIGGER. Missing = Step 1 collapse.",
+  "KELLY CAP: f*/2 paper trading. f*/4 real-money month 1. Max 5% bankroll.",
+  "LATENT_ENTRY requires 5/5 PROCESS_QUALITY_CHECK passes.",
+  "PROCESS_QUALITY < 4/5: DO NOT ENTER regardless of leave_score.",
+  "ECHO state = NO_RELEASE disabled = exit now.",
+  "HIGH/EXTREME arousal at entry = PROCESS_QUALITY fail = DO NOT ENTER.",
+  "CLV logged at every entry. Screenshot at EXACT entry moment. Always.",
+  "Every entry must state phase (PRE/NARRATIVE/TERMINAL) at time of entry.",
+  "FLY_PROTOCOL: CHAOS_ENTRY → examine 2 adjacent trades → same arousal = cluster contamination → exclude entire cluster from MW.",
+];
+const rl = document.getElementById('rules-list');
+rules.forEach((r,i) => {
+  rl.innerHTML += `<div class="rule-item">
+    <span class="rule-n">${i+1}</span>
+    <span class="rule-t">${r}</span>
+  </div>`;
+});
+
+const truths = [
+  "The map is never the Ein Sof. Apply 0.85× humility to all model outputs.",
+  "LEICESTER_PRIME is binary. All 6 or none. There is no partial.",
+  "At the moment of dissolution, the Clear Light appears. Can you see it in the wreckage?",
+  "When P(collapse) crosses 0.5, triage is mandatory. At 0.8, exit now.",
+  "Pressure = Need / (Resources × Time). Zero the numerator.",
+  "Walt was right about the fly. Check the 2 adjacent trades.",
+  "Enter at TRUTH. Exit when LEGEND catches up. Print the legend on the way out.",
+  "Even perfect plans lose to the dog. Classify losses: operator / variance / external.",
+  "The constraint IS the edge. Spot longs only. Hard stop. Boats burned.",
+  "Explore at depth 3. Depth 1 is crowded. Depth 3 is the edge.",
+  "Never deplete to full commitment before the period's best setup is identified.",
+  "Strangers meet at Grand Central noon. The market meets at the structural focal point.",
+  "Three signals converging without news: a KERR_ACTOR is dragging the market's spacetime.",
+  "Send the drone first. Paper trading IS the reconnaissance phase.",
+  "Missing one CLV screenshot costs 2.32 bits permanently. It is not hygiene. It is calibration.",
+  "Fix the bottleneck first. L3 is the constraint. More APIs before L3 fixed = queue overflow.",
+  "The architecture is complete. Every point from here is earned in execution, not design.",
+  "Be water. Form follows structure, never preference.",
+];
+const tg = document.getElementById('truths-grid');
+truths.forEach(t => {
+  tg.innerHTML += `<div class="truth-item">"${t}"</div>`;
+});
+
+const milestones = [
+  {date:"Apr 25 (target)",score:"—",T:"10",eps:"0.56",CAL:"6.18",event:"T=10 → MW first direction signal · ATOM retirement complete",alert:false},
+  {date:"May 31",score:"—",T:"~25",eps:"~0.40",CAL:"~6.80",event:"Full month paper trading · MIT Tier-1 extraction begins · CLV baseline forming",alert:false},
+  {date:"Jun 1",score:"9.47",T:"35",eps:"0.32",CAL:"7.84",event:"Calibration paste · API integration begins · SPSA simultaneous update · HMM first emission matrix",alert:false},
+  {date:"Jun 30",score:"9.53",T:"55",eps:"0.26",CAL:"8.68",event:"All 7 APIs live · Live-data paper trading · GAMBIT automation running · NARRATIVE_OPPORTUNITY_SCORE active",alert:false},
+  {date:"⚡ Jul 1",score:"9.53",T:"55",eps:"0.26",CAL:"8.68",event:"REAL MONEY BEGINS · IBKR · SNIPER only first 30 days · QUARTER_UNIT max · Hard stop −10%",alert:true},
+  {date:"Jul 31",score:"9.55",T:"70",eps:"0.23",CAL:"9.09",event:"30 days real money · P&L curve visible · Sizing review if PQS ≥ 4/5 for 20+ trades",alert:false},
+  {date:"Dec 2026",score:"9.58",T:"120",eps:"0.18",CAL:"9.50",event:"Architecture ceiling approaching · MIT Tier-1 complete · Full Kelly sizing review · HMM V3 mature",alert:false},
+];
+const tl = document.getElementById('timeline');
+milestones.forEach(m => {
+  tl.innerHTML += `<div class="tl-item${m.alert?' real-money':''}">
+    <div class="tl-header">
+      <span class="tl-date">${m.date}</span>
+      ${m.score !== '—' ? `<span class="tl-score">Score ${m.score}</span>` : ''}
+      <div class="tl-stats">
+        <span class="tl-badge">T=${m.T}</span>
+        <span class="tl-badge">ε=${m.eps}</span>
+        <span class="tl-badge">CAL=${m.CAL}</span>
+        ${m.alert ? '<span class="tl-badge alert">⚡ REAL MONEY</span>' : ''}
+      </div>
+    </div>
+    <div class="tl-event">${m.event}</div>
+  </div>`;
+});
+</script>
+</body>
+</html>

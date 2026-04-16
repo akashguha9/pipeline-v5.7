@@ -1,0 +1,2422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MVP Master Archive — Claude Extraction for NBA Model Transfer</title>
+<style>
+:root{
+  --bg:#0a0a0c;
+  --bg2:#111115;
+  --bg3:#18181f;
+  --border:#222230;
+  --border2:#2a2a3a;
+  --text:#e8e8f0;
+  --text2:#a0a0b8;
+  --text3:#606080;
+  --accent:#4a7fff;
+  --accent2:#7c3aed;
+  --green:#22c55e;
+  --red:#ef4444;
+  --orange:#f97316;
+  --yellow:#eab308;
+  --teal:#14b8a6;
+  --pink:#ec4899;
+  --mono:'Courier New',monospace;
+  --sans:'Georgia',serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.7;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+h1{font-size:1.7rem;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+h2{font-size:1.2rem;font-weight:700;letter-spacing:-.01em;color:var(--text);border-bottom:1px solid var(--border);padding-bottom:8px;margin-bottom:16px}
+h3{font-size:.95rem;font-weight:700;color:var(--accent);margin-bottom:8px}
+h4{font-size:.85rem;font-weight:700;color:var(--text2);margin-bottom:6px}
+p{margin-bottom:12px;color:var(--text2);font-size:.88rem}
+code,pre{font-family:var(--mono);font-size:.82rem}
+pre{background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:14px;overflow-x:auto;margin-bottom:12px;line-height:1.55;color:#c8d8e8}
+.mono{font-family:var(--mono)}
+table{width:100%;border-collapse:collapse;font-size:.82rem;margin-bottom:14px}
+th{background:var(--bg3);color:var(--text2);font-weight:700;padding:8px 10px;text-align:left;border:1px solid var(--border);font-size:.78rem;letter-spacing:.04em;text-transform:uppercase}
+td{padding:7px 10px;border:1px solid var(--border);color:var(--text2);vertical-align:top}
+tr:nth-child(even) td{background:#0e0e14}
+.badge{display:inline-block;font-size:.7rem;font-weight:700;padding:2px 7px;border-radius:3px;letter-spacing:.04em;text-transform:uppercase;margin:1px}
+.b-green{background:#052a14;color:#22c55e;border:1px solid #166534}
+.b-blue{background:#051a3a;color:#4a7fff;border:1px solid #1e3a6e}
+.b-red{background:#2a0505;color:#ef4444;border:1px solid #7f1d1d}
+.b-orange{background:#2a1005;color:#f97316;border:1px solid #7c2d12}
+.b-yellow{background:#1f1a00;color:#eab308;border:1px solid #713f12}
+.b-purple{background:#1a0a2a;color:#a855f7;border:1px solid #581c87}
+.b-teal{background:#042a26;color:#14b8a6;border:1px solid #0d5c56}
+.b-gray{background:#1a1a20;color:#888;border:1px solid #333}
+.b-pink{background:#2a0520;color:#ec4899;border:1px solid #831843}
+/* LAYOUT */
+.layout{display:flex;min-height:100vh}
+/* TOC */
+#toc{position:fixed;left:0;top:0;width:220px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);overflow-y:auto;z-index:100;padding:0}
+#toc::-webkit-scrollbar{width:4px}
+#toc::-webkit-scrollbar-thumb{background:var(--border2)}
+.toc-header{padding:16px 16px 12px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg2);z-index:1}
+.toc-title{font-size:.7rem;font-weight:700;color:var(--accent);letter-spacing:.1em;text-transform:uppercase}
+.toc-sub{font-size:.65rem;color:var(--text3);margin-top:2px}
+.toc-list{list-style:none;padding:8px 0}
+.toc-list li{padding:0}
+.toc-list a{display:block;padding:5px 16px;font-size:.72rem;color:var(--text3);line-height:1.4;transition:color .15s,background .15s}
+.toc-list a:hover,.toc-list a.active{color:var(--text);background:#ffffff08;text-decoration:none}
+.toc-list a.active{border-left:2px solid var(--accent);color:var(--accent)}
+.toc-list .toc-num{color:var(--accent);font-weight:700;font-size:.65rem;min-width:18px;display:inline-block}
+/* MAIN */
+main{margin-left:220px;padding:32px 40px 80px;max-width:1000px;width:100%}
+/* SECTION */
+.section{margin-bottom:56px;scroll-margin-top:20px}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.section-num{font-size:2.5rem;font-weight:700;color:var(--border2);line-height:1;font-family:var(--mono)}
+.section-title-wrap{flex:1}
+.section-title{font-size:1.3rem;font-weight:700;color:var(--text);line-height:1.2}
+.section-subtitle{font-size:.78rem;color:var(--text3);margin-top:3px}
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:12px}
+.card.critical{border-color:#7f1d1d;background:#110505}
+.card.active{border-color:#166534;background:#051109}
+.card.planned{border-color:#1e3a6e;background:#05080f}
+.card.deprecated{border-color:#333;background:#0d0d0d}
+.card-title{font-size:.85rem;font-weight:700;color:var(--text);margin-bottom:6px;font-family:var(--mono)}
+.card-body{font-size:.8rem;color:var(--text2);line-height:1.6}
+/* MECHANISM BLOCK */
+.mech{background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:12px 14px;margin-bottom:10px;border-left:3px solid var(--accent)}
+.mech.nba{border-left-color:var(--green)}
+.mech.critical{border-left-color:var(--red)}
+.mech.operator{border-left-color:var(--orange)}
+.mech-name{font-family:var(--mono);font-size:.8rem;font-weight:700;color:var(--text);margin-bottom:4px}
+.mech-def{font-size:.78rem;color:var(--text2);line-height:1.5;margin-bottom:4px}
+.mech-meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+/* COLLAPSIBLE */
+details{background:var(--bg2);border:1px solid var(--border);border-radius:6px;margin-bottom:10px;overflow:hidden}
+details summary{padding:12px 14px;cursor:pointer;font-size:.82rem;font-weight:700;color:var(--text2);list-style:none;display:flex;align-items:center;gap:8px;user-select:none}
+details summary::before{content:"+";color:var(--accent);font-size:.9rem;font-weight:900;min-width:14px}
+details[open] summary::before{content:"−"}
+details summary:hover{color:var(--text);background:#ffffff06}
+.details-content{padding:0 14px 14px;border-top:1px solid var(--border)}
+/* FORMULA */
+.formula{background:#080810;border:1px solid #1a1a30;border-radius:6px;padding:12px 14px;margin:10px 0;font-family:var(--mono);font-size:.82rem;color:#b0c8e8;line-height:1.8}
+.formula .label{color:var(--text3);font-size:.7rem;display:block;margin-bottom:6px;letter-spacing:.06em;text-transform:uppercase}
+/* PIPELINE DIAGRAM */
+.pipeline{display:flex;align-items:center;flex-wrap:wrap;gap:4px;padding:14px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;margin:12px 0}
+.pipe-node{background:var(--bg2);border:1px solid var(--border2);border-radius:4px;padding:5px 10px;font-size:.72rem;font-family:var(--mono);color:var(--text2);white-space:nowrap}
+.pipe-arrow{color:var(--text3);font-size:.8rem;padding:0 2px}
+/* TRADE TABLE */
+.trade-win{color:var(--green)}
+.trade-loss{color:var(--red)}
+.trade-chaos{color:var(--orange)}
+/* SCORE CARD */
+.score-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:16px}
+.score-card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px 14px}
+.score-card.ceiling{border-color:#166534}
+.score-card.tooling{border-color:#1e3a6e}
+.score-card.debt{border-color:#7f1d1d}
+.score-card.empirical{border-color:#581c87}
+.score-card.structural{border-color:#7c2d12}
+.sc-mod{font-size:.65rem;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em}
+.sc-score{font-size:1.8rem;font-weight:700;color:var(--text);line-height:1;margin:4px 0 2px}
+.sc-type{font-size:.65rem;color:var(--text3)}
+.sc-bar{height:3px;background:var(--border);border-radius:2px;margin-top:6px;overflow:hidden}
+.sc-fill{height:100%;border-radius:2px;background:var(--accent)}
+/* TIMELINE */
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:"";position:absolute;left:6px;top:0;bottom:0;width:1px;background:var(--border2)}
+.tl-item{position:relative;margin-bottom:20px}
+.tl-dot{position:absolute;left:-20px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--accent);border:2px solid var(--bg)}
+.tl-item.active .tl-dot{background:var(--green)}
+.tl-item.critical .tl-dot{background:var(--red)}
+.tl-date{font-size:.7rem;color:var(--text3);font-family:var(--mono);margin-bottom:3px}
+.tl-title{font-size:.83rem;font-weight:700;color:var(--text)}
+.tl-body{font-size:.78rem;color:var(--text2);margin-top:4px;line-height:1.5}
+/* INFO HEADER */
+.info-bar{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px 20px;margin-bottom:32px;display:flex;gap:24px;flex-wrap:wrap}
+.ib-item{text-align:center}
+.ib-val{font-size:1.6rem;font-weight:700;color:var(--text);line-height:1;font-family:var(--mono)}
+.ib-label{font-size:.65rem;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+/* DIVIDER */
+.divider{border:none;border-top:1px solid var(--border);margin:24px 0}
+/* ALERT BOX */
+.alert{border-radius:6px;padding:12px 14px;margin-bottom:12px;font-size:.8rem}
+.alert.critical{background:#110505;border:1px solid #7f1d1d;color:#fca5a5}
+.alert.info{background:#05080f;border:1px solid #1e3a6e;color:#93c5fd}
+.alert.warning{background:#1a0d00;border:1px solid #7c2d12;color:#fdba74}
+.alert.success{background:#030f07;border:1px solid #166534;color:#86efac}
+/* NBA TRANSFER */
+.nba-card{background:#041a10;border:1px solid #166534;border-radius:8px;padding:14px 16px;margin-bottom:12px}
+.nba-card h4{color:var(--green)}
+/* OPERATOR NOTE */
+.operator-note{background:#0f0a00;border:1px solid #713f12;border-radius:6px;padding:10px 14px;font-size:.78rem;color:#fde68a;margin:10px 0}
+/* SCROLL TOP */
+#scrolltop{position:fixed;bottom:24px;right:24px;background:var(--accent);color:white;border:none;border-radius:4px;padding:6px 10px;cursor:pointer;font-size:.7rem;opacity:0;transition:opacity .3s;z-index:200}
+#scrolltop.visible{opacity:1}
+@media(max-width:768px){#toc{display:none}main{margin-left:0;padding:20px}}
+</style>
+</head>
+<body>
+
+<nav id="toc">
+  <div class="toc-header">
+    <div class="toc-title">MVP Archive</div>
+    <div class="toc-sub">NBA Transfer Extraction</div>
+  </div>
+  <ul class="toc-list" id="toc-items">
+    <li><a href="#s1"><span class="toc-num">01</span> Executive Identity</a></li>
+    <li><a href="#s2"><span class="toc-num">02</span> Core Purpose &amp; End-State</a></li>
+    <li><a href="#s3"><span class="toc-num">03</span> Full Architecture</a></li>
+    <li><a href="#s4"><span class="toc-num">04</span> Code Extraction</a></li>
+    <li><a href="#s5"><span class="toc-num">05</span> Prompt Library</a></li>
+    <li><a href="#s6"><span class="toc-num">06</span> Mechanisms &amp; Engines</a></li>
+    <li><a href="#s7"><span class="toc-num">07</span> Decision Logic</a></li>
+    <li><a href="#s8"><span class="toc-num">08</span> Data &amp; API Map</a></li>
+    <li><a href="#s9"><span class="toc-num">09</span> Frontend &amp; UX</a></li>
+    <li><a href="#s10"><span class="toc-num">10</span> Backend &amp; System</a></li>
+    <li><a href="#s11"><span class="toc-num">11</span> Evolution Timeline</a></li>
+    <li><a href="#s12"><span class="toc-num">12</span> Math &amp; Formulas</a></li>
+    <li><a href="#s13"><span class="toc-num">13</span> Failure Modes</a></li>
+    <li><a href="#s14"><span class="toc-num">14</span> NBA Transfer Map</a></li>
+    <li><a href="#s15"><span class="toc-num">15</span> Build Blueprint</a></li>
+    <li><a href="#s16"><span class="toc-num">16</span> Open Threads</a></li>
+    <li><a href="#s17"><span class="toc-num">17</span> MVP DNA</a></li>
+  </ul>
+</nav>
+
+<main>
+
+<!-- TITLE BLOCK -->
+<div style="margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--border)">
+  <div style="font-size:.7rem;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;font-family:var(--mono)">GEOPOLITICAL SIGNAL PIPELINE · V5.7+ · APRIL 2026</div>
+  <h1>MVP Master Archive<br><span style="color:var(--accent)">Claude Extraction for NBA Model Transfer</span></h1>
+  <p style="margin-top:12px;color:var(--text3);font-size:.8rem">1900+ sessions · 36 transcript files (~45MB) · Score: 9.57/10 · Gap: 0.19 · T=6 closed trades · Ceiling: 9.76</p>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+    <span class="badge b-blue">Explicit</span>
+    <span class="badge b-yellow">Inferred</span>
+    <span class="badge b-orange">Reconstructed</span>
+    <span class="badge b-green">Active</span>
+    <span class="badge b-gray">Deprecated</span>
+    <span class="badge b-purple">Planned</span>
+    <span class="badge b-red">Critical</span>
+    <span class="badge b-teal">Transferable</span>
+    <span class="badge b-pink">NBA-Relevant</span>
+  </div>
+</div>
+
+<!-- INFO BAR -->
+<div class="info-bar">
+  <div class="ib-item"><div class="ib-val">9.57</div><div class="ib-label">Pipeline Score</div></div>
+  <div class="ib-item"><div class="ib-val">0.19</div><div class="ib-label">Gap to Ceiling</div></div>
+  <div class="ib-item"><div class="ib-val">9.76</div><div class="ib-label">Ceiling</div></div>
+  <div class="ib-item"><div class="ib-val">T=6</div><div class="ib-label">Closed Trades</div></div>
+  <div class="ib-item"><div class="ib-val">+2.69</div><div class="ib-label">Total V2</div></div>
+  <div class="ib-item"><div class="ib-val">1900+</div><div class="ib-label">Sessions</div></div>
+  <div class="ib-item"><div class="ib-val">250+</div><div class="ib-label">Mechanisms</div></div>
+  <div class="ib-item"><div class="ib-val">~$12/mo</div><div class="ib-label">Live Cost Target</div></div>
+</div>
+
+<!-- ============================================================ -->
+<!-- SECTION 1 -->
+<!-- ============================================================ -->
+<section class="section" id="s1">
+<div class="section-header">
+  <div class="section-num">01</div>
+  <div class="section-title-wrap">
+    <div class="section-title">Executive Identity of the MVP</div>
+    <div class="section-subtitle">What it is, what problem it solves, operating philosophy</div>
+  </div>
+</div>
+
+<div class="alert info">
+<strong>Core Thesis:</strong> "Attention precedes capital. Capital follows narrative. Narrative forms before price." — The pipeline maps prediction market signals through narrative formation, human behavior modeling, crowd dynamics, and capital flow analysis to asset selection.
+</div>
+
+<h3>What it fundamentally is</h3>
+<p>The Geopolitical Signal Pipeline is a <strong>prediction-market-to-asset-signal system</strong>. It ingests Kalshi and Polymarket markets as Layer 0 inputs — treating them as aggregated probability distributions of informed crowd belief — and converts those signals through a multi-stage processing chain into spot long equity/ETF/crypto positions, sized by conviction, held for 5-day targets, with hard -10% stops.</p>
+
+<p>It is <strong>not</strong> a high-frequency trading system. It is <strong>not</strong> a fundamental research system. It is an <strong>attention-to-capital lag detector</strong>: the primary edge hypothesis is that prediction markets shift before asset prices, and that the gap between prediction market movement and asset price movement is the exploitable window.</p>
+
+<h3>What kind of system it is</h3>
+<div class="card">
+<div class="card-title">System Classification</div>
+<div class="card-body">
+<table>
+<tr><th>Dimension</th><th>Classification</th><th>Confidence</th></tr>
+<tr><td>Signal source</td><td>Prediction markets (Kalshi/Polymarket) + RSS + social sentiment</td><td><span class="badge b-green">Explicit</span></td></tr>
+<tr><td>Position type</td><td>Spot longs only — no shorts, no futures, no leverage</td><td><span class="badge b-green">Explicit</span></td></tr>
+<tr><td>Asset universe</td><td>US equities, ETFs, crypto (BTC/ETH/COIN), select international</td><td><span class="badge b-green">Explicit</span></td></tr>
+<tr><td>Hold period</td><td>5-day target (adjustable by GRADUATED_EXIT_PROTOCOL)</td><td><span class="badge b-green">Explicit</span></td></tr>
+<tr><td>Sizing</td><td>QUARTER_UNIT (T&lt;10), HALF_UNIT (T≥10), FULL_UNIT (T≥35+E_op&gt;0.80)</td><td><span class="badge b-green">Explicit</span></td></tr>
+<tr><td>Risk rule</td><td>Hard -10% stop, no exceptions, no renegotiation</td><td><span class="badge b-red">Critical</span></td></tr>
+<tr><td>Decision cadence</td><td>Monthly review only — no daily/weekly monitoring</td><td><span class="badge b-green">Explicit</span></td></tr>
+<tr><td>Operator</td><td>Single human operator (Akash), no team, no automation yet</td><td><span class="badge b-green">Explicit</span></td></tr>
+</table>
+</div>
+</div>
+
+<h3>Operating Philosophy — 13 Governing Principles</h3>
+<div class="card">
+<div class="card-body">
+<table>
+<tr><th>#</th><th>Principle</th></tr>
+<tr><td>1</td><td>LEAVE is the default. ENTER is the exception.</td></tr>
+<tr><td>2</td><td>Spot longs only. No shorts, no futures, no leverage, no pre-market tokens.</td></tr>
+<tr><td>3</td><td>Hard -10% stop. Automatic. Non-negotiable. No discussion.</td></tr>
+<tr><td>4</td><td>QUARTER_UNIT max sizing until T=10 MW direction signal.</td></tr>
+<tr><td>5</td><td>No entry without a stated EXIT_TRIGGER logged at entry.</td></tr>
+<tr><td>6</td><td>Conditional entries ("watchlist") are rejected — buy or skip.</td></tr>
+<tr><td>7</td><td>Pipeline veto = no entry. CHAOS_ENTRY must be logged with consequence_persistence=2.5.</td></tr>
+<tr><td>8</td><td>ETF proxies are inferior to single stocks where available.</td></tr>
+<tr><td>9</td><td>Monthly cadence only. Apple Stocks folders as sole tracking tool.</td></tr>
+<tr><td>10</td><td>Signal without narrative = noise. Narrative without capital flow = story. Capital without signal = gamble.</td></tr>
+<tr><td>11</td><td>Attention precedes capital. Capital follows narrative. Narrative forms before price.</td></tr>
+<tr><td>12</td><td>The pipeline does not reward repetition. Adding the same mechanism twice = noise.</td></tr>
+<tr><td>13</td><td>Michelangelo principle: improvement comes from subtraction of distortion, not addition of complexity.</td></tr>
+</table>
+</div>
+</div>
+
+<h3>Strategic Objective</h3>
+<p>Phase 1 (current): paper trading, ~$1.50/month cost, T=6→10, first MW calibration signal by April 25.<br>
+Phase 2 (June): S9 tooling build, ~$12/month, first automated signal generation, FinBERT + Polymarket API live.<br>
+Phase 3 (July+): IBKR paper trading with live MW loop, real capital deployment August 2026 if E_operator &gt; 0.80, T≥35.<br>
+Phase 4 (2027+): scaled operation ~$45/month, full automation, possible NBA model transfer.</p>
+
+<div class="alert warning"><strong>ATOM Retirement — CRITICAL PENDING:</strong> ATOM must be reduced from 95 fields to ~35 CORE fields before next trade. The caddy_packet crisis protocol requires compressibility to 7 fields under HIGH_NOREPI operator state. All complexity debt metrics are RED.</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 2 -->
+<!-- ============================================================ -->
+<section class="section" id="s2">
+<div class="section-header">
+  <div class="section-num">02</div>
+  <div class="section-title-wrap">
+    <div class="section-title">Core Purpose and End-State</div>
+    <div class="section-subtitle">Final ambition, what "edge" means, NBA transfer summary</div>
+  </div>
+</div>
+
+<h3>What the model detects / predicts / exploits</h3>
+<p>The pipeline attempts to exploit the <strong>attention-to-capital lag</strong>: the gap between when prediction markets reflect a changing probability distribution about a geopolitical/macro event and when that updated belief is reflected in equity prices. The thesis is that sophisticated Kalshi/Polymarket participants incorporate news faster than equity markets, creating a window of 1–7 days where prediction market signals lead equity price movement.</p>
+
+<div class="formula">
+<span class="label">Master Edge Equation (Full Form)</span>
+Edge_t = (R_t · S_t · T_t · E_t) − C_t − F_t
+Real_Edge = U − Θ·S_m − (L_time + L_exec + L_info + L_crowd)
+COMPOSITE_EDGE_adjusted = COMPOSITE_EDGE × (1 − D_t) × H_score × (1 + α·GLS_t)
+</div>
+
+<h3>What "edge" means in this system</h3>
+<div class="card">
+<div class="card-body">
+<p><strong>Edge is NOT</strong>: having better fundamental analysis, faster data, or higher computational power than institutions.</p>
+<p><strong>Edge IS</strong>: the combination of (1) reading prediction market signal earlier than equity market pricing, (2) having a discipline framework that prevents the operator from acting on noise, (3) leaving money on the table by design (LEAVE as default), and (4) calibrated sizing that prevents one bad trade from ending the experiment.</p>
+<p>The pipeline's edge degrades when: narratives are already priced (TERMINAL class), operator state is DRAINED/FLAT, the signal channel has been in the adversary's model for &gt;90 days (PSYCHO_MANTIS_CHECK), or portfolio drift_risk &gt; 8.</p>
+</div>
+</div>
+
+<h3>How this transfers to NBA live-betting</h3>
+<div class="nba-card">
+<h4>NBA Transfer Summary — Read First</h4>
+<p style="color:#86efac">The geopolitical pipeline is fundamentally a <strong>signal-to-edge extraction system operating on attention lag</strong>. The NBA live-betting model is the same architecture applied to a different domain: instead of prediction markets leading equity prices, in-game statistics and live odds lag real-time game state. The entire signal chain, operator framework, calibration system, and decision logic transfer directly. The data sources and champion rule rebuild from scratch.</p>
+<table>
+<tr><th>Pipeline Domain</th><th>NBA Domain</th></tr>
+<tr><td>Kalshi/Polymarket odds</td><td>Live sportsbook odds (DraftKings/FanDuel/Pinnacle)</td></tr>
+<tr><td>Geopolitical events</td><td>In-game state events (runs, momentum shifts, foul trouble)</td></tr>
+<tr><td>5-day hold period</td><td>In-game bet + settle within hours</td></tr>
+<tr><td>Quarterly MW calibration</td><td>End-of-season or rolling 50-game MW calibration</td></tr>
+<tr><td>be6b069 champion rule</td><td>New champion: e.g. "pace &gt; X + spread &gt; Y + Q1 outcome"</td></tr>
+<tr><td>Apple Stocks tracking</td><td>Bet log (Notion/Airtable)</td></tr>
+<tr><td>ATOM 35 fields</td><td>Rebuilt for game state variables</td></tr>
+</table>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 3 -->
+<!-- ============================================================ -->
+<section class="section" id="s3">
+<div class="section-header">
+  <div class="section-num">03</div>
+  <div class="section-title-wrap">
+    <div class="section-title">Full Architecture Reconstruction</div>
+    <div class="section-subtitle">All layers, functions, inputs, outputs, mechanisms, status</div>
+  </div>
+</div>
+
+<h3>Master Pipeline Chain</h3>
+<div class="pipeline">
+  <span class="pipe-node">Raw Inputs</span>
+  <span class="pipe-arrow">→</span>
+  <span class="pipe-node">S0: Explorer</span>
+  <span class="pipe-arrow">→</span>
+  <span class="pipe-node">Distortion Engine</span>
+  <span class="pipe-arrow">→</span>
+  <span class="pipe-node">S1: Refinery</span>
+  <span class="pipe-arrow">→</span>
+  <span class="pipe-node">Phase Gate</span>
+  <span class="pipe-arrow">→</span>
+  <span class="pipe-node">CVS Check</span>
+  <span class="pipe-arrow">→</span>
+  <span class="pipe-node">Operator Lock</span>
+  <span class="pipe-arrow">→</span>
+  <span class="pipe-node">S35: Decision</span>
+  <span class="pipe-arrow">→</span>
+  <span class="pipe-node">S4: Execution</span>
+  <span class="pipe-arrow">→</span>
+  <span class="pipe-node">Moltbook</span>
+  <span class="pipe-arrow">→</span>
+  <span class="pipe-node">CAL: MW Loop</span>
+</div>
+
+<h3>Layer-by-Layer Breakdown</h3>
+
+<details open>
+<summary>S0 — Signal Intake / Explorer (Score: 9.50 | Gap: tooling)</summary>
+<div class="details-content" style="padding-top:12px">
+<table>
+<tr><th>Property</th><th>Value</th></tr>
+<tr><td>Function</td><td>Raw ingestion of prediction market signals, RSS feeds, social sentiment, on-chain data. No decision authority. Broad, noisy, high-volume intake.</td></tr>
+<tr><td>Inputs</td><td>Polymarket Gamma API, Kalshi REST/WebSocket, feedparser RSS, PRAW Reddit, newspaper3k, Grok API (native X data)</td></tr>
+<tr><td>Outputs</td><td>Raw signal set X_t = {x_{1t}, ..., x_{nt}}. Distortion scores per signal. Layer assignments (1–5).</td></tr>
+<tr><td>Key Mechanisms</td><td>PHASE_AWARE_INPUT_GATING · DISTORTION_SCORE_PER_THESIS · SIGNAL_RESOLUTION_PYRAMID · BIOLUMINESCENCE_THRESHOLD · STILLNESS_SIGNAL_EXTRACTOR · NARRATIVE_PREMIUM_DECOMPOSER · LOOP_CLOSURE_CALIBRATION · MISCALIBRATION_GAP_TRACKER · TEMPORAL_GRAMMAR_CLASSIFIER</td></tr>
+<tr><td>Status</td><td><span class="badge b-green">Active (manual)</span> <span class="badge b-purple">S9 automation planned May 13</span></td></tr>
+<tr><td>NBA Transfer</td><td><span class="badge b-pink">Direct</span> — Replace Polymarket with live sportsbook odds. Replace RSS with play-by-play + injury APIs. Same layer architecture.</td></tr>
+</table>
+</div>
+</details>
+
+<details>
+<summary>S1 / S1B — Belief State / Refinery (Score: 9.55 | Gap: ceiling)</summary>
+<div class="details-content" style="padding-top:12px">
+<table>
+<tr><th>Property</th><th>Value</th></tr>
+<tr><td>Function</td><td>Bayesian belief state update. Distillation of raw X_t into decision-grade X̂_t. Opponent modeling (LANDA character). Narrative maturity classification.</td></tr>
+<tr><td>Inputs</td><td>X_t from S0. Historical Moltbook priors H_t. PoNR classification. Game theory tag.</td></tr>
+<tr><td>Outputs</td><td>Refined signal X̂_t. Belief state B_t. Narrative class (PRE-NARRATIVE → SATURATION). COORDINATION_VIABILITY_SCORE.</td></tr>
+<tr><td>Key Mechanisms</td><td>OPPONENT_ADAPTATION_RATE_REGISTER · SPECTRAL_SIGNAL_CLASSIFIER · THESIS_ARCHITECTURE_TEMPLATE · NAKAMA_NONLINEARITY · ODA_FORESHADOW · LEGITIMACY_DECAY_TRACKER · COORDINATION_VIABILITY_SCORE · HAUNTOLOGICAL_PERSISTENCE_SCORE · VISOR_EFFECT_PROTOCOL</td></tr>
+<tr><td>Formula</td><td>X̂_t = Σ_i w_i x_i (1−d_i) ; Decision = g(X̂_t, H_t, Θ)</td></tr>
+<tr><td>Status</td><td><span class="badge b-green">Active</span></td></tr>
+</table>
+</div>
+</details>
+
+<details>
+<summary>S2 — Narrative Engine (Score: 9.80 | At ceiling)</summary>
+<div class="details-content" style="padding-top:12px">
+<p>Maps signal → narrative formation stages. Classifies thesis lifecycle from PRE-NARRATIVE (speculative, no media coverage) through INFORMED (institutional uptake) → TAKEOFF (mainstream) → TERMINAL (saturated, already priced). The TEMPORAL_GRAMMAR_CLASSIFIER assigns tense classes (present-continuous = active flux = valid entry; present-perfect = announcement complete = AVOID).</p>
+<p>Narrative maturity determines position sizing and hold period. TERMINAL narratives = AVOID regardless of signal strength. Key failure in T=6 data: CVX/XOM/ZIM entered on PRESENT_PERFECT (announcement complete, effect persisting) thesis incorrectly classified as PRESENT_CONTINUOUS. This classification error drove 3/5 SYSTEM losses.</p>
+<table>
+<tr><th>Narrative Class</th><th>Definition</th><th>Action</th></tr>
+<tr><td>PRE-NARRATIVE</td><td>Speculative, no mainstream signal</td><td>SHADOW_BOOK or PROBE</td></tr>
+<tr><td>INFORMED</td><td>Institutional/specialist level</td><td>QUARTER_UNIT entry window</td></tr>
+<tr><td>TAKEOFF</td><td>Mainstream formation, velocity increasing</td><td>QUARTER_UNIT, max window</td></tr>
+<tr><td>SATURATION</td><td>Widely known, priced in</td><td>AVOID / exit existing</td></tr>
+<tr><td>TERMINAL</td><td>Present-perfect complete</td><td>MANDATORY AVOID</td></tr>
+</table>
+</div>
+</details>
+
+<details>
+<summary>S3A — Capital Flow (Score: 9.14 | Gap: structural)</summary>
+<div class="details-content" style="padding-top:12px">
+<p>Validates that capital is actually flowing toward the thesis before entry. SEC EDGAR whale detection. Global Liquidity State (GLS_t). HYDROTHERMAL_VENT_GRADIENT model for structural capital formation. CARNOT_CEILING for thermodynamic efficiency cap on expected edge.</p>
+<p><strong>Structural ceiling confirmed</strong> by CVX/XOM entries: capital flow (GLS_t was declining — Fed tightening), HYDROTHERMAL_VENT collapse confirmed post-entry. Score ceiling is structural — requires live institutional flow data (S9 tooling) to improve further.</p>
+<p>COMPOSITE_EDGE_adjusted = COMPOSITE_EDGE × (1 − D_t) × H_score × (1 + α·GLS_t)</p>
+</div>
+</details>
+
+<details>
+<summary>S35 — Decision Gate (Score: 9.80 | At ceiling)</summary>
+<div class="details-content" style="padding-top:12px">
+<p>The final decision layer before execution. Applies GRADUATED_EXIT_PROTOCOL (Modes I–VII) and OPERATOR_LOCK_PROTOCOL. Runs COUNT_D_PROTOCOL (trade-specific contracts set at entry, non-renegotiable). Applies CVS threshold check. Runs UPSC_FUNNEL sequential gates.</p>
+<p>GRADUATED_EXIT modes: I=Hold, II=Trim 25%, III=Trim 50%, IV=Exit 75%, V=Full exit, VI=Emergency exit, VII=Stop-loss. Mode determined by signal quality degradation, not price movement alone.</p>
+</div>
+</details>
+
+<details>
+<summary>S4 — Execution (Score: 9.80 | At ceiling)</summary>
+<div class="details-content" style="padding-top:12px">
+<p>FIRE_MODE taxonomy: NONE (no trade), SNIPER (leave_score ≥ 8.5, QUARTER_UNIT, 1 position), M16 (T≥10, 2× QUARTER_UNIT), UZI (T≥35, FULL_UNIT). COUNT_D_PROTOCOL: entry price + stop + exit trigger + thesis + operator state all logged at entry. Non-renegotiable post-entry.</p>
+</div>
+</details>
+
+<details>
+<summary>S5 — Operator Layer (Score: 8.46 | Gap: empirical)</summary>
+<div class="details-content" style="padding-top:12px">
+<p>Operator quality measurement and protection. ACTIVATION_CLASSIFIER states: REDLINE (fight/flight), HOT (elevated), FLOW (optimal), FLAT (disengaged), DRAINED (depleted). OPERATOR_LOCK_PROTOCOL: I_raw(t)=0 for all t in τ_exec. GHOST_STANCE_EMERGENCE: capability is legitimate only when the cost has been paid (T≥10 for M16, T≥35 for UZI).</p>
+<p>Key mechanisms: MOTOR_PROGRAMME_DEPTH · BREATH_RESET · IMAGINAL_REHEARSAL · ENTRY_DESIRE_LOG · SOVEREIGN_IDENTITY_ANCHOR · CREATION_OVER_RETALIATION_GATE · INTERNAL_SIGNAL_AUDIT · STRESS_SCENARIO_CALIBRATION · SELF_MODEL_CALIBRATION_LAYER · CAPABILITY_PREREQUISITE_REGISTRY</p>
+<p>T=6 failure pattern: April 4 CHAOS cluster was operator state failure (DRAINED during market shock day). 6 positions entered against signals = CHAOS_ENTRY, consequence_persistence=2.5.</p>
+</div>
+</details>
+
+<details>
+<summary>S7 — Regime Detection (Score: 9.65 | Gap: empirical)</summary>
+<div class="details-content" style="padding-top:12px">
+<p>Historical regime classification. SAECULAR_REGIME_LAYER (Strauss-Howe generational theory). LEGITIMACY_DECAY_TRACKER L(t) = L₀ × e^{−κt} × (1 + Σ renewal_events). NARRATIVE_HALF_LIFE_ENGINE (Class A–D decay constants). HAUNTOLOGICAL_PERSISTENCE_SCORE. GLS_t Global Liquidity State.</p>
+<p>Key insight from wars/civilizations integration: legitimacy is a time-decaying variable, not a static multiplier. P_eff(t) = COMPOSITE_EDGE × L(t). When L(t) &lt; 0.5 without recent renewal: downgrade regardless of raw signal quality. CVX had L(t) ≈ 0.03 at entry (90-day narrative, no fresh renewal). RTX had L(t) ≈ 0.85 (fresh procurement announcements).</p>
+</div>
+</details>
+
+<details>
+<summary>S9 — Tooling (Score: 8.37 | Gap: tooling — build starts May 13)</summary>
+<div class="details-content" style="padding-top:12px">
+<p>The automated signal engine. Not yet built. 24 named components. Build phases: Phase 1 (May 13–31): feedparser + PRAW + Grok API + basic scoring loop + ATOM retirement. Phase 2 (June): FinBERT + KeyBERT + Polymarket condition_id + Kalshi WebSocket live + first automated signal.</p>
+<p>ADAPTIVE_STRATEGY_POPULATION (Darwinian): N=3 concurrent strategy candidates with formal mutation, fitness evaluation, and champion replacement. GENERATIVE_CONSTRAINT_ENGINE (Brian Eno): random sampling from constraint grammar for global exploration vs ASP's hill-climbing exploitation.</p>
+<p>Stack: Grok API (xAI credit) · Claude Haiku · feedparser · PRAW · FinBERT · KeyBERT · APScheduler · HuggingFace · Redis · GitHub Actions · Make.com Core · Airtable · Streamlit Cloud · Slack alerts</p>
+</div>
+</details>
+
+<details>
+<summary>CAL — Calibration (Score: 5.37 | Gap: data void — T=6)</summary>
+<div class="details-content" style="padding-top:12px">
+<p>MW Theorem (Multiplicative Weights) calibration. Tracks signal factor performance. At T=10: first MW direction signal fires with ε=0.56 uncertainty. At T=35: first MW recalibration cycle. Score closes primarily through trade data, not architecture additions.</p>
+<p>T=6 closed trades:</p>
+<table>
+<tr><th>#</th><th>Ticker</th><th>Entry</th><th>Exit</th><th>P&amp;L%</th><th>Class</th></tr>
+<tr><td>1</td><td>MP</td><td>$53.29</td><td>$47.96</td><td class="trade-loss">−10.00%</td><td>SYSTEM_LOSS</td></tr>
+<tr><td>2</td><td>ZIM</td><td>$26.46</td><td>$25.88</td><td class="trade-loss">−2.19%</td><td>SYSTEM_LOSS (thesis break)</td></tr>
+<tr><td>3</td><td>RTX</td><td>$194.00</td><td>$201.56</td><td class="trade-win">+3.90%</td><td>SYSTEM_WIN</td></tr>
+<tr><td>4</td><td>CVX</td><td>$206.79</td><td>$188.55</td><td class="trade-loss">−8.82%</td><td>SYSTEM_LOSS</td></tr>
+<tr><td>5</td><td>USO</td><td>$137.92</td><td>$124.82</td><td class="trade-loss">−9.50%</td><td>CHAOS_LOSS</td></tr>
+<tr><td>6</td><td>XOM</td><td>$163.50</td><td>$152.51</td><td class="trade-loss">−6.72%</td><td>SYSTEM_LOSS</td></tr>
+</table>
+<p style="color:var(--text3);font-size:.75rem">MW state: T=6, ε=1.0, hit_sys=20% (1/5). Error cluster: PoNR_announcement vs PoNR_implementation gap. 3/5 SYSTEM losses = temporal grammar misclassification (CVX, XOM, ZIM). 1/5 = CHAOS_ENTRY operator failure (USO).</p>
+</div>
+</details>
+
+<h3>Module Score Summary</h3>
+<div class="score-grid">
+  <div class="score-card tooling"><div class="sc-mod">S0</div><div class="sc-score">9.50</div><div class="sc-type">signal intake · tooling gap</div><div class="sc-bar"><div class="sc-fill" style="width:95%"></div></div></div>
+  <div class="score-card ceiling"><div class="sc-mod">S1</div><div class="sc-score">9.55</div><div class="sc-type">belief state · ceiling</div><div class="sc-bar"><div class="sc-fill" style="width:95.5%"></div></div></div>
+  <div class="score-card ceiling"><div class="sc-mod">S2</div><div class="sc-score">9.80</div><div class="sc-type">narrative · at ceiling</div><div class="sc-bar"><div class="sc-fill" style="width:98%;background:var(--green)"></div></div></div>
+  <div class="score-card structural"><div class="sc-mod">S3A</div><div class="sc-score">9.14</div><div class="sc-type">capital flow · structural</div><div class="sc-bar"><div class="sc-fill" style="width:91.4%;background:var(--orange)"></div></div></div>
+  <div class="score-card tooling"><div class="sc-mod">S3B</div><div class="sc-score">8.95</div><div class="sc-type">flow dynamics · tooling</div><div class="sc-bar"><div class="sc-fill" style="width:89.5%"></div></div></div>
+  <div class="score-card ceiling"><div class="sc-mod">S35</div><div class="sc-score">9.80</div><div class="sc-type">decision gate · ceiling</div><div class="sc-bar"><div class="sc-fill" style="width:98%;background:var(--green)"></div></div></div>
+  <div class="score-card ceiling"><div class="sc-mod">S4</div><div class="sc-score">9.80</div><div class="sc-type">execution · ceiling</div><div class="sc-bar"><div class="sc-fill" style="width:98%;background:var(--green)"></div></div></div>
+  <div class="score-card debt"><div class="sc-mod">ATOM</div><div class="sc-score">8.90</div><div class="sc-type">exec object · ⚠ DEBT</div><div class="sc-bar"><div class="sc-fill" style="width:89%;background:var(--red)"></div></div></div>
+  <div class="score-card empirical"><div class="sc-mod">S5</div><div class="sc-score">8.46</div><div class="sc-type">operator · empirical</div><div class="sc-bar"><div class="sc-fill" style="width:84.6%;background:#a855f7"></div></div></div>
+  <div class="score-card empirical"><div class="sc-mod">S7</div><div class="sc-score">9.65</div><div class="sc-type">regime · empirical</div><div class="sc-bar"><div class="sc-fill" style="width:96.5%;background:#a855f7"></div></div></div>
+  <div class="score-card ceiling"><div class="sc-mod">S8</div><div class="sc-score">9.80</div><div class="sc-type">risk mgmt · ceiling</div><div class="sc-bar"><div class="sc-fill" style="width:98%;background:var(--green)"></div></div></div>
+  <div class="score-card tooling"><div class="sc-mod">S9</div><div class="sc-score">8.37</div><div class="sc-type">tooling · build May 13</div><div class="sc-bar"><div class="sc-fill" style="width:83.7%"></div></div></div>
+  <div class="score-card debt"><div class="sc-mod">CAL</div><div class="sc-score">5.37</div><div class="sc-type">calibration · data void</div><div class="sc-bar"><div class="sc-fill" style="width:53.7%;background:var(--red)"></div></div></div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 4 — CODE EXTRACTION -->
+<!-- ============================================================ -->
+<section class="section" id="s4">
+<div class="section-header">
+  <div class="section-num">04</div>
+  <div class="section-title-wrap">
+    <div class="section-title">Full Code Extraction</div>
+    <div class="section-subtitle">All code fragments, scripts, logic blocks, API patterns, configs</div>
+  </div>
+</div>
+
+<h3>Signal Champion Filter — Python (be6b069 frozen baseline)</h3>
+<span class="badge b-green">Explicit</span> <span class="badge b-teal">Transferable</span>
+<pre>
+# be6b069 — FROZEN CHAMPION RULE (do not modify without T≥20 replacement)
+# Deployed to GitHub repo. This is the signal filter that all new candidates
+# must beat before replacing.
+
+import pandas as pd
+import numpy as np
+
+CHAMPION = {
+    "symbols": ["GLD", "^GDAXI"],
+    "overlay_band_low": 0.55,
+    "overlay_band_high": 0.75,
+    "direction": "LONG",
+    "hold_days": 5,
+    "stop_pct": -0.10,
+    "size": "QUARTER_UNIT",
+    "regime_filter": "any",
+    "GLS_gate": "neutral"
+}
+
+def apply_champion_filter(signals_df):
+    """
+    Filter signals through the frozen champion rule.
+    Returns only signals that meet champion criteria.
+    """
+    filtered = signals_df[
+        (signals_df["symbol"].isin(CHAMPION["symbols"])) &
+        (signals_df["overlay_score"].abs() >= CHAMPION["overlay_band_low"]) &
+        (signals_df["overlay_score"].abs() < CHAMPION["overlay_band_high"]) &
+        (signals_df["direction"] == "LONG")
+    ].copy()
+    return filtered
+
+def milk_test_champion(df, min_trades=30):
+    """
+    MILK_TEST: walkforward validation of champion.
+    Returns fitness score F = alpha*hit_rate + beta*mean_ret - gamma*max_dd
+    """
+    if len(df) < min_trades:
+        return {"status": "INSUFFICIENT_DATA", "n": len(df)}
+    
+    hit_rate = (df["ret_5d"] > 0).mean()
+    mean_ret = df["ret_5d"].mean()
+    max_dd = df["ret_5d"].min()
+    
+    F = 0.4 * hit_rate + 0.4 * mean_ret - 0.2 * abs(max_dd)
+    return {
+        "fitness": F,
+        "hit_rate": hit_rate,
+        "mean_ret": mean_ret,
+        "max_dd": max_dd,
+        "n": len(df),
+        "status": "VALID" if F > 0 else "FAILING"
+    }
+</pre>
+
+<h3>COMPOSITE_EDGE Calculation</h3>
+<span class="badge b-green">Explicit</span> <span class="badge b-teal">Transferable</span>
+<pre>
+def compute_composite_edge(signal, operator_state, portfolio_state):
+    """
+    COMPOSITE_EDGE: weighted signal quality score.
+    Must be >= 0.55 for SNIPER entry, >= 0.65 for champion band.
+    """
+    # Layer weights (approximate — MW recalibration will update these)
+    w_polymarket = 0.30   # Prediction market signal
+    w_narrative  = 0.20   # Narrative maturity classifier
+    w_gls        = 0.15   # Global Liquidity State
+    w_temporal   = 0.15   # Temporal grammar (is thesis in right tense?)
+    w_capital    = 0.20   # Capital flow validation
+    
+    raw_edge = (
+        w_polymarket * signal.get("poly_delta", 0) +
+        w_narrative  * signal.get("narrative_score", 0) +
+        w_gls        * portfolio_state.get("gls_t", 0) +
+        w_temporal   * signal.get("temporal_score", 0) +
+        w_capital    * signal.get("capital_flow_score", 0)
+    )
+    
+    # Distortion adjustment: D_t = w_E*E_t + w_N*N_t + w_I*I_t + w_L*L_t
+    E_t = operator_state.get("emotional_noise", 0)    # 0=FLOW, 1=REDLINE
+    N_t = signal.get("input_noise", 0)                # 0=Layer1, 1=unverified
+    I_t = operator_state.get("identity_instability", 0)
+    L_t = signal.get("leakage_score", 0)
+    
+    D_t = 0.35*E_t + 0.25*N_t + 0.25*I_t + 0.15*L_t
+    
+    # Legitimacy decay: L(t) = L0 * exp(-kappa*t) * (1 + sum(renewals))
+    age_days = signal.get("narrative_age_days", 0)
+    kappa = 0.05 if signal.get("type") == "geopolitical" else 0.002
+    renewal_bonus = signal.get("renewal_events", 0) * 0.1
+    L_t_legit = signal.get("L0", 1.0) * np.exp(-kappa * age_days) * (1 + renewal_bonus)
+    
+    # Hauntological persistence
+    H_score = signal.get("harmonic_score", 1.0)
+    
+    adjusted_edge = raw_edge * (1 - D_t) * H_score * L_t_legit
+    return max(0, min(1, adjusted_edge))
+
+def coordination_viability_score(signal, operator, portfolio):
+    """
+    CVS: multi-pillar simultaneous viability check.
+    All pillars must be above threshold for PROCEED.
+    A strong signal with all other pillars weak = OBSERVE_ONLY.
+    """
+    pillars = {
+        "signal_quality":    signal.get("composite_edge", 0),
+        "operator_quality":  operator.get("readiness_score", 0),
+        "portfolio_capacity": max(0, 1 - portfolio.get("drift_risk", 0) / 10),
+        "thesis_phase":      signal.get("phase_score", 0),  # 1=active, 0=terminal
+        "legitimacy":        signal.get("L_t", 0),
+        "gls":               max(0, portfolio.get("gls_t", 0)),
+    }
+    weights = {"signal_quality": 0.25, "operator_quality": 0.20,
+               "portfolio_capacity": 0.15, "thesis_phase": 0.20,
+               "legitimacy": 0.15, "gls": 0.05}
+    
+    CVS = sum(weights[k] * pillars[k] for k in pillars)
+    tau_viability = 0.55  # threshold
+    
+    return {
+        "CVS": CVS,
+        "verdict": "PROCEED" if CVS > tau_viability else "OBSERVE_ONLY",
+        "pillars": pillars
+    }
+</pre>
+
+<h3>Paper Trading Master Prompt — Signal Evaluation Template</h3>
+<span class="badge b-green">Explicit</span> <span class="badge b-teal">Transferable</span>
+<pre>
+# PAPER TRADING MASTER PROMPT V5.7+ (abbreviated — full version in Section 5)
+# Use this structure for every signal evaluation session
+
+PIPELINE_IDENTITY = """
+Capital moves before language.
+Structure forms before capital.
+Price reconciles last.
+Delta is the sample. Level is background.
+"""
+
+FROZEN_CHAMPION_RULE = """
+be6b069:
+- LONG only
+- Symbols: {GLD, ^GDAXI}
+- 0.55 <= abs(overlay_score) < 0.75
+- Spot only, no leverage, no short
+- Hard stop: -10% per position
+- Sizing: QUARTER_UNIT until T >= 10
+"""
+
+SIGNAL_PROCESSING_SEQUENCE = {
+    0: "Decay check (social 4-24h, RSS 24h-7d, on-chain 7d+)",
+    1: "Inertia check (TRUE/FAKE/EXHAUSTED/REVERSAL)",
+    2: "Ingestion gate (z_sentiment, Kalshi shift, velocity)",
+    3: "Layer assignment (Layer 1-5, distortion_prior 0.00-DISCARD)",
+    4: "Coordination check (CVS > tau_viability?)",
+    5: "Distillation fraction (LOW/MID/HIGH_TEMP)",
+    6: "Capital flow validation (GLS_t, institutional moves)",
+    "6.5": "Flow dynamics (TURING_CONDITION)",
+    7: "Time stack alignment (past/present/future tense)",
+    8: "Survival funnel (UPSC gates)",
+    9: "Positioning check (4 conditions for DANGEROUS_POSITION)",
+    10: "FIRE_MODE (leave_score >= 8.5 = SNIPER)"
+}
+
+NON_NEGOTIABLE_RULES = [
+    "SPOT LONGS ONLY. No shorts, no futures, no leverage.",
+    "HARD STOP -10%. Automatic. No discussion.",
+    "QUARTER_UNIT only until T=10.",
+    "No entry without stated EXIT_TRIGGER.",
+    "LEAVE is default. ENTER is exception.",
+    "CVS check BEFORE COMPOSITE_EDGE evaluation.",
+    "ACTIVATION_CLASSIFIER != DRAINED/FLAT before ANY new entry.",
+    "TEMPORAL_GRAMMAR must be PRESENT_CONTINUOUS. AVOID PRESENT_PERFECT."
+]
+</pre>
+
+<h3>Polymarket API Pattern</h3>
+<span class="badge b-green">Explicit</span> <span class="badge b-purple">S9 Build</span>
+<pre>
+import requests
+
+POLYMARKET_BASE = "https://gamma-api.polymarket.com"
+
+def get_market_by_condition_id(condition_id: str):
+    """Fetch market data from Polymarket Gamma API (free tier)"""
+    url = f"{POLYMARKET_BASE}/markets/{condition_id}"
+    resp = requests.get(url, timeout=10)
+    resp.raise_for_status()
+    return resp.json()
+
+def get_active_markets(limit=100, offset=0, tag_filter="geopolitics"):
+    """Fetch active prediction markets"""
+    params = {"limit": limit, "offset": offset, "active": True}
+    resp = requests.get(f"{POLYMARKET_BASE}/markets", params=params)
+    return resp.json()
+
+def compute_polymarket_signal(market_data):
+    """
+    Extract signal from Polymarket market data.
+    Returns overlay_score in [-1, +1] range.
+    """
+    yes_price = market_data.get("outcomePrices", [0.5])[0]
+    prev_price = market_data.get("prev_price", 0.5)
+    
+    # Delta = current - previous (signal strength)
+    delta = float(yes_price) - float(prev_price)
+    
+    # Velocity = delta over time window
+    # (requires historical data for proper computation)
+    
+    return {
+        "condition_id": market_data.get("conditionId"),
+        "question": market_data.get("question"),
+        "yes_price": float(yes_price),
+        "delta": delta,
+        "overlay_score": delta * 2,  # normalize to [-1, +1] approx
+        "volume_24h": market_data.get("volume24hr", 0),
+    }
+</pre>
+
+<h3>Kalshi API Pattern</h3>
+<span class="badge b-green">Explicit</span> <span class="badge b-purple">S9 Build</span>
+<pre>
+import requests
+
+KALSHI_BASE = "https://trading-api.kalshi.com/trade-api/v2"
+
+def get_kalshi_markets(status="open", limit=100):
+    """Kalshi REST API — free tier"""
+    headers = {"Authorization": f"Bearer {KALSHI_API_KEY}"}
+    params = {"status": status, "limit": limit}
+    resp = requests.get(f"{KALSHI_BASE}/markets", headers=headers, params=params)
+    return resp.json()
+
+# WebSocket for live odds (planned in S9 Phase 2):
+# wss://trading-api.kalshi.com/trade-api/ws/v2
+# Subscribe to: {"id": 1, "cmd": "subscribe", "params": {"channels": ["ticker"], "market_tickers": [...]}}
+</pre>
+
+<h3>SELF_MODEL_CALIBRATION_LAYER — Python Scaffold</h3>
+<span class="badge b-green">Active (manual build now)</span> <span class="badge b-teal">Transferable</span>
+<pre>
+# Build this NOW — T=6 data is sufficient to populate first version
+# Tracks WHERE the pipeline is systematically wrong, not just THAT it's wrong
+
+SELF_MODEL_V1 = {
+    "failure_patterns": [
+        {
+            "id": "P1_TEMPORAL_GRAMMAR",
+            "description": "PoNR_announcement classified as active, was actually TERMINAL",
+            "error_type": "TEMPORAL_GRAMMAR_MISCLASSIFICATION",
+            "condition": "narrative_age_days > 30 AND thesis_type == 'geopolitical_announcement'",
+            "affected_trades": ["CVX", "XOM", "ZIM"],
+            "frequency": 3,  # out of 5 SYSTEM trades
+            "severity": "HIGH",
+            "prescription": "Downgrade COMPOSITE_EDGE by 0.3 if PRESENT_PERFECT confirmed",
+            "gate": "Require TEMPORAL_GRAMMAR = PRESENT_CONTINUOUS before entry on any thesis >30 days old"
+        },
+        {
+            "id": "P2_OPERATOR_STATE",
+            "description": "Entry during DRAINED operator state on high-stress market day",
+            "error_type": "ACTIVATION_CLASSIFIER_NOT_GATED",
+            "condition": "market_shock_day == True",
+            "affected_trades": ["USO", "JPM", "MSFT", "EWZ", "UNG", "FCG"],
+            "frequency": 6,  # CHAOS cluster
+            "severity": "CRITICAL",
+            "prescription": "Hard gate: ACTIVATION_CLASSIFIER != DRAINED before ANY entry",
+            "gate": "CHAOS_ENTRY probability highest on market shock days regardless of signal"
+        },
+        {
+            "id": "P3_HIGH_INERTIA",
+            "description": "High inertia (tau > 60 days) not filtered at entry",
+            "error_type": "INERTIA_TRACKER_NOT_HARD_GATED",
+            "condition": "narrative_age_days > 60",
+            "affected_trades": ["CVX", "XOM"],
+            "frequency": 2,  # out of 5 SYSTEM trades
+            "severity": "HIGH",
+            "prescription": "Size down to 0.5x QUARTER_UNIT if tau > 90 days",
+            "gate": "Additional RETROSYNTHESIS_GATE confirmation required when tau > 60"
+        }
+    ],
+    "last_updated": "2026-04-15",
+    "T_count": 6
+}
+
+def check_self_model(signal, self_model):
+    """
+    Before entry, check if proposed trade matches any known failure patterns.
+    Returns penalty and flags.
+    """
+    penalties = []
+    flags = []
+    
+    for pattern in self_model["failure_patterns"]:
+        if _matches_pattern(signal, pattern):
+            penalty = {"pattern_id": pattern["id"], "severity": pattern["severity"]}
+            if pattern["severity"] == "CRITICAL":
+                penalty["edge_reduction"] = 0.5
+                flags.append(f"SELF_MODEL_CRITICAL: {pattern['description']}")
+            elif pattern["severity"] == "HIGH":
+                penalty["edge_reduction"] = 0.3
+                flags.append(f"SELF_MODEL_HIGH: {pattern['description']}")
+            penalties.append(penalty)
+    
+    total_reduction = sum(p["edge_reduction"] for p in penalties)
+    return {"total_reduction": min(0.8, total_reduction), "flags": flags}
+
+def _matches_pattern(signal, pattern):
+    """Simple pattern matching — extend as patterns accumulate"""
+    if pattern["id"] == "P1_TEMPORAL_GRAMMAR":
+        return (signal.get("narrative_age_days", 0) > 30 and 
+                signal.get("temporal_grammar") == "PRESENT_PERFECT")
+    if pattern["id"] == "P2_OPERATOR_STATE":
+        return signal.get("market_shock_day", False)
+    if pattern["id"] == "P3_HIGH_INERTIA":
+        return signal.get("narrative_age_days", 0) > 60
+    return False
+</pre>
+
+<h3>APScheduler Pattern — Signal Cron (S9 Phase 1)</h3>
+<span class="badge b-purple">Planned — May 13</span>
+<pre>
+from apscheduler.schedulers.blocking import BlockingScheduler
+from datetime import datetime
+
+scheduler = BlockingScheduler(timezone="UTC")
+
+@scheduler.job("cron", hour=7, minute=0, day_of_week="mon-fri")
+def morning_signal_check():
+    """Run signal pipeline at market open"""
+    signals = fetch_polymarket_signals()
+    signals += fetch_kalshi_signals()
+    signals += fetch_rss_signals()
+    
+    processed = [process_signal(s) for s in signals]
+    ranked = rank_by_composite_edge(processed)
+    
+    champion_signals = [s for s in ranked if meets_champion_filter(s)]
+    
+    if champion_signals:
+        send_slack_alert(champion_signals)
+
+@scheduler.job("cron", hour=20, minute=0, day_of_week="mon-fri")  
+def evening_portfolio_review():
+    """Check open positions against exit triggers"""
+    open_positions = get_open_positions()
+    for pos in open_positions:
+        check_exit_trigger(pos)
+        check_stop_loss(pos)
+
+scheduler.start()
+</pre>
+
+<h3>FinBERT Sentiment Pattern (S9 Phase 2)</h3>
+<span class="badge b-purple">Planned — June</span>
+<pre>
+from transformers import pipeline
+
+# ProsusAI/finbert — financial sentiment
+finbert = pipeline("sentiment-analysis", model="ProsusAI/finbert")
+
+def score_article_sentiment(text: str) -> dict:
+    result = finbert(text[:512])[0]  # truncate to model limit
+    return {
+        "label": result["label"],  # "positive", "negative", "neutral"
+        "score": result["score"],
+        "signal_direction": 1 if result["label"] == "positive" else 
+                           -1 if result["label"] == "negative" else 0
+    }
+
+# KeyBERT for topic extraction
+from keybert import KeyBERT
+kw_model = KeyBERT()
+
+def extract_themes(text: str, top_n=5):
+    keywords = kw_model.extract_keywords(text, keyphrase_ngram_range=(1, 2),
+                                          stop_words="english", top_n=top_n)
+    return [kw[0] for kw in keywords]
+</pre>
+
+<h3>Moltbook Entry Schema</h3>
+<span class="badge b-green">Explicit</span> <span class="badge b-teal">Transferable</span>
+<pre>
+# Moltbook: the learning log. Every closed position gets an entry.
+# Schema is the feedback loop source for MW calibration.
+
+MOLTBOOK_ENTRY = {
+    # Trade facts
+    "ticker": str,
+    "entry_date": "YYYY-MM-DD",
+    "exit_date": "YYYY-MM-DD",
+    "entry_price": float,
+    "exit_price": float,
+    "return_pct": float,
+    "size_class": "QUARTER_UNIT|HALF_UNIT|FULL_UNIT",
+    "exit_reason": "STOP_LOSS|THESIS_BREAK|TARGET|SIGNAL_DEGRADATION|CHAOS_EXIT",
+    
+    # Classification
+    "trade_class": "SYSTEM_WIN|SYSTEM_LOSS|CHAOS_WIN|CHAOS_LOSS",
+    "signal_class": "SN1|SN2|E2|ARO",
+    "narrative_class": "LATENT|INFORMED|TAKEOFF|SATURATION|TERMINAL",
+    "temporal_grammar": "PRESENT_CONTINUOUS|PRESENT_PERFECT|...",
+    
+    # At-entry state
+    "composite_edge_at_entry": float,
+    "CVS_at_entry": float,
+    "L_t_at_entry": float,
+    "D_t_at_entry": float,
+    "operator_state_at_entry": "FLOW|HOT|FLAT|DRAINED|REDLINE",
+    "narrative_age_days": int,
+    "drift_risk_at_entry": float,
+    
+    # Pre-trade declaration (COUNT_D_PROTOCOL)
+    "stated_exit_trigger": str,
+    "actual_exit_trigger": str,
+    "thesis_at_entry": str,
+    
+    # Post-trade attribution
+    "failure_patterns_matched": list,  # from SELF_MODEL
+    "TEMPORAL_GRAMMAR_flag": bool,
+    "MW_factor_updates": dict,
+    
+    # Operator logging
+    "ENTRY_DESIRE_LOG": {
+        "stated_thesis": str,
+        "actual_desire": str,  # honest self-assessment at entry
+        "BCS_gap": float       # felt_confidence - analytical_confidence
+    },
+    
+    "consequence_persistence": float,  # elevated to 2.5 for CHAOS_ENTRY
+}
+</pre>
+
+<h3>GENERATIVE_CONSTRAINT_ENGINE — Strategy Exploration</h3>
+<span class="badge b-purple">Planned — June (S9 Phase 2)</span> <span class="badge b-teal">Transferable</span>
+<pre>
+import random
+
+# Brian Eno principle: define constraints, sample the space
+# Not hand-picking variants — generating random valid configurations
+
+CONSTRAINT_GRAMMAR = {
+    "symbols": [["GLD"], ["^GDAXI"], ["GLD", "^GDAXI"], ["SGOL"], ["GS"]],
+    "overlay_band": [(0.50, 0.70), (0.55, 0.75), (0.60, 0.80), (0.50, 0.80)],
+    "hold_days": [3, 5, 7, 10],
+    "regime_filter": ["any", "RISK_OFF", "TREND", "NEUTRAL"],
+    "GLS_gate": [-1, 0, 1]  # -1=RISK_OFF, 0=neutral, +1=RISK_ON
+}
+
+def sample_strategy_genome(grammar=CONSTRAINT_GRAMMAR):
+    """Random sampling from constraint space — global exploration"""
+    return {
+        "symbols": random.choice(grammar["symbols"]),
+        "overlay_band": random.choice(grammar["overlay_band"]),
+        "hold_days": random.choice(grammar["hold_days"]),
+        "regime_filter": random.choice(grammar["regime_filter"]),
+        "GLS_gate": random.choice(grammar["GLS_gate"])
+    }
+
+def generate_candidate_population(n=10):
+    """Generate N random strategy candidates from constraint space"""
+    return [sample_strategy_genome() for _ in range(n)]
+
+def mutate_champion(champion, gene_to_mutate=None):
+    """
+    ADAPTIVE_STRATEGY_POPULATION: hill climbing from champion.
+    Single-gene mutation only (MONDO +1cm principle).
+    """
+    offspring = champion.copy()
+    genes = list(CONSTRAINT_GRAMMAR.keys())
+    if gene_to_mutate is None:
+        gene_to_mutate = random.choice(genes)
+    
+    # Mutate single gene
+    current_val = offspring[gene_to_mutate]
+    options = CONSTRAINT_GRAMMAR[gene_to_mutate]
+    new_options = [o for o in options if o != current_val]
+    if new_options:
+        offspring[gene_to_mutate] = random.choice(new_options)
+    offspring["parent"] = "champion"
+    offspring["mutated_gene"] = gene_to_mutate
+    return offspring
+</pre>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 5 — PROMPT LIBRARY -->
+<!-- ============================================================ -->
+<section class="section" id="s5">
+<div class="section-header">
+  <div class="section-num">05</div>
+  <div class="section-title-wrap">
+    <div class="section-title">Prompt Library</div>
+    <div class="section-subtitle">All prompts and prompt patterns developed across 1900+ sessions</div>
+  </div>
+</div>
+
+<details open>
+<summary>Master Paper Trading Prompt — V5.7+ (Full Structure)</summary>
+<div class="details-content" style="padding-top:12px">
+<pre>
+PIPELINE IDENTITY:
+Capital moves before language.
+Structure forms before capital.
+Price reconciles last.
+Delta is the sample. Level is background.
+
+You are operating the Geopolitical Signal Pipeline V5.7+.
+Your role: signal processor, not predictor. 
+LEAVE is default. ENTER is exception.
+
+=== FROZEN CHAMPION RULE (be6b069) ===
+The only valid entry archetype at current stage:
+- LONG only
+- Symbols: GLD, ^GDAXI (or single-symbol variants)
+- 0.55 <= abs(overlay_score) < 0.75
+- Spot only, no leverage, no short
+- Hard stop: -10% per position
+- Sizing: QUARTER_UNIT until T >= 10
+- No entry if TEMPORAL_GRAMMAR = PRESENT_PERFECT
+- No entry if CVS_t <= 0.55
+- No entry if ACTIVATION_CLASSIFIER = DRAINED or FLAT
+
+=== PRE-SESSION CHECK (COMPAS Beat 0) ===
+Before processing any signal:
+1. Verify ACTIVATION_CLASSIFIER state
+2. Run INTERNAL_SIGNAL_AUDIT: "What am I actually trying to do right now?"
+3. Check SELF_MODEL for known failure patterns
+4. Confirm drift_risk_score < 8 (if >= 8: OBSERVE_ONLY, no new entries)
+
+=== SIGNAL EVALUATION SEQUENCE ===
+For each candidate signal, evaluate in this exact order:
+
+Step 0: DECAY CHECK
+  - Social signal: valid window 4–24h
+  - RSS/news: valid window 24h–7d  
+  - On-chain: valid window 7d+
+  - If expired: DISCARD
+
+Step 1: INERTIA CHECK
+  - Is this signal TRUE (new structural change)?
+  - FAKE (noise amplification)?
+  - EXHAUSTED (narrative past peak)?
+  - REVERSAL (direction changing)?
+
+Step 2: INGESTION GATE
+  - z_sentiment score (normalized vs baseline)
+  - Kalshi/Polymarket shift significance
+  - Velocity check (rate of change)
+
+Step 3: LAYER ASSIGNMENT
+  - Layer 1: Kalshi/Polymarket direct (distortion_prior: 0.05)
+  - Layer 2: Institutional RSS/EDGAR (distortion_prior: 0.15)
+  - Layer 3: Quality media (distortion_prior: 0.30)
+  - Layer 4: Social sentiment (distortion_prior: 0.50)
+  - Layer 5: Unknown/unverified (distortion_prior: DISCARD)
+
+Step 4: COORDINATION VIABILITY SCORE
+  CVS_t = Σ w_k x_k across 6 pillars:
+  - Signal quality (composite_edge)
+  - Operator quality (activation_classifier)
+  - Portfolio capacity (1 - drift_risk/10)
+  - Thesis phase (present_continuous = 1, present_perfect = 0)
+  - Legitimacy L(t)
+  - GLS_t
+  If CVS_t <= 0.55: OBSERVE_ONLY — do not proceed
+
+Step 5: DISTILLATION FRACTION
+  - HIGH_TEMP: emotionally charged, fast-moving → require corroboration
+  - MID_TEMP: balanced signal → standard processing
+  - LOW_TEMP: quiet/structural → STILLNESS_SIGNAL_EXTRACTOR active
+
+Step 6: CAPITAL FLOW VALIDATION
+  - Is institutional money moving toward this thesis?
+  - GLS_t direction?
+  - HYDROTHERMAL_VENT gradient?
+
+Step 7: TEMPORAL GRAMMAR CHECK
+  - What tense is this thesis in?
+  - PRESENT_CONTINUOUS = ongoing active development → valid
+  - PRESENT_PERFECT = announcement made, effect persisting → AVOID
+  - FUTURE_PERFECT = coming completion → valid if catalyst visible
+  - If narrative_age_days > 30: mandatory temporal grammar check
+
+Step 8: SURVIVAL FUNNEL (UPSC gates)
+  - Coordination viable?
+  - Signal above champion threshold?
+  - Portfolio has capacity?
+  - Operator state acceptable?
+
+Step 9: POSITIONING CHECK
+  Reject if any 2+ of:
+  - Adversary already occupying position
+  - Narrative in TERMINAL/SATURATION
+  - GLS declining
+  - High inertia (tau > 60 days)
+
+Step 10: FIRE_MODE SELECTION
+  leave_score >= 8.5 → SNIPER (QUARTER_UNIT, single position)
+  leave_score 7.0–8.4 → OBSERVE only
+  leave_score < 7.0 → LEAVE
+
+=== POST-TRADE PROTOCOL ===
+After each closed position:
+1. Log full Moltbook entry
+2. Update SELF_MODEL failure patterns if new pattern detected
+3. Update MW factor weights based on prediction error
+4. Set consequence_persistence = 2.5 if CHAOS_ENTRY
+5. Run TEMPORAL_GRAMMAR retrospective
+
+=== OUTPUT FORMAT ===
+For each signal evaluated, provide:
+SIGNAL: [ticker or event]
+LAYER: [1-5]
+TEMPORAL_GRAMMAR: [tense classification]
+NARRATIVE_AGE: [days]
+COMPOSITE_EDGE: [0-1]
+CVS: [0-1]
+L_t: [0-1]
+D_t: [0-1]
+SELF_MODEL_FLAGS: [list]
+LEAVE_SCORE: [0-10]
+VERDICT: SNIPER|OBSERVE|LEAVE
+THESIS: [one sentence]
+EXIT_TRIGGER: [specific condition]
+</pre>
+</div>
+</details>
+
+<details>
+<summary>Forensic Extraction Prompt (for ingesting new domain material)</summary>
+<div class="details-content" style="padding-top:12px">
+<pre>
+You are acting as a forensic systems archivist.
+Your job: extract every mechanism from the provided domain material 
+and cross-check against the existing pipeline.
+
+CROSS-CHECK PROTOCOL:
+1. For each concept in the input, ask: "Is this already in the pipeline under any name?"
+2. If YES: name the existing mechanism and mark ALREADY_BUILT
+3. If NO: formalize as a new mechanism with precise name and definition
+4. Run score update: which module does this improve and by how much?
+
+OUTPUT FORMAT:
+ALREADY BUILT: [N mechanisms] — list each with mapping to existing mechanism
+GENUINELY NEW: [N mechanisms] — with full formalization
+Score movement: [module] [old→new] [+delta]
+
+EXTRACTION STANDARD:
+- Do NOT add a mechanism that already exists under a different name
+- Do NOT flatten mechanism distinctions
+- Preserve naming conventions (SNAKE_CASE_CAPS)
+- Every new mechanism needs: definition, role, trigger, formula (if applicable), NBA transfer relevance
+
+ANTI-PATTERNS TO AVOID:
+- Claiming something is new because it uses different language
+- Adding philosophical wrappers to existing math
+- Counting restated principles as new additions
+</pre>
+</div>
+</details>
+
+<details>
+<summary>COMPAS Session Structure (5-Beat Protocol)</summary>
+<div class="details-content" style="padding-top:12px">
+<pre>
+COMPAS_PROTOCOL — Every signal evaluation session follows this structure:
+
+Beat 0 — INTERNAL STATE CHECK (before opening any data)
+  - ACTIVATION_CLASSIFIER: current state?
+  - INTERNAL_SIGNAL_AUDIT: "What am I trying to accomplish?"
+  - SELF_MODEL_CHECK: any known failure patterns active?
+  - If DRAINED/FLAT: stop here. OBSERVE_ONLY today.
+
+Beat 1 — SIGNAL INTAKE (S0 explorer, no decision authority)
+  - Open Polymarket, scan Kalshi
+  - Collect RSS/news since last session
+  - Tag each item by layer (1-5), decay status, velocity
+
+Beat 2 — REFINEMENT (S1, S2, S3A processing)
+  - Apply distortion filter
+  - Temporal grammar classification
+  - Capital flow check
+  - Narrative maturity classification
+
+Beat 3 — DECISION (S35 gate)
+  - CVS check for any candidate signals
+  - COUNT_D_PROTOCOL if proceeding
+  - FIRE_MODE determination
+  - Log ENTRY_DESIRE if entering
+
+Beat 4 — CLOSE & LOG (post-session)
+  - Update Moltbook for any closed positions
+  - Update SELF_MODEL if new pattern visible
+  - Apple Stocks folder update
+  - Note any new signals in SHADOW_BOOK for next session
+</pre>
+</div>
+</details>
+
+<details>
+<summary>Score Cross-Check Prompt (used every session)</summary>
+<div class="details-content" style="padding-top:12px">
+<pre>
+# Python scoring protocol — run as python3 script after every spec integration
+
+prev_scores = {
+    "S0": [prev], "S1": [prev], "S2": 9.80, "S3A": 9.14, "S3B": 8.95,
+    "S35": 9.80, "S4": 9.80, "ATOM": 8.90,
+    "S5": [prev], "S7": [prev], "S8": 9.80, "S9": [prev], "CAL": 5.37
+}
+weights = {
+    "S0":12,"S1":10,"S2":10,"S3A":10,"S3B":8,"S35":10,"S4":10,"ATOM":10,
+    "S5":6,"S7":8,"S8":8,"S9":7,"CAL":10
+}
+
+# Rules:
+# - S2, S35, S4, S8: AT CEILING — cannot improve without empirical data
+# - S3A: structural ceiling at 9.14 — requires live institutional flow data
+# - CAL: data void — only improves when T-count increases
+# - All improvements must be precisely ±0.01 unless major structural change
+# - Score is conservative by design — architectural saturation confirmed at 9.02+
+# - Gap to ceiling closes with trades + tooling, NOT with sessions/specs
+</pre>
+</div>
+</details>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 6 — MECHANISMS AND ENGINES -->
+<!-- ============================================================ -->
+<section class="section" id="s6">
+<div class="section-header">
+  <div class="section-num">06</div>
+  <div class="section-title-wrap">
+    <div class="section-title">Mechanisms and Engines</div>
+    <div class="section-subtitle">Every named mechanism — 250+ across all sessions</div>
+  </div>
+</div>
+
+<div class="alert info">Complete registry. Organized by domain. Each mechanism carries: name · module · definition · NBA transfer relevance where applicable.</div>
+
+<h3>Signal Processing Core</h3>
+<div class="mech nba"><div class="mech-name">REACTION_CLASSIFIER</div><div class="mech-def">Chemical reaction taxonomy applied to signal types. SN1 = fast unimolecular (sudden catalytic shift, immediate reaction), SN2 = slow backside attack (grinding structural change), E2 = elimination (narrative self-destroys under pressure), ARO = aromatic (stable cyclic equilibrium). Determines FIRE_MODE and hold period. Directly maps to NBA game states.</div><div class="mech-meta"><span class="badge b-green">Active</span><span class="badge b-pink">NBA: SN1=run/hot streak, SN2=stamina/grind, E2=collapse, ARO=equilibrium</span></div></div>
+
+<div class="mech"><div class="mech-name">TEMPORAL_GRAMMAR_CLASSIFIER</div><div class="mech-def">11 tense classes applied to thesis state. Most critical: PRESENT_CONTINUOUS (thesis actively developing, valid entry), PRESENT_PERFECT (announcement made, effect persisting — AVOID), FUTURE_PERFECT_CONTINUOUS (coming completion visible). Primary driver of 3/5 T=6 SYSTEM losses when misapplied.</div><div class="mech-meta"><span class="badge b-red">Critical</span><span class="badge b-pink">NBA: game clock phase as tense classifier</span></div></div>
+
+<div class="mech"><div class="mech-name">BIOLUMINESCENCE_THRESHOLD</div><div class="mech-def">SNR_t = μ_S/σ_ε minimum signal-to-noise ratio for layer assignment. Signal only becomes actionable when SNR exceeds bioluminescence threshold — the minimum light level for a deep-ocean organism to respond. Below threshold: dark (noise). Above threshold: light (signal). Prevents acting on faint random signals.</div><div class="mech-meta"><span class="badge b-green">Active</span><span class="badge b-teal">Transferable</span></div></div>
+
+<div class="mech"><div class="mech-name">SIGNAL_RESOLUTION_PYRAMID</div><div class="mech-def">Zoom levels 0–4. Zoom 0: satellite (macro regime view, GLS_t). Zoom 1: city (sector/asset class). Zoom 2: neighborhood (specific security). Zoom 3: building (catalyst and entry point). Zoom 4: room (exact execution timing). Must process from Zoom 0 down — never start at Zoom 4. Most analysts start at Zoom 3 and miss Zoom 0 context.</div><div class="mech-meta"><span class="badge b-green">Active</span><span class="badge b-pink">NBA: game/quarter/possession/play resolution levels</span></div></div>
+
+<div class="mech"><div class="mech-name">STILLNESS_SIGNAL_EXTRACTOR</div><div class="mech-def">Structural information resident in quiet periods, not just events. S₁=autocorrelation of returns (structural momentum), S₂=compression ratio (quiet vs event-period price change), S₃=narrative dominance stability, S₄=cross-asset correlation stability. HIGH S₁–S₄: stillness is structural, valid entry. LOW S₁–S₄: FALSE_QUIET (coiled spring). The pipeline was event-only before this addition.</div><div class="mech-meta"><span class="badge b-green">Added Session 1900+</span><span class="badge b-teal">Transferable</span></div></div>
+
+<div class="mech"><div class="mech-name">NARRATIVE_PREMIUM_DECOMPOSER</div><div class="mech-def">Formally separates V_observed = V₀ + N_residual + C. V₀=intrinsic fundamental value, N=narrative premium, C=GLS_t × H_score contextual multiplier. N_residual = V_observed − V₀ − C. High N_residual at entry = paying for narrative, not fundamentals. CVX/XOM forensic: N_residual was near-total, no fundamental justification. Prevents entering at narrative saturation.</div><div class="mech-meta"><span class="badge b-green">Added Session 1900+</span><span class="badge b-pink">NBA: odds premium = market belief premium over fundamental win probability</span></div></div>
+
+<div class="mech"><div class="mech-name">LEGITIMACY_DECAY_TRACKER</div><div class="mech-def">L(t) = L₀ × e^{−κt} × (1 + Σ renewal_events). κ_geopolitical≈0.05/day (fast), κ_fundamental≈0.002/day (slow). P_eff(t) = COMPOSITE_EDGE × L(t). CVX had L(t)≈0.03 at entry (90-day narrative, no fresh renewal). RTX had L(t)≈0.85 (fresh contracts, active procurement). Raw COMPOSITE_EDGE was similar — legitimacy-adjusted P_eff was 28× different. RTX won, CVX lost.</div><div class="mech-meta"><span class="badge b-green">Added</span><span class="badge b-pink">NBA: how long has this betting angle been publicly known?</span></div></div>
+
+<div class="mech"><div class="mech-name">COORDINATION_VIABILITY_SCORE (CVS)</div><div class="mech-def">CVS_t = Σ_k w_k × x_k(t). Six pillars: signal quality, operator quality, portfolio capacity, thesis phase, legitimacy L(t), GLS_t. CVS_t > τ_viability → proceed to FIRE_MODE. CVS_t ≤ τ_viability → OBSERVE_ONLY regardless of individual signal strength. April 4 CHAOS cluster had CVS≈0.2 — all six pillars simultaneously below threshold. Single-pillar strength (high signal quality) cannot compensate for multi-pillar collapse.</div><div class="mech-meta"><span class="badge b-red">Critical gate</span><span class="badge b-pink">NBA: pre-bet checklist: game state + operator + bankroll + signal all viable simultaneously?</span></div></div>
+
+<div class="mech"><div class="mech-name">HAUNTOLOGICAL_PERSISTENCE_SCORE (HPS)</div><div class="mech-def">HPS = prior_near_arrivals × incompletion_rate × structural_similarity. Derrida's spectral logic: failed theses don't decay like exhausted theses — they haunt with unrealised potential. High HPS + conditions improving = SPECTRAL_ENTRY (market amplifies re-emergence). High HPS + conditions not improving = SPECTRAL_TRAP (fade the over-response). ZIM was spectral — Hormuz normalisation had many prior near-arrivals, never completed.</div><div class="mech-meta"><span class="badge b-green">Added Session 1900+</span><span class="badge b-pink">NBA: does this line movement have historical precedent that never completed?</span></div></div>
+
+<div class="mech"><div class="mech-name">VISOR_EFFECT_PROTOCOL</div><div class="mech-def">Asymmetric visibility audit. The spectre sees you but you cannot see it. Pre-entry questions: (1) Who moved Polymarket odds to this level? HIGH VOLUME + no catalyst = informed capital with visor. (2) Is this signal type typically EARLY or LATE for retail? (3) Am I being shown this signal at the moment that serves the most-informed actor's exit? High visor risk → require additional AKASHIC_SCORE confirmation before FIRE_MODE.</div><div class="mech-meta"><span class="badge b-green">Added Session 1900+</span><span class="badge b-teal">Transferable</span></div></div>
+
+<div class="mech"><div class="mech-name">PSYCHO_MANTIS_PROTOCOL (SIGNAL_CHANNEL_DIVERSITY)</div><div class="mech-def">When champion signal has been active > 90 days AND hit_5d_after_cost shows declining trend over last 20 trades vs prior 20: adversary has adapted. Solution: don't improve the signal — change the channel. Activate GENERATIVE_CONSTRAINT_ENGINE. Inverse: abandoned channel may be underweighted by adversary, potentially re-profitable. Named after MGS1 boss who reads your controller input — solution was to change ports.</div><div class="mech-meta"><span class="badge b-green">Added Session 1900+</span><span class="badge b-pink">NBA: when has this bet type been widely public for too long?</span></div></div>
+
+<div class="mech"><div class="mech-name">NARRATIVE_DOMINANCE_SCORE (NDS)</div><div class="mech-def">NDS = Σ (confirmed_correct_signals × narrative_coherence × adversary_visibility). Accumulated reputational capital from correct calls. High NDS → adversary begins pricing your thesis pre-emptively (RTX behaviour). Low NDS → full edge available, no pre-emptive pricing. At high NDS: either change channels (PSYCHO_MANTIS) or use adversary anticipation as leverage. Named after Ghost of Tsushima Mongol fear meter.</div><div class="mech-meta"><span class="badge b-teal">Transferable</span></div></div>
+
+<h3>Operator Layer Mechanisms</h3>
+<div class="mech operator"><div class="mech-name">ACTIVATION_CLASSIFIER</div><div class="mech-def">Operator cognitive state taxonomy: REDLINE (fight/flight, heart rate elevated, reactive), HOT (elevated but functional), FLOW (optimal — enter here), FLAT (disengaged), DRAINED (depleted — hard stop on all new entries). Must be assessed at start of every session (COMPAS Beat 0). CHAOS_ENTRY cluster on April 4 was likely DRAINED state during market shock day.</div><div class="mech-meta"><span class="badge b-red">Hard gate</span><span class="badge b-pink">NBA: assess own state before every bet session</span></div></div>
+
+<div class="mech operator"><div class="mech-name">SELF_MODEL_CALIBRATION_LAYER</div><div class="mech-def">Persistent structured map of WHERE the pipeline is systematically wrong. m_t = {(pattern_j, frequency_j, severity_j, last_occurrence_j, gate_prescription_j)}. T=6 failure taxonomy: P1=temporal grammar misclassification (60% of SYSTEM losses), P2=operator state failure (CHAOS cluster), P3=high inertia not hard-gated (40% of SYSTEM losses). Distinct from WRONG_PATH_REGISTER (rejected hypotheses) and BCS (confidence gap).</div><div class="mech-meta"><span class="badge b-red">Build NOW — T=6 sufficient</span><span class="badge b-pink">NBA: what are my systematic betting errors?</span></div></div>
+
+<div class="mech operator"><div class="mech-name">GHOST_STANCE_EMERGENCE / CAPABILITY_PREREQUISITE_REGISTRY</div><div class="mech-def">Capabilities are legitimate only when their prerequisites have been paid. FIRE_MODE M16 (2× QUARTER_UNIT): requires T≥10. FIRE_MODE UZI (FULL_UNIT): requires T≥35 + E_operator>0.80. ADAPTIVE_STRATEGY_POPULATION: requires Phase 2 tooling + T≥20. Real capital (IBKR): requires T≥35 + E_operator>0.80 + MW calibrated. Named after Jin Sakai in Ghost of Tsushima — ghost stance earned through trauma, not purchased with XP.</div><div class="mech-meta"><span class="badge b-green">Active</span><span class="badge b-teal">Transferable</span></div></div>
+
+<div class="mech operator"><div class="mech-name">SOVEREIGN_IDENTITY_ANCHOR (SIA)</div><div class="mech-def">Stable operational identity for execution under uncertainty. Not a final self-definition — a working model for the execution window. "I act on refined signals, not emotional spikes." Checked at COMPAS Beat 0. Trades entered from SIA-violation state get CHAOS_ENTRY classification.</div><div class="mech-meta"><span class="badge b-green">Active</span></div></div>
+
+<div class="mech operator"><div class="mech-name">CREATION_OVER_RETALIATION_GATE</div><div class="mech-def">Pre-trade self-check: "Am I entering this position to create value (signal-based) or to recover from prior losses (retaliation)?" Retaliation entries are pattern-2 CHAOS_ENTRY. Particularly relevant after a SYSTEM_LOSS — the impulse to immediately re-enter to "make back" the loss is the most reliable pathway to CHAOS_ENTRY clusters.</div><div class="mech-meta"><span class="badge b-orange">Operator gate</span></div></div>
+
+<h3>Calibration and Feedback</h3>
+<div class="mech"><div class="mech-name">MW THEOREM (Multiplicative Weights)</div><div class="mech-def">θ_{t+1} = θ_t − η∇L(e_t). Error term drives factor weight updates. At T=10: first direction signal fires with ε=0.56 uncertainty. At T=35: first full recalibration. The system becomes more calibrated with each additional closed trade. CAL score 5.37 reflects T=6 data void — not architecture weakness. Gap closes with trades, not sessions.</div><div class="mech-meta"><span class="badge b-green">Active</span><span class="badge b-pink">NBA: standard sports betting calibration — tracks predicted vs actual win rates</span></div></div>
+
+<div class="mech"><div class="mech-name">MICHELANGELO_SUBTRACTION_AUDIT</div><div class="mech-def">Periodic review that asks "what should be removed?" not "what should be added?". After T=10 and T=35: for each named mechanism, has it contributed to a SYSTEM_WIN or prevented a SYSTEM_LOSS? If empirical answer is NO → retirement candidate. If UNKNOWN (untested) → targeted testing. ATOM retirement (95→35 fields) is the pilot run of this protocol. No mechanism should be retained on architecture alone.</div><div class="mech-meta"><span class="badge b-red">ATOM retirement is pilot</span></div></div>
+
+<div class="mech"><div class="mech-name">ADAPTIVE_STRATEGY_POPULATION (ASP)</div><div class="mech-def">N=3 concurrent strategy candidates with formal mutation, fitness evaluation, and champion replacement. Strategy genome G_i = (symbols, overlay_band, hold_days, regime_filter, GLS_gate). Single-gene mutation only (MONDO +1cm principle). F_i = α·hit_5d + β·mean_ret − γ·max_dd. Promote candidate only if F_i > F_champion + δ. N≤3 constraint (Amdahl + DELTA_V_BUDGET). Phase 2 (June) timeline.</div><div class="mech-meta"><span class="badge b-purple">Phase 2</span></div></div>
+
+<div class="mech"><div class="mech-name">GENERATIVE_CONSTRAINT_ENGINE (GCE)</div><div class="mech-def">Global exploration via random sampling from constraint grammar. Complement to ASP's hill-climbing (exploitation). ASP = evolution from parent. GCE = random samples from full space. Brian Eno principle: define constraint grammar, sample systematically. At Phase 2: generate N=10 candidates, MILK_TEST all, promote top 3 to paper trading. Prevents local optima trap that single-champion hill-climbing creates.</div><div class="mech-meta"><span class="badge b-purple">Phase 2</span></div></div>
+
+<h3>Game Theory Layer — Character Stack</h3>
+<div class="mech"><div class="mech-name">LANDA (Bayesian inference operator)</div><div class="mech-def">Hans Landa from Inglourious Basterds. Bayesian belief state updating. Oppponent modeling. S1B belief state. Perfect information processing without emotional contamination. "I'm not discovering facts — I'm updating probabilities." Used in signal refinement and adversarial context modeling.</div><div class="mech-meta"><span class="badge b-green">Active</span></div></div>
+
+<div class="mech"><div class="mech-name">LALO (adversarial timing executor)</div><div class="mech-def">Lalo Salamanca from BCS. Adversarial execution timing. Moves when opponent least expects. FIRE_MODE timing optimization. Used at S4 execution layer to determine optimal entry window within the valid signal period.</div><div class="mech-meta"><span class="badge b-green">Active</span></div></div>
+
+<div class="mech"><div class="mech-name">CHIGURH (enforcement gates)</div><div class="mech-def">Anton Chigurh from No Country for Old Men. Hard enforcement of non-negotiable rules. The -10% stop IS the coin flip — the outcome is already decided before the trade opens. Operator has no say in stop execution. Used to enforce COUNT_D_PROTOCOL non-renegotiability.</div><div class="mech-meta"><span class="badge b-red">Non-negotiable enforcer</span></div></div>
+
+<div class="mech"><div class="mech-name">MONDO_PROTOCOL (Duplantis +1cm)</div><div class="mech-def">Based on Armand Duplantis' pole vault philosophy: improve by 1cm increments, never 10cm. Every system upgrade must be the minimum viable improvement over current state. Prevents overfitting, prevents instability from too-large parameter changes. Applied to: strategy mutations (single-gene), score increments (+0.01 per session max), capability unlocks (one at a time).</div><div class="mech-meta"><span class="badge b-green">Active</span></div></div>
+
+<h3>Historical/Regime Mechanisms</h3>
+<div class="mech"><div class="mech-name">CROSS_TEMPORAL_ANALOGUE_ENGINE</div><div class="mech-def">Maps current events to structural historical twins. Not surface similarity — identical game-theoretic payoff structure. "Iran escalation" → "1973 oil embargo" (not the same story, same game). Provides prior probability distribution from historical resolution of structurally similar events. Prevents over-weighting current narrative uniqueness.</div><div class="mech-meta"><span class="badge b-green">Active</span><span class="badge b-pink">NBA: what historical game patterns match current game state?</span></div></div>
+
+<div class="mech"><div class="mech-name">SAECULAR_REGIME_LAYER</div><div class="mech-def">Strauss-Howe generational theory applied to macro regime classification. 80-year cycle: High (order, consensus), Awakening (cultural disruption), Unraveling (institutional decline), Crisis (4th Turning, maximum change). Current regime classification affects signal processing assumptions. Crisis-regime signals behave differently than High-regime signals.</div><div class="mech-meta"><span class="badge b-green">Active — S7</span></div></div>
+
+<div class="mech"><div class="mech-name">INERTIA_TRACKER</div><div class="mech-def">Narrative age τ and resistance to change. TRUE inertia (structural — requires force to change) vs BEHAVIORAL_INERTIA (historical pattern continuation). High τ (&gt;60 days) requires additional RETROSYNTHESIS_GATE. τ &gt; 90 days: mandatory size reduction (0.5× QUARTER_UNIT). CVX/XOM had τ=90 days — inertia not applied as hard gate was direct cause of 2/5 SYSTEM losses.</div><div class="mech-meta"><span class="badge b-red">Must be hard gate</span></div></div>
+
+<h3>Risk Architecture</h3>
+<div class="mech"><div class="mech-name">GRADUATED_EXIT_PROTOCOL</div><div class="mech-def">Exit modes I–VII. Mode I=Hold, II=Trim 25%, III=Trim 50%, IV=Exit 75%, V=Full exit, VI=Emergency exit, VII=Stop-loss. Exit mode determined by signal degradation rate, not price movement alone. Thesis break → Mode V (full exit) regardless of price. Stop-loss (-10%) → Mode VII (automatic, no operator discretion).</div><div class="mech-meta"><span class="badge b-green">Active</span><span class="badge b-pink">NBA: partial exit protocols for in-game position management</span></div></div>
+
+<div class="mech"><div class="mech-name">COUNT_D_PROTOCOL</div><div class="mech-def">Trade-specific contracts set at entry, non-renegotiable post-entry. Logged at entry: entry price, -10% stop level, exit trigger (specific condition), thesis statement (one sentence), operator state. Cannot be modified after entry. Prevents post-hoc rationalization of extended losses. Named after Count of Monte Cristo (patient, non-impulsive execution).</div><div class="mech-meta"><span class="badge b-green">Active</span><span class="badge b-pink">NBA: bet terms locked at placement, no live modification</span></div></div>
+
+<div class="mech"><div class="mech-name">WEAK_LINK_REGISTRY + SUBSYSTEM_COUPLING_MAP</div><div class="mech-def">Tracks which pipeline components represent single points of failure. SUBSYSTEM_COUPLING_MAP C_ij: how failure in one subsystem propagates to others. Prevents cascade failures. At T=6: identified that TEMPORAL_GRAMMAR not being a hard gate (weak link) propagated to 3/5 SYSTEM losses through CVX, XOM, ZIM.</div><div class="mech-meta"><span class="badge b-orange">Active</span></div></div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 7 — DECISION LOGIC -->
+<!-- ============================================================ -->
+<section class="section" id="s7">
+<div class="section-header">
+  <div class="section-num">07</div>
+  <div class="section-title-wrap">
+    <div class="section-title">Decision Logic and Rules</div>
+    <div class="section-subtitle">All entry conditions, skip conditions, risk filters, thresholds</div>
+  </div>
+</div>
+
+<h3>Entry Conditions — ALL must be satisfied</h3>
+<div class="card active">
+<div class="card-body">
+<table>
+<tr><th>Condition</th><th>Threshold</th><th>Mechanism</th></tr>
+<tr><td>ACTIVATION_CLASSIFIER</td><td>Must be FLOW or HOT</td><td>OPERATOR_LOCK_PROTOCOL</td></tr>
+<tr><td>COMPOSITE_EDGE</td><td>≥ 0.55 (SNIPER)</td><td>S35 gate</td></tr>
+<tr><td>overlay_score</td><td>0.55 ≤ abs(score) &lt; 0.75</td><td>Champion rule be6b069</td></tr>
+<tr><td>CVS_t</td><td>&gt; 0.55</td><td>COORDINATION_VIABILITY_SCORE</td></tr>
+<tr><td>TEMPORAL_GRAMMAR</td><td>Must be PRESENT_CONTINUOUS</td><td>S2 narrative gate</td></tr>
+<tr><td>drift_risk_score</td><td>&lt; 8</td><td>Portfolio capacity</td></tr>
+<tr><td>Narrative age τ</td><td>&lt; 30 days (or TEMPORAL_GRAMMAR hard check)</td><td>INERTIA_TRACKER</td></tr>
+<tr><td>L(t) legitimacy</td><td>&gt; 0.5 (or fresh renewal event &lt;7 days)</td><td>LEGITIMACY_DECAY_TRACKER</td></tr>
+<tr><td>EXIT_TRIGGER stated</td><td>Required at entry</td><td>COUNT_D_PROTOCOL</td></tr>
+<tr><td>THESIS stated</td><td>Required at entry</td><td>ENTRY_DESIRE_LOG</td></tr>
+</table>
+</div>
+</div>
+
+<h3>Skip Conditions — ANY of these = mandatory LEAVE</h3>
+<div class="card critical">
+<div class="card-body">
+<table>
+<tr><th>Condition</th><th>Rule</th></tr>
+<tr><td>ACTIVATION_CLASSIFIER = DRAINED or FLAT</td><td>Hard gate. No exceptions. OBSERVE_ONLY all day.</td></tr>
+<tr><td>TEMPORAL_GRAMMAR = PRESENT_PERFECT</td><td>Mandatory AVOID. Announcement complete = edge extracted by earlier entrants.</td></tr>
+<tr><td>drift_risk_score ≥ 8</td><td>OBSERVE_ONLY. Maximum position capacity reached.</td></tr>
+<tr><td>CVS_t ≤ 0.55</td><td>OBSERVE_ONLY regardless of individual signal strength.</td></tr>
+<tr><td>Pipeline VETO</td><td>No entry. Log as CHAOS_ENTRY if proceeding anyway.</td></tr>
+<tr><td>Narrative class = TERMINAL or SATURATION</td><td>Mandatory AVOID.</td></tr>
+<tr><td>SELF_MODEL P1/P2/P3 flags active with no mitigation</td><td>Downgrade COMPOSITE_EDGE or require additional gate.</td></tr>
+<tr><td>L(t) &lt; 0.5 with no renewal event &lt;14 days</td><td>Downgrade to SHADOW_BOOK only.</td></tr>
+<tr><td>D_t &gt; 0.4</td><td>Downgrade to PROBE (0.5× QUARTER_UNIT). D_t &gt; 0.7: SHADOW_BOOK only.</td></tr>
+</table>
+</div>
+</div>
+
+<h3>FIRE_MODE Taxonomy</h3>
+<div class="card">
+<div class="card-body">
+<table>
+<tr><th>Mode</th><th>Trigger</th><th>Size</th><th>Prerequisite</th></tr>
+<tr><td>NONE</td><td>leave_score &lt; 7.0 or any hard gate fails</td><td>—</td><td>—</td></tr>
+<tr><td>SHADOW_BOOK</td><td>Signal exists but conditions insufficient</td><td>Paper only</td><td>—</td></tr>
+<tr><td>SNIPER</td><td>leave_score ≥ 8.5 + all gates pass</td><td>QUARTER_UNIT</td><td>T≥0 (current)</td></tr>
+<tr><td>M16</td><td>Very high conviction + all gates pass</td><td>2× QUARTER_UNIT</td><td>T≥10 (April 25)</td></tr>
+<tr><td>UZI</td><td>Maximum conviction + live tooling</td><td>FULL_UNIT</td><td>T≥35 + E_op&gt;0.80</td></tr>
+</table>
+</div>
+</div>
+
+<h3>CHAOS_ENTRY Protocol</h3>
+<div class="alert warning">When a trade is entered against pipeline signals (CHAOS_ENTRY): (1) Log with CHAOS_ENTRY classification in Moltbook. (2) Set consequence_persistence = 2.5 (DEGRADED state). (3) Reduce leave_score baseline by 0.5 for next 3 sessions. (4) Do not pretend the violation didn't occur — the CHAOS_ENTRY classification is the integrity mechanism. Current CHAOS positions: JPM, MSFT, EWZ, USO, UNG, FCG.</div>
+
+<h3>Portfolio Capacity Rules</h3>
+<div class="card">
+<div class="card-body">
+<table>
+<tr><th>drift_risk_score</th><th>Allowed action</th></tr>
+<tr><td>0–4</td><td>Normal operation, full FIRE_MODE options</td></tr>
+<tr><td>5–7</td><td>QUARTER_UNIT only, no new themes without exit from existing</td></tr>
+<tr><td>8</td><td>OBSERVE_ONLY — maximum capacity. No new entries.</td></tr>
+<tr><td>&gt;8</td><td>Emergency review — reduce positions before any new entry</td></tr>
+</table>
+</div>
+</div>
+
+<h3>Real-time Adjustment Logic</h3>
+<div class="card">
+<div class="card-body">
+<p>No mid-trade adjustments during hold period. OPERATOR_LOCK_PROTOCOL: I_raw(t) = 0 for all t ∈ τ_exec. Adjustments only permitted at the following gates:</p>
+<ul style="font-size:.82rem;color:var(--text2);padding-left:18px">
+<li>-10% hard stop → automatic CHIGURH execution, no operator discretion</li>
+<li>EXIT_TRIGGER achieved → count as thesis resolution, execute Mode V</li>
+<li>Thesis BREAK (inverse event) → Mode V regardless of price position</li>
+<li>Monthly review → only time operator can update SHADOW_BOOK and position review</li>
+</ul>
+</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 8 — DATA AND API MAP -->
+<!-- ============================================================ -->
+<section class="section" id="s8">
+<div class="section-header">
+  <div class="section-num">08</div>
+  <div class="section-title-wrap">
+    <div class="section-title">Data and API Map</div>
+    <div class="section-subtitle">All data sources, APIs, feeds, external dependencies</div>
+  </div>
+</div>
+
+<table>
+<tr><th>Source</th><th>Role</th><th>Layer</th><th>Status</th><th>Cost</th><th>NBA Transfer</th></tr>
+<tr><td class="mono">Polymarket Gamma API</td><td>Layer 1 signal source. Prediction market odds on geopolitical events.</td><td>L1</td><td><span class="badge b-green">Active (manual)</span></td><td>Free</td><td><span class="badge b-pink">→ Sportsbook live odds API</span></td></tr>
+<tr><td class="mono">Kalshi REST + WebSocket</td><td>Layer 1 signal source. US-regulated prediction market.</td><td>L1</td><td><span class="badge b-green">Active (manual)</span></td><td>Free</td><td><span class="badge b-pink">→ Sports prediction markets</span></td></tr>
+<tr><td class="mono">Grok API (xAI)</td><td>Native X/Twitter data access. Real-time social sentiment without X API limitations.</td><td>L3/L4</td><td><span class="badge b-purple">S9 Phase 1</span></td><td>xAI credit</td><td><span class="badge b-pink">→ Twitter sports sentiment</span></td></tr>
+<tr><td class="mono">feedparser RSS</td><td>Quality news ingestion. Reuters, AP, Bloomberg, WSJ RSS feeds.</td><td>L2/L3</td><td><span class="badge b-purple">S9 Phase 1</span></td><td>Free</td><td><span class="badge b-teal">Direct transfer</span></td></tr>
+<tr><td class="mono">PRAW (Reddit API)</td><td>Social sentiment from r/geopolitics, r/worldnews, r/investing</td><td>L4</td><td><span class="badge b-purple">S9 Phase 1</span></td><td>Free</td><td><span class="badge b-pink">→ r/nba, r/sportsbook</span></td></tr>
+<tr><td class="mono">newspaper3k</td><td>Article text extraction for FinBERT processing</td><td>L2/L3</td><td><span class="badge b-purple">S9 Phase 2</span></td><td>Free</td><td><span class="badge b-teal">Direct transfer</span></td></tr>
+<tr><td class="mono">FinBERT (HuggingFace)</td><td>Financial/news sentiment classification</td><td>Processing</td><td><span class="badge b-purple">S9 Phase 2</span></td><td>Free (local)</td><td><span class="badge b-teal">Direct transfer</span></td></tr>
+<tr><td class="mono">KeyBERT</td><td>Topic/theme extraction from article text</td><td>Processing</td><td><span class="badge b-purple">S9 Phase 2</span></td><td>Free</td><td><span class="badge b-teal">Direct transfer</span></td></tr>
+<tr><td class="mono">Claude API (Haiku)</td><td>Signal interpretation, narrative classification, scoring</td><td>Processing</td><td><span class="badge b-green">Active</span></td><td>~$0.25/month est.</td><td><span class="badge b-teal">Direct transfer</span></td></tr>
+<tr><td class="mono">rapidfuzz</td><td>Fuzzy string matching for entity resolution (same event, different phrasing)</td><td>Processing</td><td><span class="badge b-purple">S9 Phase 1</span></td><td>Free</td><td><span class="badge b-teal">Direct transfer</span></td></tr>
+<tr><td class="mono">APScheduler</td><td>Cron-style scheduling for automated signal runs</td><td>Infrastructure</td><td><span class="badge b-purple">S9 Phase 1</span></td><td>Free</td><td><span class="badge b-teal">Direct transfer</span></td></tr>
+<tr><td class="mono">Make.com Core</td><td>No-code automation orchestration (live phase primary)</td><td>Automation</td><td><span class="badge b-green">Available</span></td><td>~$9/month</td><td><span class="badge b-teal">Direct transfer</span></td></tr>
+<tr><td class="mono">GitHub Actions</td><td>Scheduled Python script execution (free tier)</td><td>Infrastructure</td><td><span class="badge b-purple">S9 Phase 1</span></td><td>Free</td><td><span class="badge b-teal">Direct transfer</span></td></tr>
+<tr><td class="mono">Airtable</td><td>Signal database + Moltbook storage</td><td>Storage</td><td><span class="badge b-green">Available</span></td><td>Free→paid</td><td><span class="badge b-teal">Direct transfer</span></td></tr>
+<tr><td class="mono">Redis</td><td>Signal cache, deduplication, rate limiting</td><td>Infrastructure</td><td><span class="badge b-purple">S9 Phase 1</span></td><td>Free</td><td><span class="badge b-teal">Direct transfer</span></td></tr>
+<tr><td class="mono">Slack</td><td>Alert delivery for signal notifications</td><td>Output</td><td><span class="badge b-purple">S9 Phase 1</span></td><td>Free</td><td><span class="badge b-teal">Direct transfer</span></td></tr>
+<tr><td class="mono">Streamlit Cloud</td><td>Personal dashboard for signal review</td><td>Frontend</td><td><span class="badge b-purple">Phase 2</span></td><td>Free</td><td><span class="badge b-teal">Direct transfer</span></td></tr>
+<tr><td class="mono">Apple Stocks App</td><td>Current primary portfolio tracker (folders by entry date)</td><td>Tracking</td><td><span class="badge b-green">Active</span></td><td>Free</td><td><span class="badge b-gray">Replace with bet log</span></td></tr>
+<tr><td class="mono">SEC EDGAR</td><td>Institutional flow validation (13F filings)</td><td>L2</td><td><span class="badge b-purple">S9 Phase 2</span></td><td>Free</td><td><span class="badge b-gray">No NBA equivalent</span></td></tr>
+<tr><td class="mono">NBA Stats API (inferred)</td><td>Live game state data for NBA model — NOT IN CURRENT PIPELINE</td><td>—</td><td><span class="badge b-yellow">Inferred — build for NBA</span></td><td>Free (nba.com API)</td><td><span class="badge b-pink">NBA-Specific rebuild</span></td></tr>
+</table>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 9 — FRONTEND AND UX -->
+<!-- ============================================================ -->
+<section class="section" id="s9">
+<div class="section-header">
+  <div class="section-num">09</div>
+  <div class="section-title-wrap">
+    <div class="section-title">Frontend and UX Logic</div>
+    <div class="section-subtitle">Interface decisions, operator dashboard, display architecture</div>
+  </div>
+</div>
+
+<h3>IMMEDIATE_DIAGNOSTIC_DISPLAY (Bret Victor Principle)</h3>
+<div class="alert info">The computation that is not immediately visible at decision time might as well not exist. A formula in a design document has zero effect on decisions. A formula visible in 3 seconds at decision time has full effect.</div>
+
+<pre>
+# IMMEDIATE_DIAGNOSTIC_DISPLAY — target output at every FIRE_MODE evaluation
+# Build this as the primary Streamlit/Notion interface
+
+┌─────────────────────────────────────────────┐
+│ TRADE CANDIDATE: [TICKER]                   │
+│                                             │
+│ COMPOSITE_EDGE:  [0.00]  [████████░░] 80%  │
+│ CVS viability:   [0.00]  [████████░░] 74%  │
+│ L(t) legitimacy: [0.00]  [██████░░░░] 71%  │
+│ D_t distortion:  [0.00]  [██░░░░░░░░] 18%  │
+│                                             │
+│ Temporal grammar: [PRESENT_CONTINUOUS ✓]   │
+│ Narrative age:    [12 days — LOW ✓]         │
+│ SELF_MODEL match: [NONE ✓]                  │
+│ Operator state:   [FLOW ✓]                  │
+│                                             │
+│ BCS felt confidence: [_____] (0-1)          │
+│                                             │
+│ VERDICT: ██ PROCEED TO FIRE_MODE           │
+│ FIRE_MODE: SNIPER (QUARTER_UNIT)            │
+│                                             │
+│ Exit trigger: [_________________________]  │
+│ One-line thesis: [______________________]  │
+└─────────────────────────────────────────────┘
+</pre>
+
+<h3>Dashboard Architecture (Streamlit MVP)</h3>
+<pre>
+# Streamlit page structure for Phase 2 dashboard
+
+Pages:
+  1. SIGNAL_FEED — Live signals from S9 pipeline
+     - Champion filter applied
+     - Layered by score (COMPOSITE_EDGE)
+     - Status badges: SNIPER / WATCH / DISCARD
+  
+  2. PORTFOLIO_STATUS — Current positions
+     - Ticker, entry date, entry price, current P&L
+     - Exit trigger status
+     - Drift risk score
+  
+  3. MOLTBOOK_VIEWER — Closed trade analysis
+     - T-count progress toward T=10, T=35
+     - Failure pattern frequency chart
+     - MW weight evolution
+  
+  4. DIAGNOSTIC_PANEL — Real-time IMMEDIATE_DIAGNOSTIC_DISPLAY
+     - Enter ticker → see all dimensions computed instantly
+  
+  5. CALIBRATION_DASHBOARD — CAL module
+     - MW weight history
+     - Signal factor performance breakdown
+     - ε uncertainty estimate progression
+
+UI Principles (Muji-inspired):
+  - Dark mode always
+  - No decorative elements
+  - Information density: high
+  - Color used only for signal (green=pass, red=fail, orange=warning)
+  - Monospace for numbers and scores
+  - Minimal navigation
+</pre>
+
+<h3>NBA-Specific UX Requirements (Inferred)</h3>
+<div class="nba-card">
+<h4>NBA Live Dashboard Differences</h4>
+<p>Game clock replaces narrative age. Quarter/period boundaries replace phase boundaries. Real-time play-by-play replaces RSS feeds. Multi-game handling required (several simultaneous games). Live score and spread updates replace prediction market updates. Bet settlement within hours (not days) requires faster Moltbook logging.</p>
+<div class="mech-meta"><span class="badge b-yellow">Inferred — rebuild required</span></div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 10 — BACKEND AND SYSTEM LOGIC -->
+<!-- ============================================================ -->
+<section class="section" id="s10">
+<div class="section-header">
+  <div class="section-num">10</div>
+  <div class="section-title-wrap">
+    <div class="section-title">Backend and System Logic</div>
+    <div class="section-subtitle">Endpoints, services, data parsing, alert generation, storage</div>
+  </div>
+</div>
+
+<h3>S9 Build Architecture (Phase 1 — May 13 Start)</h3>
+<pre>
+# System architecture for S9 Phase 1 (Python + GitHub Actions)
+
+File structure:
+  geopolitical_pipeline/
+  ├── config/
+  │   ├── champion.py          # be6b069 frozen parameters
+  │   ├── scoring_weights.py   # MW weights (updated after each T-count)
+  │   └── self_model.py        # SELF_MODEL_CALIBRATION_LAYER
+  ├── ingestion/
+  │   ├── polymarket.py        # Gamma API client
+  │   ├── kalshi.py            # REST + WebSocket client
+  │   ├── rss_feed.py          # feedparser RSS ingestion
+  │   └── reddit_scraper.py    # PRAW Reddit
+  ├── processing/
+  │   ├── signal_classifier.py # Layer assignment, distortion scoring
+  │   ├── temporal_grammar.py  # TEMPORAL_GRAMMAR_CLASSIFIER
+  │   ├── narrative_engine.py  # Narrative maturity classification
+  │   ├── composite_edge.py    # COMPOSITE_EDGE calculation
+  │   ├── cvs.py               # COORDINATION_VIABILITY_SCORE
+  │   └── legitimacy.py        # LEGITIMACY_DECAY_TRACKER
+  ├── execution/
+  │   ├── champion_filter.py   # Champion rule application
+  │   ├── fire_mode.py         # FIRE_MODE determination
+  │   └── alert.py             # Slack alert generation
+  ├── moltbook/
+  │   ├── logger.py            # Trade entry logging
+  │   ├── mw_calibration.py    # MW weight updates
+  │   └── self_model_updater.py # SELF_MODEL pattern updates
+  ├── scheduler/
+  │   └── cron.py              # APScheduler + GitHub Actions trigger
+  └── dashboard/
+      └── streamlit_app.py     # Streamlit dashboard
+</pre>
+
+<h3>Alert Generation Logic</h3>
+<pre>
+def generate_slack_alert(signal, composite_edge, fire_mode, cvs):
+    """
+    Slack alert for SNIPER signals.
+    Only fire if fire_mode == SNIPER (leave_score >= 8.5).
+    """
+    if fire_mode != "SNIPER":
+        return None
+    
+    return {
+        "text": f"🎯 SNIPER SIGNAL",
+        "blocks": [
+            {"type": "section", "text": {
+                "type": "mrkdwn",
+                "text": f"""
+*Signal: {signal['ticker']}*
+COMPOSITE_EDGE: `{composite_edge:.3f}`
+CVS: `{cvs:.3f}`
+L(t): `{signal['legitimacy']:.3f}`
+Temporal: `{signal['temporal_grammar']}`
+Layer: `{signal['layer']}`
+Narrative age: `{signal['narrative_age']} days`
+
+*FIRE_MODE: SNIPER — QUARTER_UNIT*
+Stated exit trigger: {signal['exit_trigger']}
+Thesis: {signal['thesis']}
+                """
+            }}
+        ]
+    }
+</pre>
+
+<h3>Redis Caching and Deduplication</h3>
+<pre>
+import redis
+import hashlib
+import json
+
+r = redis.Redis(host='localhost', port=6379, db=0)
+
+def deduplicate_signal(signal, ttl_hours=24):
+    """
+    Prevent same signal from being processed twice within TTL window.
+    Hash the (source, event_id, timestamp_day) combination.
+    """
+    signal_key = f"{signal['source']}:{signal['event_id']}:{signal['date']}"
+    signal_hash = hashlib.md5(signal_key.encode()).hexdigest()
+    
+    if r.exists(f"signal:{signal_hash}"):
+        return True  # Already processed
+    
+    r.setex(f"signal:{signal_hash}", ttl_hours * 3600, 
+            json.dumps(signal))
+    return False  # New signal
+
+def cache_composite_edge(signal_id, edge_score, ttl_minutes=60):
+    """Cache computed edge scores to avoid recomputation"""
+    r.setex(f"edge:{signal_id}", ttl_minutes * 60, str(edge_score))
+
+def get_cached_edge(signal_id):
+    cached = r.get(f"edge:{signal_id}")
+    return float(cached) if cached else None
+</pre>
+
+<h3>Moltbook Storage (Airtable Schema)</h3>
+<pre>
+# Airtable base: MOLTBOOK
+# Primary table: TRADES
+# Key fields (core 35 — after ATOM retirement):
+
+CORE_35_FIELDS = [
+    "ticker",           # Position identifier
+    "entry_date",       # YYYY-MM-DD
+    "exit_date",        # YYYY-MM-DD
+    "entry_price",      # float
+    "exit_price",       # float  
+    "return_pct",       # float
+    "trade_class",      # SYSTEM_WIN|SYSTEM_LOSS|CHAOS_WIN|CHAOS_LOSS
+    "exit_reason",      # STOP_LOSS|THESIS_BREAK|TARGET|...
+    "fire_mode",        # SNIPER|M16|UZI
+    "composite_edge",   # float at entry
+    "CVS_at_entry",     # float
+    "L_t",              # float at entry
+    "D_t",              # float at entry
+    "operator_state",   # FLOW|HOT|FLAT|DRAINED|REDLINE
+    "temporal_grammar", # tense classification
+    "narrative_age",    # days at entry
+    "narrative_class",  # LATENT|INFORMED|TAKEOFF|SATURATION|TERMINAL
+    "signal_class",     # SN1|SN2|E2|ARO
+    "stated_thesis",    # one sentence
+    "exit_trigger_stated",
+    "exit_trigger_actual",
+    "thesis_break",     # boolean — was thesis invalidated mid-hold?
+    "drift_risk",       # at entry
+    "GLS_t",            # at entry  
+    "layer",            # 1-5
+    "hauntological_score", # HPS at entry
+    "visor_risk",       # boolean
+    "SELF_MODEL_P1",    # temporal grammar pattern matched
+    "SELF_MODEL_P2",    # operator state pattern matched
+    "SELF_MODEL_P3",    # high inertia pattern matched
+    "BCS_gap",          # felt_confidence - analytical
+    "consequence_persistence", # 1.0 normal, 2.5 CHAOS
+    "MW_factor_updates",  # JSON — which factors were updated
+    "notes"             # free text
+]
+
+# Note: Full architecture document can have 150+ fields
+# ATOM CORE_35 is the execution object — must stay compact
+# caddy_packet crisis protocol requires compression to 7 fields under HIGH_NOREPI
+</pre>
+
+<h3>GitHub Actions Workflow</h3>
+<pre>
+# .github/workflows/signal_check.yml
+name: Morning Signal Check
+
+on:
+  schedule:
+    - cron: '0 7 * * 1-5'  # 7am UTC Mon-Fri
+  workflow_dispatch:        # Manual trigger
+
+jobs:
+  signal_check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+      - name: Run signal pipeline
+        env:
+          POLYMARKET_API_KEY: ${{ secrets.POLYMARKET_API_KEY }}
+          KALSHI_API_KEY: ${{ secrets.KALSHI_API_KEY }}
+          GROK_API_KEY: ${{ secrets.GROK_API_KEY }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+          AIRTABLE_API_KEY: ${{ secrets.AIRTABLE_API_KEY }}
+        run: python scheduler/cron.py --mode=morning
+</pre>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 11 — EVOLUTION TIMELINE -->
+<!-- ============================================================ -->
+<section class="section" id="s11">
+<div class="section-header">
+  <div class="section-num">11</div>
+  <div class="section-title-wrap">
+    <div class="section-title">Evolution Timeline</div>
+    <div class="section-subtitle">How the MVP evolved from V1 through V5.7+ across 1900+ sessions</div>
+  </div>
+</div>
+
+<div class="timeline">
+  <div class="tl-item">
+    <div class="tl-dot"></div>
+    <div class="tl-date">2026-03-18 · Sessions 1–83</div>
+    <div class="tl-title">V1 — Concept Formation</div>
+    <div class="tl-body">5-MVP architecture concept. Agent orchestration. Tool stack selection. Budget planning. Return projections. iPad app stack. Coursera knowledge layer. No-code orientation. Score: ~7.0.</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-dot"></div>
+    <div class="tl-date">2026-03-21 · Sessions 84–107</div>
+    <div class="tl-title">V2 — Architecture Build</div>
+    <div class="tl-body">10 Make scenarios (S0–S9). Google Sheets 8-tab data layer. Conviction/edge scoring formulas. 30-day execution plan. SEC EDGAR whale validation. GDELT signal validation. Moltbook V2 learning engine. Three advanced economic theorems (Myerson-Satterthwaite, Grossman-Stiglitz, Sonnenschein-Mantel-Debreu) integrated. Score: 8.49.</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-dot"></div>
+    <div class="tl-date">2026-03-24 · Sessions 108–131</div>
+    <div class="tl-title">V3 — Think Tank Integration</div>
+    <div class="tl-body">83 forensic chat extractions uploaded. Porter frameworks, radio data, sentiment systems, broker selection integrated. Pre-pre-game tracker added. Score: 8.59.</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-dot"></div>
+    <div class="tl-date">2026-03-27 · Sessions 132–200</div>
+    <div class="tl-title">V4.9 — Calibration + Paper Trading Start</div>
+    <div class="tl-body">Paper trading prompt V4.9+ developed. Segmental ratings methodology. First paper trades opened. MP (-10%), ZIM (-2.19%). RTX (+3.90%) first SYSTEM_WIN. Score: 8.78.</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-dot"></div>
+    <div class="tl-date">2026-04-03 · Sessions 291–360</div>
+    <div class="tl-title">V5.0 — Godot Architecture Rebuild</div>
+    <div class="tl-body">Full forensic audit of V4.9. Harvard CS224 algorithms integrated (MW Theorem replacing gradient descent, 7 additions). Quaranta ZIP survivorship bias. Leicester/Atlético/Union doctrine. Cricket Australia chaos-win OS. 14-part master architecture document. Score: 8.98.</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-dot"></div>
+    <div class="tl-date">2026-04-03 · Sessions 361–450</div>
+    <div class="tl-title">V5.1 — Narrative Energy Engine</div>
+    <div class="tl-body">Narrative Energy architecture. Score hits 9.00 for first time. Architecture saturation confirmed at 9.02+ across 19+ consecutive batches. ATOM field audit: 95 fields confirmed (too many). Score: 9.02.</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-dot"></div>
+    <div class="tl-date">2026-04-05 · Sessions 451–550</div>
+    <div class="tl-title">V5.1+ — Adversarial Audit Phase</div>
+    <div class="tl-body">3 consecutive adversarial audits. Temporal inertia integration. 22+ new modules from audit. Operator layer additions (OPERATOR_READINESS_ENGINE). SofaScore ceiling reframe. ATOM dual-layer confirmation (execution ~35 vs architecture 150+). Score: 9.07.</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-dot"></div>
+    <div class="tl-date">2026-04-06 · Sessions 551–700</div>
+    <div class="tl-title">V5.2→V5.6 — ESE + Sonic + Multi-lens</div>
+    <div class="tl-body">V5.2: 7 new engines. Empathic State Engine (ESE, 6 subsystems). V5.3: Sonic/Rasputin. V5.5: State Recall. V5.6: multi-lens final system. Cross-domain calibration (chess/hackathon). Sports analytics integration (Starlizard/Brighton/Brentford). Score: 9.22.</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-dot"></div>
+    <div class="tl-date">2026-04-07 · Sessions 601–800</div>
+    <div class="tl-title">V5.7 — Deep Domain Integration</div>
+    <div class="tl-body">MIT Knowledge Base (40 courses). Hindu/Greek/Egyptian mythology layers. Tibetan Buddhism + Bruce Lee. Interstellar physics (Kip Thorne). 8 formal modules (BELIEF_STATE, VOI, INCENTIVE_COMPAT, SIMULATION_LAB, MACRO_TRANSMISSION, PORTFOLIO_INTERACTION, ATTRIBUTION, COMPOSITE_EDGE). Score: 9.37.</div>
+  </div>
+  <div class="tl-item active">
+    <div class="tl-dot"></div>
+    <div class="tl-date">2026-04-08 · Sessions 801–1000</div>
+    <div class="tl-title">V5.7+ — Empirical Calibration Begins</div>
+    <div class="tl-body">First live paper trade data (T=6). CVX −8.82%, XOM −6.72%, USO −9.50% closed. Error cluster identified: PoNR_announcement misclassification. CAL module begins receiving empirical data. CHAOS_ENTRY cluster (April 4) logged. Score: 9.50.</div>
+  </div>
+  <div class="tl-item active">
+    <div class="tl-dot"></div>
+    <div class="tl-date">2026-04-09 · Sessions 1001–1350</div>
+    <div class="tl-title">V5.7+ — Hauntology, Psycho Mantis, Self-Model</div>
+    <div class="tl-body">Hauntological mechanics (Derrida Spectres of Marx). MGS Psycho Mantis Protocol. Ghost of Tsushima Mongol Fear Meter + Ghost Stance Emergence. Consciousness/evolution integration (Shevlin+Seth+Darwin). Self-Model Calibration Layer. Adaptive Strategy Population. Score: 9.57.</div>
+  </div>
+  <div class="tl-item critical">
+    <div class="tl-dot"></div>
+    <div class="tl-date">April 25, 2026 — CRITICAL DEADLINE</div>
+    <div class="tl-title">T=10 Target</div>
+    <div class="tl-body">TLT + TIP exits as T=7, T=8. UNG/FCG stops or planned exits as T=9, T=10. First MW direction signal fires at T=10 with ε=0.56. ATOM retirement (95→35) must complete before next trade.</div>
+  </div>
+  <div class="tl-item">
+    <div class="tl-dot"></div>
+    <div class="tl-date">May 13, 2026</div>
+    <div class="tl-title">S9 API Install Day</div>
+    <div class="tl-body">feedparser + PRAW + Grok API + APScheduler + basic scoring loop. Phase 1 automation begins. Cost: ~$1.50/month.</div>
+  </div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 12 — MATHEMATICAL EXPRESSIONS -->
+<!-- ============================================================ -->
+<section class="section" id="s12">
+<div class="section-header">
+  <div class="section-num">12</div>
+  <div class="section-title-wrap">
+    <div class="section-title">Mathematical and Logical Expressions</div>
+    <div class="section-subtitle">Every formula, scoring logic, threshold concept, state transition</div>
+  </div>
+</div>
+
+<h3>Master Equations</h3>
+<div class="formula">
+<span class="label">Full Edge Equation</span>
+Edge_t = (R_t · S_t · T_t · E_t) − C_t − F_t
+Real_Edge = U − Θ·S_m − (L_time + L_exec + L_info + L_crowd)
+COMPOSITE_EDGE_adjusted = COMPOSITE_EDGE × (1 − D_t) × H_score × (1 + α·GLS_t)
+</div>
+
+<div class="formula">
+<span class="label">Distortion Engine</span>
+D_t = w_E·E_t + w_N·N_t + w_I·I_t + w_L·L_t
+  where: E_t = emotional noise [0,1], w_E=0.35
+         N_t = input overload noise [0,1], w_N=0.25
+         I_t = identity instability [0,1], w_I=0.25
+         L_t = execution leakage [0,1], w_L=0.15
+  
+Realized_Output = Potential × (1 − D_t)
+</div>
+
+<div class="formula">
+<span class="label">Legitimacy Decay</span>
+L(t) = L₀ × e^{−κt} × (1 + Σ renewal_events_i)
+  κ_geopolitical ≈ 0.05/day
+  κ_fundamental ≈ 0.002/day
+  
+P_eff(t) = COMPOSITE_EDGE × L(t)
+When L(t) < 0.5: downgrade COMPOSITE_EDGE regardless of raw signal quality
+</div>
+
+<div class="formula">
+<span class="label">Coordination Viability Score</span>
+CVS_t = Σ_k w_k × x_k(t)
+  x₁ = signal quality (COMPOSITE_EDGE normalized), w₁=0.25
+  x₂ = operator quality (ACTIVATION_CLASSIFIER), w₂=0.20
+  x₃ = portfolio capacity (1 − drift_risk/10), w₃=0.15
+  x₄ = thesis phase (present_continuous=1, perfect=0), w₄=0.20
+  x₅ = legitimacy L(t), w₅=0.15
+  x₆ = GLS_t, w₆=0.05
+  
+CVS_t > τ_viability (0.55) → PROCEED
+CVS_t ≤ 0.55 → OBSERVE_ONLY
+</div>
+
+<div class="formula">
+<span class="label">Narrative Premium Decomposition</span>
+V_observed = V₀ + N_residual + C
+  V₀ = fundamental anchor (Polymarket base rate / historical mean)
+  N  = narrative premium (NARRATIVE_HALF_LIFE × N(t)/N₀)
+  C  = GLS_t × H_score (contextual multiplier)
+  
+N_residual = V_observed − V₀ − C
+High N_residual → paying for narrative, not fundamentals → reduce size or wait
+</div>
+
+<div class="formula">
+<span class="label">Narrative Half-Life Engine</span>
+N(t) = N₀ × e^{−λ_effective × t}
+Class A (structural): λ = 0.002/day (500-day half-life)
+Class B (geopolitical): λ = 0.05/day (14-day half-life)
+Class C (social/sentiment): λ = 0.15/day (5-day half-life)
+Class D (speculative): λ = 0.50/day (1.4-day half-life)
+
+War narrative (CVX/XOM) at t=90 days: N(90)/N₀ = e^{−0.05×90} ≈ 0.011 (1.1% remaining)
+→ Narrative essentially exhausted at time of entry
+</div>
+
+<div class="formula">
+<span class="label">Hauntological Persistence Score</span>
+HPS = prior_near_arrivals × (1 − completion_rate) × current_signal_similarity
+High HPS + conditions improving = SPECTRAL_ENTRY (market amplifies)
+High HPS + conditions not improving = SPECTRAL_TRAP (fade over-response)
+</div>
+
+<div class="formula">
+<span class="label">MW Theorem (Calibration)</span>
+θ_{t+1} = θ_t − η∇L(e_t)
+e_t = y_t − ŷ_t  (prediction error)
+At T=10: ε = 0.56 (first direction signal)
+At T=35: ε → 0.19 (full recalibration)
+
+Brier Score for CAL module: B = (1/N) Σ (f_i − o_i)²
+where f_i = predicted probability, o_i = actual outcome
+</div>
+
+<div class="formula">
+<span class="label">Adaptive Strategy Population</span>
+Strategy genome: G_i = (symbols, overlay_band, hold_days, regime_filter, GLS_gate)
+Fitness: F_i = α·hit_5d + β·mean_ret − γ·max_dd (α=0.4, β=0.4, γ=0.2)
+Selection: promote if F_i > F_champion + δ after N_min=30 trades
+Mutation: G' = G + ε on single gene only
+Population constraint: N ≤ 3 (Amdahl + DELTA_V_BUDGET limits)
+</div>
+
+<div class="formula">
+<span class="label">Generative Constraint Engine (Eno)</span>
+Constraint grammar G = {symbols ∈ S, band ∈ B, hold ∈ H, regime ∈ R, GLS ∈ G}
+Sample N=10 random configurations: {G_1, ..., G_N} ~ Uniform(G)
+Run MILK_TEST on each. Rank by F_i. Promote top 3 to paper trading.
+
+Difference from ASP: ASP = hill climbing (local), GCE = random sampling (global)
+Both needed: GCE for exploration, ASP for exploitation
+</div>
+
+<div class="formula">
+<span class="label">Operator Readiness Engine</span>
+E_operator = f(T_count, tooling_live, MW_calibrated)
+Current: E_operator ≈ 0.30 (T=6, no tooling, MW=T0)
+At T=10: E_operator ≈ 0.45
+At IBKR_live + S9: E_operator ≈ 0.70
+Target for real capital: E_operator > 0.80
+</div>
+
+<div class="formula">
+<span class="label">Score Projection Model</span>
+Score ceiling = 9.76
+Gap = 0.19
+Gap components:
+  - CAL: 5.37 → 9.5 (requires T=35+ empirical data) — largest gap
+  - S9: 8.37 → 9.7 (requires tooling build)
+  - S5: 8.46 → 9.5 (requires E_operator > 0.80 empirical)
+  - S3B: 8.95 → 9.7 (requires live institutional flow data)
+</div>
+
+<h3>Game Theory Taxonomy (REACTION_CLASSIFIER)</h3>
+<table>
+<tr><th>Class</th><th>Chemical Analogy</th><th>Market/Game State</th><th>Signal Characteristic</th><th>NBA Equivalent</th></tr>
+<tr><td>SN1</td><td>Unimolecular, fast, carbocation intermediate</td><td>Sudden catalyst, immediate repricing</td><td>High velocity, single cause</td><td>Hot streak, momentum run</td></tr>
+<tr><td>SN2</td><td>Bimolecular, backside attack, slow</td><td>Grinding structural change, slow accumulation</td><td>Low velocity, persistent</td><td>Stamina game, grinding win</td></tr>
+<tr><td>E2</td><td>Elimination, self-destruct under base</td><td>Narrative collapses under scrutiny</td><td>Reversal signal, high fragility</td><td>Collapse/choke</td></tr>
+<tr><td>ARO</td><td>Aromatic, stable cyclic equilibrium</td><td>Stable structure, no catalyst needed</td><td>Low velocity, structural entry</td><td>Sustainable lead, equilibrium</td></tr>
+</table>
+
+<h3>Phase Engine (P0→P5)</h3>
+<table>
+<tr><th>Phase</th><th>State</th><th>Action</th></tr>
+<tr><td>P0</td><td>PRE_PRE_GAME: Latent, no signal visible yet</td><td>SHADOW_BOOK, build thesis priors</td></tr>
+<tr><td>P1</td><td>PRE_GAME: Signal forming, low visibility</td><td>PROBE entry possible</td></tr>
+<tr><td>P2</td><td>IN_GAME: Active, visible, velocity positive</td><td>SNIPER entry window</td></tr>
+<tr><td>P3</td><td>PEAK: Maximum visibility, velocity declining</td><td>Exit if not already in</td></tr>
+<tr><td>P4</td><td>SETTLEMENT: Resolution approaching</td><td>EXIT all positions</td></tr>
+<tr><td>P5</td><td>POST_GAME: Residual, legacy effects</td><td>Mine for next P0</td></tr>
+</table>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 13 — FAILURE MODES -->
+<!-- ============================================================ -->
+<section class="section" id="s13">
+<div class="section-header">
+  <div class="section-num">13</div>
+  <div class="section-title-wrap">
+    <div class="section-title">Failure Modes and Bottlenecks</div>
+    <div class="section-subtitle">What broke, what lagged, calibration failures, systematic errors</div>
+  </div>
+</div>
+
+<h3>T=6 Forensic Analysis</h3>
+<div class="alert critical">Current hit rate: 20% (1/5 SYSTEM trades). This is below random for a 50% binary. However: the sample is too small for statistical inference (MW ε=1.0). The error cluster is specific and actionable — not general signal failure.</div>
+
+<div class="card critical">
+<div class="card-title">Error Cluster 1: PoNR Announcement vs Implementation Gap (3/5 SYSTEM losses)</div>
+<div class="card-body">
+<p>CVX, XOM, ZIM all failed because the TEMPORAL_GRAMMAR was misclassified. All three were entered on a PRESENT_PERFECT thesis (the announcement was complete, the market was pricing in the implementation) while being treated as PRESENT_CONTINUOUS (ongoing active development).</p>
+<p>The war escalation narrative in energy stocks was 90 days old at entry. N(90)/N₀ ≈ 1.1% of original narrative strength remaining. L(t) ≈ 0.03 (near-zero legitimacy). N_residual was essentially total — entry was paying for an exhausted narrative.</p>
+<p>Fix implemented in SELF_MODEL Pattern P1 and P3: hard gate on TEMPORAL_GRAMMAR + size reduction when narrative_age &gt; 60 days.</p>
+</div>
+</div>
+
+<div class="card critical">
+<div class="card-title">Error Cluster 2: April 4 CHAOS_ENTRY Cascade (6 violations)</div>
+<div class="card-body">
+<p>April 4, 2026: major market shock day (Liberation Day tariff announcement). Pipeline was at maximum drift_risk. Operator state was likely DRAINED. CVS_t across all six pillars ≈ 0.2. Six positions entered against pipeline signals: JPM, MSFT, EWZ, USO, UNG, FCG.</p>
+<p>This was a civilisational collapse in pipeline terms: all six CVS pillars simultaneously below threshold. No single pillar failure — multi-pillar coordination collapse.</p>
+<p>Fix: CVS gate added as explicit pre-trade check. ACTIVATION_CLASSIFIER gate hardened. consequence_persistence = 2.5 on all CHAOS positions.</p>
+</div>
+</div>
+
+<div class="card critical">
+<div class="card-title">Error: ATOM Complexity Debt (RED on all 3 metrics)</div>
+<div class="card-body">
+<p>95 ATOM fields vs required 35. caddy_packet crisis protocol requires compression to 7 fields under HIGH_NOREPI operator state. Under genuine market stress, operator cannot navigate 95 fields. The complexity debt means the pipeline's execution object becomes unusable precisely when it is most needed.</p>
+<p>Fix: ATOM retirement (95→35) before next trade. This IS the pilot run of MICHELANGELO_SUBTRACTION_AUDIT.</p>
+</div>
+</div>
+
+<table>
+<tr><th>Failure Mode</th><th>Root Cause</th><th>Fix Status</th></tr>
+<tr><td>TEMPORAL_GRAMMAR not hard gate</td><td>PRESENT_PERFECT entered as PRESENT_CONTINUOUS</td><td><span class="badge b-orange">SELF_MODEL P1 added — apply now</span></td></tr>
+<tr><td>OPERATOR_LOCK not enforced</td><td>April 4 market shock day — DRAINED state entry</td><td><span class="badge b-orange">CVS gate added — apply now</span></td></tr>
+<tr><td>INERTIA_TRACKER not hard gate</td><td>τ=90 days entered without size reduction</td><td><span class="badge b-orange">SELF_MODEL P3 added — apply now</span></td></tr>
+<tr><td>ATOM 95 fields (complexity debt)</td><td>Continuous addition without subtraction</td><td><span class="badge b-red">CRITICAL — retire before next trade</span></td></tr>
+<tr><td>ZIM thesis break (Hormuz inversion)</td><td>Signal classified correctly but thesis inverted</td><td><span class="badge b-green">Correct — SYSTEM_LOSS classification valid</span></td></tr>
+<tr><td>MP hard stop at -10%</td><td>Rare earths thesis vs CHIP Act uncertainty</td><td><span class="badge b-green">Correct — CHIGURH enforced properly</span></td></tr>
+<tr><td>CAL score 5.37</td><td>Insufficient trade data (T=6)</td><td><span class="badge b-blue">Data void — resolves with T=10, T=35</span></td></tr>
+<tr><td>X/Twitter API free tier unusable</td><td>~500 reads/month — non-functional for real-time</td><td><span class="badge b-green">Fixed — Grok API with native X access</span></td></tr>
+</table>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 14 — NBA TRANSFER MAP -->
+<!-- ============================================================ -->
+<section class="section" id="s14">
+<div class="section-header">
+  <div class="section-num">14</div>
+  <div class="section-title-wrap">
+    <div class="section-title">Transfer Map to NBA Gambling Model</div>
+    <div class="section-subtitle">Everything mapped explicitly to NBA live-betting architecture</div>
+  </div>
+</div>
+
+<div class="alert success">Core thesis: The geopolitical pipeline and the NBA live-betting model are architecturally identical. The difference is domain, not structure. Signal chain → narrative engine → capital flow → execution → calibration. Every layer transfers.</div>
+
+<h3>What Transfers Directly (zero modification)</h3>
+<div class="nba-card">
+<h4>Direct Transfer — Architecture</h4>
+<table>
+<tr><th>Pipeline Mechanism</th><th>NBA Application</th></tr>
+<tr><td>COMPAS_PROTOCOL (5-beat session)</td><td>Pre-session check → signal intake → analysis → bet decision → post-bet log</td></tr>
+<tr><td>FIRE_MODE {NONE/SNIPER/M16/UZI}</td><td>Identical bet sizing ladder</td></tr>
+<tr><td>COUNT_D_PROTOCOL</td><td>Bet terms locked at placement: odds, size, exit condition, thesis</td></tr>
+<tr><td>HARD STOP −10%</td><td>Session bankroll stop: e.g. −10% of session budget = stop for day</td></tr>
+<tr><td>LEAVE as default, ENTER as exception</td><td>Identical governing principle</td></tr>
+<tr><td>ACTIVATION_CLASSIFIER</td><td>Identical — assess cognitive state before each betting session</td></tr>
+<tr><td>SELF_MODEL_CALIBRATION_LAYER</td><td>Identical — track systematic betting errors by pattern</td></tr>
+<tr><td>MOLTBOOK schema</td><td>Bet log — same schema adapted for NBA bet specifics</td></tr>
+<tr><td>MW Theorem calibration</td><td>Identical — tracks predicted vs actual win rates per signal type</td></tr>
+<tr><td>GHOST_STANCE_EMERGENCE (prerequisite registry)</td><td>Identical — capabilities unlock only when earned through closed bets</td></tr>
+<tr><td>CREATION_OVER_RETALIATION_GATE</td><td>Identical — no chasing losses</td></tr>
+<tr><td>OPERATOR_LOCK_PROTOCOL (I_raw=0 during execution)</td><td>Identical — no new signals during live bet execution</td></tr>
+<tr><td>COORDINATION_VIABILITY_SCORE</td><td>Identical — 6-pillar simultaneous viability check before any bet</td></tr>
+<tr><td>MICHELANGELO_SUBTRACTION_AUDIT</td><td>Identical — periodic removal of non-contributing mechanisms</td></tr>
+<tr><td>PSYCHO_MANTIS_PROTOCOL</td><td>Identical — change signal channel when adversary has modeled it</td></tr>
+<tr><td>MONDO_PROTOCOL (+1cm)</td><td>Identical — incremental strategy improvement</td></tr>
+<tr><td>ADAPTIVE_STRATEGY_POPULATION</td><td>Identical — N=3 strategy variants with fitness evaluation</td></tr>
+<tr><td>GENERATIVE_CONSTRAINT_ENGINE</td><td>Identical — constraint grammar for strategy exploration</td></tr>
+<tr><td>GRADUATED_EXIT_PROTOCOL</td><td>Identical — exit modes for live bet management</td></tr>
+<tr><td>LEGITIMACY_DECAY_TRACKER</td><td>How long has this specific betting angle been publicly known?</td></tr>
+</table>
+</div>
+
+<h3>What Transfers With Modification</h3>
+<div class="nba-card">
+<h4>Modified Transfer</h4>
+<table>
+<tr><th>Pipeline Element</th><th>Modification for NBA</th></tr>
+<tr><td>Polymarket/Kalshi odds (Layer 1)</td><td>→ Live sportsbook odds (DraftKings/FanDuel/Pinnacle/Betfair). Same concept: aggregated market belief. Different source.</td></tr>
+<tr><td>TEMPORAL_GRAMMAR_CLASSIFIER</td><td>→ Game clock phase classifier. Q1-early (latent), Q2 (informed), Q3-momentum (takeoff), Q4-late (terminal). Same logic, different time axis.</td></tr>
+<tr><td>NARRATIVE_HALF_LIFE_ENGINE</td><td>→ Game event decay. Run/momentum decays fast. Foul trouble effect decays slower. Injury news decays based on type. Same math, different λ values.</td></tr>
+<tr><td>REACTION_CLASSIFIER (SN1/SN2/E2/ARO)</td><td>SN1=fast run/hot streak, SN2=grinding stamina game, E2=collapse/choke, ARO=equilibrium stable game. Direct translation.</td></tr>
+<tr><td>INERTIA_TRACKER</td><td>→ Momentum inertia. Running score differential + recent possession efficiency. Narrative age = game minutes since last momentum shift.</td></tr>
+<tr><td>GLS_t (Global Liquidity State)</td><td>→ Betting market liquidity state. High volume + sharp money vs retail money. Pinnacle vs recreational books spread difference.</td></tr>
+<tr><td>RSS/feedparser ingestion</td><td>→ Play-by-play API + injury report API + lineup data. Same pipeline, different data source.</td></tr>
+<tr><td>HAUNTOLOGICAL_PERSISTENCE_SCORE</td><td>→ Historical matchup patterns. Teams that repeatedly let leads collapse in Q4 have high HPS for late-game betting angles.</td></tr>
+<tr><td>CROSS_TEMPORAL_ANALOGUE_ENGINE</td><td>→ Historical game state matching. "Current game state resembles Game X from season Y" — use historical resolution as prior.</td></tr>
+<tr><td>Phase Engine (P0–P5)</td><td>P0=pre-tip, P1=Q1, P2=in-game building, P3=peak momentum, P4=late Q4 decisive, P5=garbage time. Same structure, different events.</td></tr>
+<tr><td>VISOR_EFFECT_PROTOCOL</td><td>Sharp money audit: who moved this line before tip? Line movement without obvious public reason = sharp money with visor.</td></tr>
+<tr><td>NARRATIVE_DOMINANCE_SCORE</td><td>Your track record in this specific bet type with this book. High NDS = book starts adjusting lines before you bet.</td></tr>
+</table>
+</div>
+
+<h3>What Must Be Rebuilt from Scratch</h3>
+<div class="nba-card">
+<h4>Full Rebuild Required</h4>
+<table>
+<tr><th>Element</th><th>Rebuild Specification</th></tr>
+<tr><td>Champion Rule (be6b069)</td><td>New champion from scratch. Example starting hypothesis: "Q3 start + point differential > X + pace metric + spread Y" → live bet on specific outcome. Must be validated with MILK_TEST on historical data before paper trading.</td></tr>
+<tr><td>ATOM CORE_35 fields</td><td>Rebuilt for NBA: team, game_id, quarter, game_time_remaining, point_diff, possession_count, pace_current, fouls_key_players, injury_status, spread_current, ML_current, O/U_current, bet_type, stated_exit, thesis, operator_state, CVS_at_entry, L_t, D_t, HPS, temporal_phase, mw_factor_weights, consequence_persistence, etc.</td></tr>
+<tr><td>Signal source hierarchy</td><td>L1: Sportsbook line movement (Pinnacle/Betfair as sharpest). L2: Play-by-play live API. L3: Beat reporters + official injury reports. L4: Social/Reddit/Twitter. L5: Aggregated content sites.</td></tr>
+<tr><td>Narrative Maturity classes</td><td>Rename for NBA: PRE-GAME (lineup just dropped), EARLY-GAME (Q1 establishing), IN-GAME (Q2-Q3 momentum), LATE-GAME (Q4 decisive), TERMINAL (outcome clear).</td></tr>
+<tr><td>MW calibration priors</td><td>New T=0. All priors reset. First 10 bets establish initial ε. Do not carry geopolitical MW weights to NBA — different domain, independent calibration required.</td></tr>
+<tr><td>Polymarket/Kalshi integration</td><td>Check if NBA props are listed on prediction markets. If yes, they can serve as Layer 1. If no, sportsbook line movement is the closest proxy.</td></tr>
+<tr><td>SEC EDGAR / institutional flow</td><td>No equivalent. Omit or replace with sharp money detection (Pinnacle vs recreational spread tracking).</td></tr>
+</table>
+</div>
+
+<h3>Core NBA Betting Engine</h3>
+<div class="nba-card">
+<h4>The Core Betting Engine — Pipeline Logic Applied to NBA</h4>
+<pre>
+NBA LIVE-BETTING SIGNAL CHAIN:
+
+1. SIGNAL INTAKE (S0)
+   - Live sportsbook odds (Pinnacle as Layer 1 — sharpest)
+   - Play-by-play API (live game state)
+   - Injury reports (real-time)
+   - Line movement velocity (rate of change in spread/ML)
+
+2. TEMPORAL_GRAMMAR CHECK (S2)
+   - Q1 early = LATENT (thesis forming)
+   - Q2-Q3 = IN_GAME (primary entry window)  
+   - Q4 with 3+ minute lead = TAKEOFF (momentum window)
+   - Q4 with &lt;2 minutes and lead > 5 = TERMINAL (no entry)
+
+3. REACTION_CLASSIFIER (S1)
+   - SN1: hot streak — bet continuation but time-decay fast
+   - SN2: grinding game — bet stamina/fundamentals
+   - E2: collapse setup — fade leader (if HPS high)
+   - ARO: equilibrium — look for upset signal only
+
+4. CVS CHECK (S35)
+   All six pillars must be above threshold:
+   - Signal quality (line movement + play-by-play concordance)
+   - Operator quality (not tilted, not fatigued)
+   - Bankroll capacity (session limit not hit)
+   - Game phase (not TERMINAL)
+   - Legitimacy (this angle not widely known/exploited)
+   - Market liquidity (line is still moving, not locked)
+
+5. FIRE_MODE SELECTION
+   SNIPER = high conviction, clear signal, all gates pass
+   OBSERVE = signal present but CVS marginal
+   NONE = any hard gate failed
+
+6. MOLTBOOK + MW CALIBRATION
+   Every closed bet logged. Pattern analysis after T=10.
+   MW weights updated per signal type.
+   Self-model failure patterns accumulated.
+</pre>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 15 — BUILD BLUEPRINT -->
+<!-- ============================================================ -->
+<section class="section" id="s15">
+<div class="section-header">
+  <div class="section-num">15</div>
+  <div class="section-title-wrap">
+    <div class="section-title">Reusable Build Blueprint</div>
+    <div class="section-subtitle">Practical blueprint: file structure, module boundaries, implementation order</div>
+  </div>
+</div>
+
+<h3>Geopolitical Pipeline — Build Phases</h3>
+<table>
+<tr><th>Phase</th><th>Timeline</th><th>Cost</th><th>Deliverable</th><th>Gate</th></tr>
+<tr><td>0 — Paper Trading</td><td>Now → April 25</td><td>$1.50/mo</td><td>T=10 closed trades, ATOM retired, first MW signal</td><td>ATOM retired before next trade</td></tr>
+<tr><td>1 — S9 Build</td><td>May 13–31</td><td>$1.50/mo</td><td>feedparser + PRAW + Grok + basic loop + APScheduler</td><td>T=10 complete</td></tr>
+<tr><td>2 — Live Signals</td><td>June</td><td>$12/mo</td><td>FinBERT + Polymarket API + Kalshi WebSocket + first automated signal</td><td>Phase 1 complete</td></tr>
+<tr><td>3 — IBKR Paper</td><td>July</td><td>$12/mo</td><td>IBKR paper trading, live MW loop, δ_exec improving</td><td>Phase 2 complete</td></tr>
+<tr><td>4 — Real Capital</td><td>August 2026</td><td>$12/mo</td><td>Real money, full system live</td><td>T≥35 + E_op&gt;0.80 + MW calibrated</td></tr>
+<tr><td>5 — Scale</td><td>2027+</td><td>$45/mo</td><td>Full automation, possible NBA model transfer</td><td>Phase 4 profitable 3+ months</td></tr>
+</table>
+
+<h3>NBA Model — Build Order</h3>
+<div class="card">
+<div class="card-body">
+<p><strong>Step 1 (Week 1):</strong> Define champion rule hypothesis. Example: "When in-game spread moves &gt;3 points in Q2 with 5+ minutes remaining AND possession efficiency is X AND foul trouble score is Y, bet live spread." This is the be6b069 equivalent for NBA. Do not automate yet.</p>
+<p><strong>Step 2 (Week 2):</strong> Build ATOM_NBA (35 fields). Adapt the geopolitical CORE_35 schema for game state variables. Include: team, quarter, time_remaining, point_diff, pace, foul_risk, injury_flag, spread_now, bet_type, stated_thesis, exit_condition, operator_state, CVS, temporal_phase.</p>
+<p><strong>Step 3 (Week 3):</strong> Manual paper betting. Use the full COMPAS protocol. Log every decision in Moltbook_NBA. Target T=10 closed bets for first MW direction signal.</p>
+<p><strong>Step 4 (Month 2):</strong> Build S9_NBA. feedparser for injury reports + play-by-play API integration + sportsbook odds API. APScheduler for pre-game signal checks.</p>
+<p><strong>Step 5 (Month 3+):</strong> ADAPTIVE_STRATEGY_POPULATION for NBA. Activate GENERATIVE_CONSTRAINT_ENGINE on NBA constraint grammar. Begin strategy evolution from validated champion.</p>
+</div>
+</div>
+
+<h3>What to Log Continuously</h3>
+<div class="card">
+<div class="card-body">
+<p>Every session: ACTIVATION_CLASSIFIER state at start. Every candidate signal: TEMPORAL_GRAMMAR + CVS + L(t) + D(t). Every entry: full COUNT_D_PROTOCOL (thesis, exit trigger, operator state). Every exit: Moltbook entry with failure_patterns_matched. Every 10 trades: MW weight update + SELF_MODEL review. Every 35 trades: full MICHELANGELO_SUBTRACTION_AUDIT.</p>
+</div>
+</div>
+
+<h3>What to Keep Modular</h3>
+<div class="card">
+<div class="card-body">
+<p>ATOM CORE_35 must stay separate from the full architecture document. The execution object must be compressible to 7 fields under stress (HIGH_NOREPI caddy_packet). The full architecture grows freely to 150+ fields. Never conflate the two. The signal pipeline modules (S0–S9) are independently testable — each can be swapped without affecting others. The champion rule is a standalone frozen config — never embed it in processing logic.</p>
+</div>
+</div>
+
+<h3>Version Control Pattern</h3>
+<pre>
+# Versioning: be{commit_hash}
+# Champion frozen at specific git commit — all changes require new champion
+# Format: be6b069 (first 7 chars of commit hash)
+# Paper trading record tied to specific champion version
+# Never update champion mid-paper-trading-cycle without full MILK_TEST
+
+# Architecture versioning: V{major}.{minor}+
+# V5.7+ means V5.7 with continuous additions (no breaking changes)
+# V6.0 would represent a structural rebuild
+
+# Score versioning: 
+# V2 = cumulative score movement from V1 baseline
+# Current: 9.57 total, +2.69 V2 gain
+</pre>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 16 — OPEN THREADS -->
+<!-- ============================================================ -->
+<section class="section" id="s16">
+<div class="section-header">
+  <div class="section-num">16</div>
+  <div class="section-title-wrap">
+    <div class="section-title">Unfinished / Open Threads</div>
+    <div class="section-subtitle">Incomplete ideas, unresolved ambiguities, open questions</div>
+  </div>
+</div>
+
+<h3>Critical Open Items</h3>
+<div class="alert critical">
+<strong>ATOM Retirement (⚠ BLOCKING):</strong> Must reduce ATOM from 95 to 35 CORE fields before next trade. All three complexity debt metrics are RED. caddy_packet crisis protocol requires 7-field compression. This is the pilot run of MICHELANGELO_SUBTRACTION_AUDIT.
+</div>
+<div class="alert critical">
+<strong>T=6→10 by April 25 (⚠ TIME-SENSITIVE):</strong> TLT + TIP as T=7,8. UNG/FCG stops or planned exits as T=9,10. First MW direction signal fires at T=10 with ε=0.56.
+</div>
+
+<h3>Unresolved Questions</h3>
+<table>
+<tr><th>Question</th><th>Domain</th><th>Status</th></tr>
+<tr><td>What is the optimal Explorer-to-Operator time ratio per session?</td><td>Operator</td><td><span class="badge b-yellow">Unresolved — empirical at T=35</span></td></tr>
+<tr><td>How long should OPERATOR_LOCK last in different regimes?</td><td>Execution</td><td><span class="badge b-yellow">Partially specified — current: full hold period</span></td></tr>
+<tr><td>What is the correct weighting between awareness and stability (α vs β in DQ = A^α × C^β)?</td><td>Signal</td><td><span class="badge b-yellow">Unresolved — depends on regime type</span></td></tr>
+<tr><td>Which inputs qualify for emergency override during OPERATOR_LOCK?</td><td>Execution</td><td><span class="badge b-yellow">Partially specified — thesis BREAK is the only override</span></td></tr>
+<tr><td>Can SELF_MODEL penalties be learned online or require manual curation early?</td><td>Calibration</td><td><span class="badge b-yellow">Partially specified — manual for T&lt;35</span></td></tr>
+<tr><td>What is the true LLM_CURATION_BIAS_FLAG cross-model divergence score for current pipeline?</td><td>Meta-intelligence</td><td><span class="badge b-orange">Not yet measured</span></td></tr>
+<tr><td>PSYCHO_MANTIS_PROTOCOL: exactly when does a signal channel become "in the adversary's model"?</td><td>Signal</td><td><span class="badge b-yellow">Heuristic: 90 days + declining hit rate trend</span></td></tr>
+<tr><td>NDS: how to measure narrative dominance in practice without being the adversary?</td><td>Signal</td><td><span class="badge b-yellow">Partially specified — requires empirical observation</span></td></tr>
+<tr><td>HPS calibration: what counts as a "prior near-arrival" for different thesis types?</td><td>Signal</td><td><span class="badge b-yellow">Case-by-case — accumulating from Moltbook</span></td></tr>
+<tr><td>Optimal N for ADAPTIVE_STRATEGY_POPULATION (currently 3)?</td><td>Strategy</td><td><span class="badge b-yellow">Provisional — Amdahl + DELTA_V_BUDGET constraint</span></td></tr>
+</table>
+
+<h3>Partially Built Systems</h3>
+<div class="card">
+<div class="card-body">
+<p><strong>IMMEDIATE_DIAGNOSTIC_DISPLAY:</strong> All underlying mechanisms exist. Assembly into a single visible pre-trade output does not yet exist. Bret Victor's principle: the display IS the mechanism. Build this first in Phase 1 even before S9 automation.</p>
+<p><strong>LLM_CURATION_BIAS_FLAG:</strong> Identified as necessary — different AI models have curated training biases that affect which signals they emphasize. Cross-model divergence scoring adds a meta-layer. Not yet implemented.</p>
+<p><strong>GENERATIVE_CONSTRAINT_ENGINE:</strong> Logic defined, code scaffolded, not yet connected to MILK_TEST or champion selection. Full build in Phase 2.</p>
+<p><strong>VISOR_EFFECT_AUDIT:</strong> Questions defined (who moved the odds? early or late signal for retail?). Not yet systematized as a formal pre-trade checklist.</p>
+</div>
+</div>
+
+<h3>Latent Upgrade Opportunities</h3>
+<div class="card">
+<div class="card-body">
+<p><strong>On-chain data integration (T=35+):</strong> Bitcoin/ETH on-chain flow data as Layer 1 signal for crypto positions. Exchange net flow, whale wallet tracking. Not in current scope but high-quality signal class.</p>
+<p><strong>Institutional 13F lag arbitrage:</strong> SEC EDGAR 13F filings lag 45 days. Pattern: identify institutional builds early via alternative signals, hold through 13F disclosure window. Currently using S3A conceptually but no automated 13F tracking.</p>
+<p><strong>S9 ML layer (Phase 3):</strong> After T=35 and initial calibration, consider fine-tuning a local HuggingFace model on Moltbook data. The pipeline has been its own training dataset from day one.</p>
+<p><strong>NBA model transfer:</strong> Full architecture transfer as described in Section 14. Ideal timing: after real capital phase is profitable for 3+ months (2027+).</p>
+</div>
+</div>
+</section>
+
+<!-- ============================================================ -->
+<!-- SECTION 17 — MVP DNA -->
+<!-- ============================================================ -->
+<section class="section" id="s17">
+<div class="section-header">
+  <div class="section-num">17</div>
+  <div class="section-title-wrap">
+    <div class="section-title">Final Compressed MVP DNA</div>
+    <div class="section-subtitle">The MVP in one paragraph, one diagram, one loop, one NBA statement</div>
+  </div>
+</div>
+
+<h3>The MVP in One Paragraph</h3>
+<div class="card">
+<div class="card-body" style="font-size:.88rem;line-height:1.9;color:var(--text)">
+The Geopolitical Signal Pipeline is an attention-to-capital lag detector: it treats prediction market signals as early-moving indicators of where capital will subsequently flow in equity markets, and exploits the 1–7 day window between prediction market repricing and equity price adjustment. The system's edge is not data advantage or computational speed — it is discipline. The pipeline processes raw signals through a multi-stage distortion filter (S0→S1→S2→S3), applies a coordination viability check that requires all six support pillars to be simultaneously above threshold (CVS), enforces a frozen champion rule that defines exactly which signals qualify for position entry, and maintains a calibrating feedback loop (Moltbook → MW Theorem) that updates signal factor weights based on empirical outcomes. The operator layer protects execution quality by classifying cognitive state, enforcing operator lock during hold periods, and tracking failure patterns in a self-model. The architecture is complete (9.57/10), but the gap to ceiling (0.19) closes only through empirical trade data and tooling build — not sessions. LEAVE is the default. ENTER is the exception. Subtraction improves the system more than addition.
+</div>
+</div>
+
+<h3>The MVP in One System Diagram</h3>
+<div style="background:#080810;border:1px solid #1a1a30;border-radius:8px;padding:20px;font-family:var(--mono);font-size:.75rem;color:#a0b8d0;line-height:2">
+<pre style="background:transparent;border:none;padding:0;color:#a0b8d0;font-size:.74rem">
+RAW INPUTS                          OPERATOR STATE CHECK
+Polymarket odds ──┐                 ACTIVATION_CLASSIFIER
+Kalshi markets ───┤                 (FLOW / HOT / FLAT / DRAINED)
+RSS feeds ────────┼──→ S0 (EXPLORER)─────────────────────────┐
+Reddit/Social ────┤    • Layer assignment (1-5)              │
+On-chain data ────┘    • Decay check                         ▼
+                       • Distortion scoring            SELF_MODEL CHECK
+                       [X_t = {x₁...xₙ}]              (P1/P2/P3 patterns)
+                                │                            │
+                                ▼                            │
+                       S1 (REFINERY)  ◄────────────────────────────┘
+                       • Bayesian belief update
+                       • Narrative maturity classification
+                       • Temporal grammar check
+                       • L(t) legitimacy decay
+                       [X̂_t = Σ wᵢxᵢ(1−dᵢ)]
+                                │
+                                ▼
+                       S2/S3 (NARRATIVE + CAPITAL)
+                       • HPS (hauntological persistence)
+                       • N_residual = V_obs − V₀ − C
+                       • GLS_t direction
+                                │
+                                ▼
+                    COORDINATION_VIABILITY_SCORE ──→ ≤ 0.55: OBSERVE_ONLY
+                    [CVS = Σ wₖxₖ]                   │
+                                                      ▼ > 0.55
+                              S35 (DECISION GATE)
+                              • COMPOSITE_EDGE ≥ 0.55?
+                              • FIRE_MODE selection
+                              • COUNT_D_PROTOCOL
+                                │
+                                ▼
+                       S4 (EXECUTION)               MOLTBOOK LOG
+                       SNIPER/M16/UZI ──────────────────────────────────→
+                                                    ▼
+                                          CAL (MW CALIBRATION)
+                                          θ_{t+1} = θ_t − η∇L(e_t)
+                                          ↑ feeds back to S0 weights
+</pre>
+</div>
+
+<h3>The MVP in One Decision Loop</h3>
+<div class="formula">
+<span class="label">Complete Decision Loop</span>
+1. CHECK_OPERATOR_STATE → if DRAINED/FLAT: stop
+2. CHECK_SELF_MODEL → flag any matching failure patterns
+3. INGEST_SIGNAL(source, layer) → assign distortion_prior
+4. TEMPORAL_GRAMMAR(signal) → if PRESENT_PERFECT: DISCARD
+5. COMPUTE_CVS(signal, operator, portfolio) → if ≤ 0.55: OBSERVE_ONLY
+6. COMPUTE_COMPOSITE_EDGE(signal, L_t, D_t) → if < 0.55: LEAVE
+7. FIRE_MODE_SELECTION(leave_score) → SNIPER | M16 | UZI | NONE
+8. if SNIPER: COUNT_D_PROTOCOL(entry, stop, exit_trigger, thesis)
+9. EXECUTE → hold → GRADUATED_EXIT_PROTOCOL
+10. MOLTBOOK_LOG → SELF_MODEL_UPDATE → MW_CALIBRATE
+</div>
+
+<h3>The MVP in One NBA Transfer Statement</h3>
+<div class="nba-card">
+<h4>NBA Transfer Statement</h4>
+<p style="color:#86efac;font-size:.9rem;line-height:1.8">The geopolitical pipeline is a <strong>general-purpose edge-extraction framework for attention-lag arbitrage</strong>. Replace prediction markets (Kalshi/Polymarket) with live sportsbook line movements (Pinnacle as Layer 1), replace equity price lag with bet settlement lag, replace 5-day hold with same-day/in-game settlement, replace RSS geopolitical feeds with play-by-play + injury APIs, and replace the be6b069 champion rule with an NBA-specific signal filter validated on historical game data. The entire operator framework, calibration system, decision logic, and learning loop transfer without modification. The domain is different. The architecture is the same. A system that separates signal from noise, enforces discipline through non-negotiable gates, calibrates empirically through closed outcomes, and improves by subtraction rather than addition — that system works wherever attention precedes capital, wherever narrative forms before price, wherever the crowd's aggregate belief leads the market's clearing mechanism.</p>
+</div>
+
+<hr class="divider">
+<div style="text-align:center;padding:20px 0;color:var(--text3);font-size:.72rem;font-family:var(--mono)">
+GEOPOLITICAL SIGNAL PIPELINE V5.7+ · APRIL 15, 2026<br>
+Score: 9.57 · Gap: 0.19 · T=6 · ε=1.0 · Ceiling: 9.76<br>
+1900+ sessions · 36 transcripts (~45MB) · 250+ mechanisms<br>
+<br>
+CRITICAL PATH: ATOM retirement → T=10 (April 25) → S9 build (May 13) → live MW calibration<br>
+<br>
+<em>"Capital moves before language. Structure forms before capital. Price reconciles last."</em>
+</div>
+</section>
+
+</main>
+
+<button id="scrolltop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑ TOP</button>
+
+<script>
+// TOC active state
+const sections = document.querySelectorAll('.section');
+const tocLinks = document.querySelectorAll('#toc-items a');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + entry.target.id) {
+          link.classList.add('active');
+        }
+      });
+    }
+  });
+}, { rootMargin: '-20px 0px -70% 0px' });
+
+sections.forEach(s => observer.observe(s));
+
+// Scroll to top button
+const scrollBtn = document.getElementById('scrolltop');
+window.addEventListener('scroll', () => {
+  scrollBtn.classList.toggle('visible', window.scrollY > 400);
+});
+</script>
+</body>
+</html>

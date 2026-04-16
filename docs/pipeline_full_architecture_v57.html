@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Geopolitical Signal Pipeline V5.7+ — Full Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07080e;--bg2:#0c0d18;--bg3:#111422;
+  --c0:#e94560;--c1:#00b4d8;--c2:#7b2fbe;--c3:#ffd60a;
+  --c4:#06d6a0;--c5:#e94560;--c6:#00b4d8;--c7:#ffd60a;
+  --text:#dde0f0;--text2:#8a8da6;--text3:#454760;
+  --border:rgba(221,224,240,0.07);--border2:rgba(221,224,240,0.14);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:200;background:rgba(7,8,14,0.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--border2);padding:10px 1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap}
+.nav-title{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text2);letter-spacing:3px;text-transform:uppercase;flex:1}
+.nav-links{display:flex;gap:5px;flex-wrap:wrap}
+.nl{font-family:'JetBrains Mono',monospace;font-size:8px;padding:3px 9px;border-radius:3px;border:1px solid;text-decoration:none;letter-spacing:1px;transition:all .15s}
+
+/* HERO */
+.hero{position:relative;z-index:10;padding:2.5rem 1.5rem 1.5rem;max-width:1440px;margin:0 auto}
+.hero-top{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1.5rem;margin-bottom:1.5rem}
+.score-display{display:flex;align-items:baseline;gap:1.5rem;flex-wrap:wrap}
+.score-num{font-size:clamp(5rem,9vw,8rem);font-weight:800;color:var(--text);letter-spacing:-6px;line-height:1}
+.score-meta{display:flex;flex-direction:column;gap:4px}
+.score-lbl{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:3px;text-transform:uppercase}
+.score-val{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2)}
+.hero-right{text-align:right}
+.hero-title{font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:800;letter-spacing:-.5px;line-height:1.2}
+.hero-title span{color:var(--c0)}
+.hero-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text2);margin-top:6px;letter-spacing:1px}
+
+/* STATUS ROW */
+.statusrow{position:relative;z-index:10;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:10px 1.5rem;overflow-x:auto}
+.statusrow-inner{max-width:1440px;margin:0 auto;display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;min-width:max-content}
+.stat{display:flex;flex-direction:column;gap:2px}
+.st-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:2px;text-transform:uppercase}
+.st-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500}
+.sdiv{width:1px;height:24px;background:var(--border2)}
+
+/* EQ STRIP */
+.eqstrip{position:relative;z-index:10;padding:.8rem 1.5rem;background:linear-gradient(90deg,rgba(123,47,190,.1),rgba(0,180,216,.06));border-bottom:1px solid var(--border);overflow-x:auto}
+.eqstrip-inner{max-width:1440px;margin:0 auto;display:flex;gap:8px;flex-wrap:wrap}
+.eq{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--c1);padding:3px 10px;background:rgba(0,180,216,.05);border:1px solid rgba(0,180,216,.2);border-radius:3px;white-space:nowrap}
+
+/* MAIN */
+.main{max-width:1440px;margin:0 auto;padding:1.5rem;position:relative;z-index:10}
+
+/* MODULE SCORE GRID */
+.mod-score-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;margin-bottom:2rem}
+.msc{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;transition:border-color .15s}
+.msc:hover{border-color:var(--border2)}
+.msc.crit{border-color:rgba(233,69,96,.4)}
+.msc.ceil{border-color:rgba(6,214,160,.25)}
+.msc-id{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:2px;margin-bottom:5px}
+.msc-score{font-size:26px;font-weight:700;line-height:1;margin-bottom:3px}
+.msc-bar{height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-bottom:4px;position:relative}
+.msc-bar-fill{height:100%;border-radius:2px}
+.msc-meta{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text3)}
+
+/* SECTION LABELS */
+.slabel{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text3);margin:2rem 0 .8rem;display:flex;align-items:center;gap:8px}
+.slabel::after{content:'';flex:1;height:1px;background:var(--border2)}
+
+/* LAYER CARDS */
+.layer{margin-bottom:4px;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.layer.open{border-color:var(--border2)}
+.layer-hdr{display:flex;align-items:center;gap:1rem;padding:12px 16px;cursor:pointer;position:relative;transition:background .15s;user-select:none}
+.layer-hdr:hover{background:rgba(255,255,255,.02)}
+.layer-num{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);min-width:22px}
+.layer-accent{width:3px;height:26px;border-radius:2px;flex-shrink:0}
+.layer-name{font-size:14px;font-weight:700;flex:1}
+.layer-desc{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text2);display:none}
+@media(min-width:700px){.layer-desc{display:block}}
+.layer-score{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;min-width:36px;text-align:right}
+.layer-cnt{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text3);background:rgba(255,255,255,.04);padding:2px 7px;border-radius:2px}
+.toggle{font-family:'JetBrains Mono',monospace;font-size:8px;padding:2px 8px;border:1px solid var(--border2);border-radius:2px;background:none;color:var(--text3);cursor:pointer;transition:all .15s;letter-spacing:1px}
+.toggle:hover{border-color:var(--text3);color:var(--text2)}
+
+/* MODULE CHIPS */
+.layer-mods{display:none;padding:4px 16px 14px;display:none;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:5px}
+.layer.open .layer-mods{display:grid}
+.chip{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:4px;padding:6px 10px;transition:all .15s;cursor:default}
+.chip:hover{background:rgba(255,255,255,.05);border-color:var(--border2)}
+.chip-name{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:500;color:var(--text);margin-bottom:3px}
+.chip-desc{font-size:10px;color:var(--text2);line-height:1.4}
+
+/* BUILD PHASES */
+.phase-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px;margin-bottom:2rem}
+.phase{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px 16px;position:relative;overflow:hidden}
+.phase::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.phase.active::before{background:var(--c0)}
+.phase.sched::before{background:var(--c1)}
+.phase.plan::before{background:var(--c2)}
+.phase.cond::before{background:var(--c4)}
+.phase-id{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:2px;margin-bottom:6px}
+.phase-name{font-size:13px;font-weight:700;margin-bottom:4px}
+.phase-date{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--text2);margin-bottom:6px}
+.phase-cost{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500}
+.phase-desc{font-size:10px;color:var(--text2);margin-top:8px;line-height:1.5;padding-top:8px;border-top:1px solid var(--border)}
+
+/* CRITICAL PATH */
+.cp-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.cp-item:last-child{border-bottom:none}
+.cp-dot{width:6px;height:6px;border-radius:50%;background:var(--c0);flex-shrink:0;margin-top:5px}
+.cp-text{font-size:11px;color:var(--text2);line-height:1.5}
+
+/* TRUTH STRIP */
+.truths{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:2rem}
+.truth{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text2);padding:3px 9px;border:1px solid var(--border);border-radius:2px}
+
+/* FOOTER */
+.footer{position:relative;z-index:10;border-top:1px solid var(--border);padding:1.5rem;text-align:center;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:2px}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-title">Pipeline V5.7+ · Full Architecture · April 2026</div>
+  <div class="nav-links" id="navlinks"></div>
+</nav>
+
+<div class="hero">
+  <div class="hero-top">
+    <div class="score-display">
+      <div class="score-num">9.57</div>
+      <div class="score-meta">
+        <div><div class="score-lbl">Gap</div><div class="score-val" style="color:var(--c0)">0.19</div></div>
+        <div><div class="score-lbl">Ceiling</div><div class="score-val" style="color:var(--c4)">9.76</div></div>
+        <div><div class="score-lbl">T-count</div><div class="score-val" style="color:var(--c0)">6</div></div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-title">Geopolitical Signal Pipeline <span>V5.7+</span></div>
+      <div class="hero-sub">102 modules · 8 layers · Session ~1400 · April 12 2026</div>
+    </div>
+  </div>
+</div>
+
+<div class="statusrow">
+  <div class="statusrow-inner" id="stats"></div>
+</div>
+
+<div class="eqstrip">
+  <div class="eqstrip-inner" id="eqs"></div>
+</div>
+
+<div class="main">
+
+  <!-- MODULE SCORES -->
+  <div class="slabel">Module score overview</div>
+  <div class="mod-score-grid" id="scoreGrid"></div>
+
+  <!-- LAYERS -->
+  <div class="slabel">Full architecture — click any layer to expand all 102 modules</div>
+  <div id="layers"></div>
+
+  <!-- BUILD PHASES -->
+  <div class="slabel">Build phases</div>
+  <div class="phase-grid" id="phases"></div>
+
+  <!-- CRITICAL PATH -->
+  <div class="slabel">Critical path — immediate actions</div>
+  <div class="cp-list" id="cp"></div>
+
+  <!-- TRUTHS -->
+  <div class="slabel">Pipeline truths</div>
+  <div class="truths" id="truths"></div>
+
+</div>
+
+<div class="footer">GEOPOLITICAL SIGNAL PIPELINE V5.7+ · FULL ARCHITECTURE · APRIL 2026 · SCORE 9.57 / CEILING 9.76 · 102 MODULES · 8 LAYERS</div>
+
+<script>
+const LAYERS = [
+  {id:"L0",name:"Pre-Pre Game — Total Archive",color:"#e94560",score:null,
+   desc:"Before any evaluation. Full memory check.",
+   mods:[
+    ["CLAUDIA_DAILY_SCAN","Morning signal sweep across all active theses"],
+    ["GLS_t","Global Liquidity State ∈[−1,+1] · Adjusted_Edge = CE×(1+α·GLS)"],
+    ["NARRATIVE_HALF_LIFE_ENGINE","λ* = λ_base×(1+k/TTT)/(1+GLS)/(1+PPS)/m̂ · Classes A-D"],
+    ["TIME_TO_TRUTH_ENGINE","BeliefBias_t = k/(1+TTT) · hyperbolic pre-event decay accelerator"],
+    ["AKASHIC_SCORE","A1-A7 simultaneous archive consultation · threshold 6.5/10"],
+    ["THESIS_FAILURE_INDEX","H×A (GNH) · 9 failure dimensions · gate < 0.25 alongside leave_score"],
+    ["INTERPRETATION_DIVERGENCE_SCANNER","ΔPrice=Σ_k·ΔB_k · high Divergence → reduce sizing"],
+    ["POWER_SUPPRESSION_GATE","Suppression_Score=P(displayed<true)×gap×sophistication"],
+    ["RETROSYNTHESIS_GATE","Target → Precursors_1 → Precursors_2 · backward-logic planning"],
+    ["PONDERING_PROTOCOL","3 pre-computed scenarios per open position between sessions"],
+    ["CROSS_TEMPORAL_ANALOGUE","P(win|θ_t)=Σw_i·outcome_i/Σw_i · structural twin retrieval"],
+    ["WRONG_PATH_REGISTER","IMPURITY: CARBON/SLAG/DELAMINATION/GRAIN_BOUNDARY"],
+    ["REFLEXION_ENTRY","Verbal post-trade lesson · importance_score×semantic_similarity retrieval"],
+    ["NARASIMHA_PROTOCOL","Every binary protection clause creates a boundary gap — enumerate them"],
+    ["RAKTABIJA_LOOP_DETECTOR","Does acting on this signal create more of this signal?"],
+    ["NEELAKANTHA_GATE","Intentional containment: high conviction, wrong timing — hold, don't act, don't dismiss"],
+  ]},
+  {id:"L1",name:"Signal Intake — S0 Refinery",color:"#00b4d8",score:9.55,
+   desc:"Fraction, distort, qualify, score.",
+   mods:[
+    ["DISTILLATION_FRACTION","L1(Poly)→L5(LLM) trust hierarchy · ISP scores per layer"],
+    ["RSS_CORROBORATION_GATE","L3+ signals require corroboration before advancing"],
+    ["COORDINATION_BURST_DETECTOR","Sudden multi-source alignment flag"],
+    ["LATTICE_FORMATION_DETECTOR","Organic(48h+,high variance) vs Seeded(30min,low variance)"],
+    ["MICRO_SIGNAL_VELOCITY","d(mention_rate)/dt per cluster · >5x=WEAK_SIGNAL_FLAG · >10x=CRITICAL_PERIOD"],
+    ["ATTENTION_SATURATION_SIGNAL","ASS_t=dN/dt/dA/dt · >1.5→shorten λ · >3.0+Poly_static=PREMIUM_ENTRY"],
+    ["LOADED_DIE_DISTORTION_SCORE","D=Σ|p_i−1/n| · ΔD>0.3 triggers LATTICE_FORMATION_DETECTOR"],
+    ["BODY_RATIO_GATE","Body/Range∈[0,1] · Doji at key level → SHADOW_BOOK only"],
+    ["WICK_REJECTION_SCORE","(Lower_wick−Upper_wick)/Range · institutional zone detector"],
+    ["IB_COUNT_GATE","Consecutive inside bars · IB≥3 → CRITICAL_PERIOD_ACTIVE · widen stop"],
+    ["GAMMA_PIN_SCANNER","Pull_force(K)∝OI(K)×Gamma(K,t)×(1/TTT) · options expiry attractor"],
+    ["COMPOSITE_EDGE","G·Σw_i·s_i · multiplicative signal stack · gate ≥8.5 (Effective_CE)"],
+    ["SOURCE_ISP_HIERARCHY","Phase-dependent source quality weights · L1 Poly=450 Isp"],
+    ["LLM_CURATION_BIAS_FLAG","Detects when LLM output reflects training bias not reality"],
+  ]},
+  {id:"L2",name:"Belief State — S1 Engine",color:"#7b2fbe",score:9.56,
+   desc:"Mechanism, phase, tense, resistance.",
+   mods:[
+    ["TEMPORAL_GRAMMAR_CLASSIFIER","Γ(X,t,ΔX,d) · past/present-continuous/present-perfect/imperative/future"],
+    ["REACTION_CLASSIFIER","ψ_t∈{P_SN1,P_SN2,P_E2,P_ARO} · mechanism type · pathway prediction"],
+    ["TRANSITION_ENGINE","T_{i→j}=P_i(t−1)·P_j(t)·Φ_{i→j} · state change probability"],
+    ["INERTIA_TRACKER","m̂=h(ρ,τ,σ,flow) · narrative resistance at price level"],
+    ["SEQUENCE_STATE_ENGINE","Probe→Shape→Pressure→Trap→Strike with persistent stage memory"],
+    ["CHAOS_SUBTYPE_CLASSIFIER","THEATRICAL/CONTROLLED/HIDDEN/STRUCTURAL · + GAMMA_SQUEEZE(5th)"],
+    ["REFLEXIVITY_LOOP_DETECTOR","R_index=Corr(Δnarrative,Δprice,0)−Corr(Δfundamental,Δprice,0)"],
+    ["SINGLE_NODE_DEPENDENCY_SCAN","SND=edge_through_node/total_edge · >0.6→Mode_IV max 5d"],
+    ["ADOPTION_FRICTION_MODEL","AF=Σw_i·friction_i · >0.5→shorten hold 30%"],
+    ["DORMANT_CAPACITY_DETECTOR","V_visible≈0, V_hidden>>0 · IB_count as observable proxy"],
+    ["INTELLIGENCE_INFRASTRUCTURE_TRACKER","Chokepoint=w1·Compute+w2·Data+w3·Models+w4·Distribution"],
+    ["DICE_POOL_CONSENSUS_ENGINE","S~Bin(10,p) · S≥7=FIRE · S=5-6=CE≥8.5 · S≤4=SHADOW"],
+  ]},
+  {id:"L3",name:"Regime Detection — S7",color:"#ffd60a",score:9.68,
+   desc:"What environment is this signal entering.",
+   mods:[
+    ["S7_HMM_8STATE","Hidden Markov Model 8-regime classifier"],
+    ["AVALANCHE_MATRIX","W_ij×e^{−λd_ij} · country shock propagation · cascade prediction"],
+    ["HARMONIC_INTERFERENCE_SCORE","H_score=Σ_n w_n·cos(φ_n(t)−φ_n_optimal) · timing alignment"],
+    ["CRITICAL_PERIOD_DETECTOR","Plasticity(t)=P(belief_update|information,t) · IB_count proxy"],
+    ["DECAY_PHASE_CLASSIFIER","Phase1(0-30%)→Phase2(30-70%)→Phase3 Gamma(70-90%)→Terminal"],
+    ["BUBBLE_FRAGILITY_MONITOR","Heat×Leverage×Crowding/(Liquidity+FundamentalSupport)"],
+    ["GAMMA_SQUEEZE_CASCADE","EXPIRY_CONCENTRATION_FLAG · volume profile distinguishes THEATRICAL vs STRUCTURAL"],
+    ["THETA_ACCELERATION_CURVE","Final-hour decay 10-50× morning rate · exit before Phase 3"],
+    ["NARRATIVE_HALF_LIFE_λ_STAR","λ*=λ_base×(1+k/TTT)/(1+GLS)/(1+PPS)/m̂ · all 4 modifiers active"],
+    ["ALPHALENS_IC_DECAY","IC(1d→60d) per signal type → empirical λ calibration at T=35"],
+    ["GNH_SCORE_REGIME","H×A failure profile at regime level · structural fragility indicator"],
+  ]},
+  {id:"L4",name:"Decision Gate — S35",color:"#06d6a0",score:9.80,
+   desc:"Full logical audit. A priori inviolable. LNC scan.",
+   mods:[
+    ["UPSC_FUNNEL","Prelims→Mains→Final Interview · staged conviction deepening D1→D3"],
+    ["APRIORI_INVIOLABLE_REGISTER","Class I(logical)/II(mathematical)/III(structural) · no evidence overrides"],
+    ["LNC_CONTRADICTION_SCANNER","¬(P∧¬P) · 4 types: regime/temporal/operator/position contradiction"],
+    ["SYNTHETIC_APRIORI_GATE","SA1-SA5: decay/access_asym/suppression/cost/reflexivity priors"],
+    ["ASPIRATION_WINDOW_SEARCH","Expected±δ · FAIL-HIGH=edge_emerging · FAIL-LOW=thesis_degrading"],
+    ["ITERATIVE_DEEPENING","D1(seconds)→D2(minutes)→D3(full AKASHIC) · stop at budget"],
+    ["LEAKAGE_REGISTER","L_total=L_time+L_exec+L_info+L_crowd"],
+    ["ENVELOPMENT_RISK_SCORE","P(bundle)×(their_base/ours)×shared_component · >0.4=fragile"],
+    ["KILLER_ACQUISITION_TEST","P(replacement_threat)×P(acquire-to-kill)×incumbent_power"],
+    ["PLATFORM_GOVERNANCE_GATE","E_op<0.30=closure/0.30-0.50=L3_open/0.50-0.70=shadow/0.70+=governed"],
+    ["THESIS_FAILURE_INDEX_GATE","H×A<0.25 required alongside CE · 9 dimensions · GNH formula"],
+    ["leave_score_gate","Effective_CE ≥ 8.5 → FIRE_MODE · uses operator-adjusted score not raw"],
+    ["SIGNAL_BEACON_CONDITIONS","Pre-arranged binary triggers · fires without deliberation · Gondor beacons"],
+  ]},
+  {id:"L5",name:"Operator Quality — S5",color:"#e94560",score:8.48,
+   desc:"Is the generator of decisions fit to generate.",
+   mods:[
+    ["OPERATOR_READINESS_ENGINE","Readiness=w1(z_HRV)−w2(z_RHR)−w3(z_RR)−w4(SleepDebt)−w5(Strain)"],
+    ["ACTIVATION_CLASSIFIER","REDLINE/HOT/FLOW/FLAT/DRAINED · 5 states · DRAINED=hard gate"],
+    ["OPERATOR_STATE_EQUATION","Effective=CE×(D·M·A)/(I·(1+S)+N)·K · HOT=0.51×FLOW quality"],
+    ["NOISE_ADJUSTED_CONVICTION","Gap=Raw_CE−Effective_CE · Gap>1.5→BREATH_RESET+Moltbook log"],
+    ["ATTENTION_ALLOCATION_SCORE","Priority_i=α·Relevance+β·Novelty+γ·Signal_strength · session ordering"],
+    ["EMOTIONAL_TAGGING_REGISTER","Adj_Weight=Base+(λ·Emotional_Tag) · negative correction for intensity"],
+    ["BREATH_RESET_PROTOCOL","SpiralRisk=(loss/HARD_STOP)×Activation · trigger at >0.5×stop distance"],
+    ["DELTA_V_BUDGET","Session_Δv=f(readiness) · depletes monotonically · no mid-session replenish"],
+    ["IMPURITY_TYPE_CLASSIFIER","CARBON(contaminated)/SLAG(expired)/DELAMINATION(decoherent)/GRAIN_BOUNDARY(fragile)"],
+    ["ENERGY_RETURN_SCORE","η=E_out/E_in per trade · decision economy · Moltbook tracked"],
+    ["FORD_AUTHORIAL_RECUSAL","Pre-authored constraints operator cannot override in execution mode"],
+    ["REHOBOAM_CHECK","MW self-perpetuation audit · downweighted categories get UCB1 exploration bonus"],
+    ["TARKIN_DOCTRINE","Deterrence_Credibility=P(stop|triggered)×N_demonstrations · MP=demonstration 1"],
+    ["RUST_COHLE_CONSTRAINT","Operational suppression of displayed capability · multi-tranche entry stealth"],
+  ]},
+  {id:"L6",name:"Execution Layer — S4",color:"#00b4d8",score:9.80,
+   desc:"Execute once. No hesitation. Pre-authored gates.",
+   mods:[
+    ["FIRE_MODE_SNIPER","QUARTER_UNIT until T=10 · Effective_CE ≥ 8.5 · S~Bin(10)≥7"],
+    ["MUSHIN","Min τ_cog after validation · frictionless execution · no hesitation post-gate"],
+    ["SPLIT_STEP_TIMING","t*=argmin|B(t)−P(t)| · dynamic intercept · not the open, not at close"],
+    ["STAGE_SEPARATION_GATE","TRANSITION_QUALITY_SCORE at phase handoff · abort if Q_sep below threshold"],
+    ["GRADUATED_EXIT_PROTOCOL","Modes I-VII · pre-authored, no in-session deliberation permitted"],
+    ["GONDOR_BEACON_PROTOCOL","Pre-arranged binary signal chain · fires automatically · Denethor failure locked out"],
+    ["HARD_STOP","−10% a priori Class I · TARKIN: MP demonstrated credibility is real"],
+    ["OPERATIONAL_SUPPRESSION_PROTOCOL","Multi-tranche entry · avoid triggering adversarial recalibration"],
+    ["THETA_ACCELERATION_EXIT","Exit before Phase 3 decay regardless of narrative strength"],
+    ["BODY_RATIO_CONFIRM","Entry candle Body/Range>0.65 confirms directional session commitment"],
+  ]},
+  {id:"L7",name:"Calibration — CAL / Moltbook",color:"#ffd60a",score:5.37,
+   desc:"Every closed trade teaches. MW ε=1.0 → 0.56 at T=10.",
+   mods:[
+    ["MOLTBOOK_SCHEMA","signal/action/PQS/CLV/outcome/IMPURITY_TYPE/η/REFLEXION_ENTRY/Gap/SIGNAL_AVAILABLE_TS"],
+    ["SIGNAL_AVAILABLE_TIMESTAMP","PIT discipline: availability_ts≠event_ts · prevents MW calibration drift"],
+    ["MW_RECALIBRATION","ε=1.0(T=6)→ε=0.56(T=10) · w_i+1=w_i×(1−ε)^loss_i · direction signal at T=10"],
+    ["REFLEXION_ENTRY_SCHEMA","trade_id/failure_mech/lesson/next_time/importance_score/retrieval_by_similarity"],
+    ["CROSS_TEMPORAL_ANALOGUE","feature_vector similarity · P(win|θ_t) prior · T=35 for meaningful population"],
+    ["ALPHALENS_IC_DECAY_RUN","Post-T=35: IC(1d→60d)→λ=log(2)/IC_halflife per signal type"],
+    ["PIPELINE_KNOWLEDGE_GRAPH","graphify graph.json: mechanism/trade/signal nodes · god nodes in win/loss clusters"],
+    ["FEEDBACK_GRAPH_LAYER","God nodes in loss cluster = causal pattern for MW weight adjustment"],
+    ["ARCHITECTURAL_INVARIANCE","Conservation_Score across contexts/regimes · structural twin population"],
+    ["REHOBOAM_CHECK_AUTO","Post every MW update: UCB1 bonus prevents self-perpetuation"],
+    ["E_operator_tracker","δ_exec×(T/T_target)×data_quality → gates at 0.30/0.50/0.70/0.80"],
+    ["T_progression","T=6→T=10(Apr25)→T=35(Copa América)→T=120(ceiling)"],
+  ]},
+];
+
+const MODULE_SCORES = [
+  {id:"S0",score:9.55,ceil:9.8,col:"#00b4d8",driver:"S9 tooling"},
+  {id:"S1",score:9.56,ceil:9.8,col:"#7b2fbe",driver:"T=35+"},
+  {id:"S2",score:9.80,ceil:9.8,col:"#06d6a0",driver:"AT CEILING"},
+  {id:"S3A",score:9.14,ceil:9.2,col:"#ffd60a",driver:"structural"},
+  {id:"S3B",score:8.98,ceil:9.8,col:"#00b4d8",driver:"S9 dep"},
+  {id:"S35",score:9.80,ceil:9.8,col:"#06d6a0",driver:"AT CEILING"},
+  {id:"S4",score:9.80,ceil:9.9,col:"#06d6a0",driver:"AT CEILING"},
+  {id:"ATOM",score:8.90,ceil:9.8,col:"#e94560",driver:"⚠ RETIRE"},
+  {id:"S5",score:8.48,ceil:9.5,col:"#7b2fbe",driver:"T=35+biometric"},
+  {id:"S7",score:9.68,ceil:9.8,col:"#ffd60a",driver:"live data"},
+  {id:"S8",score:9.80,ceil:9.9,col:"#06d6a0",driver:"AT CEILING"},
+  {id:"S9",score:8.43,ceil:9.7,col:"#00b4d8",driver:"May 13 build"},
+  {id:"CAL",score:5.37,ceil:10.0,col:"#e94560",driver:"T×MW only"},
+];
+
+const EQUATIONS = [
+  "Edge_t = (R·S·T·E) − C_t − F_t",
+  "Real_Edge = U − ΘS_m − L_total",
+  "Adjusted_Edge = CE × (1+α·GLS) × H_score",
+  "λ* = λ_base × (1+k/TTT)/(1+GLS)/(1+PPS)/m̂",
+  "TFI = H × A",
+  "BeliefBias_t = k/(1+TTT)",
+  "Effective_CE = CE × (D·M·A)/(I·(1+S)+N)·K",
+  "MVP_t = f(CPU,GPU,RAM,ROM)·g(Landa,Alex,Lalo,Chigurh)·(1+ε_t)",
+];
+
+const STATS = [
+  {lbl:"Score",val:"9.57",col:"#e8eaf6"},
+  {lbl:"Gap",val:"0.19",col:"#e94560"},
+  {lbl:"Ceiling",val:"9.76",col:"#06d6a0"},
+  {lbl:"T-count",val:"6",col:"#e94560"},
+  {lbl:"MW ε",val:"1.0",col:"#e94560"},
+  {lbl:"E_operator",val:"0.30",col:"#ffd60a"},
+  {lbl:"Mode",val:"PAPER/SNIPER",col:"#ffd60a"},
+  {lbl:"Modules",val:"102",col:"#00b4d8"},
+  {lbl:"ATOM",val:"⚠ 95→35",col:"#e94560"},
+  {lbl:"Build",val:"May 13",col:"#00b4d8"},
+  {lbl:"Real $",val:"August",col:"#06d6a0"},
+  {lbl:"Sessions",val:"~1400",col:"#7b2fbe"},
+];
+
+const PHASES = [
+  {id:"P0",name:"Foundation",date:"Now → May 12",cost:"$0",cls:"active",desc:"ATOM 95→35 · T=6→10 · Moltbook schema · sources.yaml · API creds · repo README"},
+  {id:"P1",name:"Core Stack",date:"May 13–31",cost:"$1.50/mo",cls:"sched",desc:"Claude Code Day 1 · feedparser · Grok · PRAW · COMPOSITE_EDGE stub · Moltbook SQLite · CLI dashboard · graphify install"},
+  {id:"P2",name:"Signal Intelligence",date:"June",cost:"$12/mo",cls:"plan",desc:"FinBERT · KeyBERT · Polymarket · Kalshi · GLS_t auto (FRED) · GDELT · Alphalens · INTERPRETATION_DIVERGENCE live"},
+  {id:"P3",name:"MW Calibration Loop",date:"July–August",cost:"$12/mo+IBKR",cls:"plan",desc:"IBKR paper API · MW direction signal at T=10 · δ_exec measurement · Apple Watch biometric · REHOBOAM_CHECK auto · T=35 Copa América gate"},
+  {id:"P4",name:"Real Capital",date:"August+",cost:"Real $$",cls:"cond",desc:"9 gates: E_op>0.80 · T≥35 · ε≤0.30 · >75% alignment · ATOM retired · 30d clean IBKR paper · GLS auto validated · CAL>6.5 · EBS graduation June"},
+];
+
+const CP = [
+  "ATOM retirement 95→35 CORE fields — before next trade. Single highest-impact action available.",
+  "T=6→10: TLT+TIP exited · UNG stop $10.22 · FCG stop $28.04 · April 25 snapshot target.",
+  "Moltbook schema: add REFLEXION_ENTRY + SIGNAL_AVAILABLE_TIMESTAMP + Gap (Raw_CE−Effective_CE) fields before May 13.",
+  "May 13: pip install graphifyy && graphify install · Claude Code Phase 1 build begins.",
+  "DICE_POOL_CONSENSUS: S~Bin(10,p) computed alongside leave_score at every FIRE_MODE evaluation.",
+  "OPERATOR_STATE_EQUATION: Effective_CE = Raw_CE × state_modifier before FIRE_MODE gate check.",
+];
+
+const TRUTHS = [
+  "Capital moves before language.",
+  "Loud narrative without flow is weak truth.",
+  "Mispricing late is not edge — it is bait.",
+  "Every trade spends future freedom.",
+  "The gap IS the edge.",
+  "Survival funds asymmetry.",
+  "Architecture is complete. Gap closes with T.",
+  "The system self-improves with every closed trade.",
+  "¬(P∧¬P) — the pipeline cannot hold contradictions.",
+  "HARD_STOP is a priori. No evidence overrides it.",
+  "Felt brilliance ≠ effective signal — Gap field proves it.",
+  "Every boon creates its own gap (Narasimha).",
+  "Failure happens at the threshold, not the centre.",
+  "Don't optimize for intensity. Optimize for clean stable repeatable signal.",
+  "The Moltbook is a table. Graphify makes it a graph.",
+  "T is the +1cm. Add trades, not sessions.",
+  "Owning the chokepoint beats joining the crowd.",
+  "HOT state delivers 51% of FLOW signal quality.",
+  "Reflexion writes the lesson. MW updates the weight. Both necessary.",
+];
+
+// Nav links
+const nl=document.getElementById("navlinks");
+LAYERS.forEach(l=>{
+  nl.innerHTML+=`<a href="#${l.id}" class="nl" style="border-color:${l.color}44;color:${l.color}">${l.id}</a>`;
+});
+
+// Equations
+document.getElementById("eqs").innerHTML=EQUATIONS.map(e=>`<div class="eq">${e}</div>`).join('');
+
+// Stats
+const statsEl=document.getElementById("stats");
+STATS.forEach((s,i)=>{
+  if(i>0) statsEl.innerHTML+=`<div class="sdiv"></div>`;
+  statsEl.innerHTML+=`<div class="stat"><div class="st-lbl">${s.lbl}</div><div class="st-val" style="color:${s.col}">${s.val}</div></div>`;
+});
+
+// Module score grid
+const sg=document.getElementById("scoreGrid");
+MODULE_SCORES.forEach(m=>{
+  const gap=(m.ceil-m.score).toFixed(2);
+  const isCeil=m.ceil-m.score<0.05;
+  const isCrit=m.id==="ATOM"||m.id==="CAL";
+  sg.innerHTML+=`<div class="msc${isCeil?' ceil':''}${isCrit?' crit':''}">
+    <div class="msc-id">${m.id}</div>
+    <div class="msc-score" style="color:${m.col}">${m.score.toFixed(2)}</div>
+    <div class="msc-bar"><div class="msc-bar-fill" style="width:${m.score/10*100}%;background:${m.col}"></div></div>
+    <div class="msc-meta">ceil ${m.ceil} · gap ${gap}<br>${m.driver}</div>
+  </div>`;
+});
+
+// Layers
+const layersEl=document.getElementById("layers");
+LAYERS.forEach((l,i)=>{
+  const div=document.createElement("div");
+  div.className="layer";
+  div.id=l.id;
+  const scoreStr=l.score!==null?`<div class="layer-score" style="color:${l.color}">${l.score.toFixed(2)}</div>`:`<div class="layer-score" style="color:${l.color}">—</div>`;
+  const chipsHtml=l.mods.map(([name,desc])=>`<div class="chip"><div class="chip-name">${name}</div><div class="chip-desc">${desc}</div></div>`).join('');
+  div.innerHTML=`
+    <div class="layer-hdr" onclick="toggleLayer('${l.id}',this)">
+      <div class="layer-num">${l.id}</div>
+      <div class="layer-accent" style="background:${l.color};box-shadow:0 0 6px ${l.color}66"></div>
+      <div class="layer-name">${l.name}</div>
+      <div class="layer-desc">${l.desc}</div>
+      ${scoreStr}
+      <div class="layer-cnt">${l.mods.length} modules</div>
+      <button class="toggle" id="btn_${l.id}">EXPAND</button>
+    </div>
+    <div class="layer-mods" id="mods_${l.id}">${chipsHtml}</div>`;
+  layersEl.appendChild(div);
+});
+
+function toggleLayer(id,hdr){
+  const card=hdr.closest('.layer');
+  const btn=document.getElementById('btn_'+id);
+  card.classList.toggle('open');
+  btn.textContent=card.classList.contains('open')?'CLOSE':'EXPAND';
+}
+
+// Build phases
+const ph=document.getElementById("phases");
+PHASES.forEach(p=>{
+  ph.innerHTML+=`<div class="phase ${p.cls}">
+    <div class="phase-id">${p.id}</div>
+    <div class="phase-name">${p.name}</div>
+    <div class="phase-date">${p.date}</div>
+    <div class="phase-cost" style="color:${p.cls==='active'?'var(--c0)':p.cls==='sched'?'var(--c1)':p.cls==='plan'?'var(--c2)':'var(--c4)'}">${p.cost}</div>
+    <div class="phase-desc">${p.desc}</div>
+  </div>`;
+});
+
+// Critical path
+const cpEl=document.getElementById("cp");
+CP.forEach(c=>{
+  cpEl.innerHTML+=`<div class="cp-item"><div class="cp-dot"></div><div class="cp-text">${c}</div></div>`;
+});
+
+// Truths
+const trEl=document.getElementById("truths");
+TRUTHS.forEach(t=>{ trEl.innerHTML+=`<div class="truth">${t}</div>`; });
+</script>
+</body>
+</html>
